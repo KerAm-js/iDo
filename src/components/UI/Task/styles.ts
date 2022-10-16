@@ -4,8 +4,8 @@ import { cardColors } from "../../../styles/global/colors";
 export const taskStyles = StyleSheet.create({
   container: {
     backgroundColor: cardColors.while,
-    borderRadius: 12,
-    paddingHorizontal: 12,
+    borderRadius: 15,
+    paddingHorizontal: 15,
     paddingTop: 15,
     paddingBottom: 12,
     flexDirection: "row",
@@ -15,5 +15,13 @@ export const taskStyles = StyleSheet.create({
   },
   title: {
     marginBottom: 6,
+    lineHeight: 19,
+    paddingRight: 20,
   },
+  pressable: {
+    position: "absolute",
+    width: "30%",
+    height: "100%",
+    zIndex: 1,
+  }
 })

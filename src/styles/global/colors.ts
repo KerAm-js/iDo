@@ -21,7 +21,7 @@ export const buttonColors = {
 }
 
 export const lineColors = {
-  grey: '#999999',
+  grey: '#ddd',
 }
 
 export const swithColors = {

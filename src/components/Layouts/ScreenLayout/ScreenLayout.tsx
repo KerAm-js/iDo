@@ -4,7 +4,8 @@ import { Animated, Text, View } from "react-native";
 import { headerStyle } from "../../../styles/header";
 import { screenLayoutStyles } from "./styles";
 import { ScreenLayoutProps } from "./types";
-import { subTitle15grey, title30 } from "../../../styles/global/texts";
+import { subTitle15, textGrey, title30 } from "../../../styles/global/texts";
+
 
 const ScreenLayout: FC<ScreenLayoutProps> = ({
   children,
@@ -86,7 +87,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
           </Animated.Text>
           {HeaderLeft}
         </View>
-        {subtitle && <Text style={[subTitle15grey]}>{subtitle}</Text>}
+        {subtitle && <Text style={[subTitle15, textGrey]}>{subtitle}</Text>}
         {SubtitleComponent}
       </View>
       {children}

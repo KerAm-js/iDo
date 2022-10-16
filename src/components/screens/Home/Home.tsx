@@ -10,10 +10,28 @@ const Home: FC = () => {
     {
       title: "Сегодня",
       list: [
-        { task: "Почитать книгу", time: "10:00", isCompleted: true },
+        { 
+          id: 'a1', 
+          task: "Почитать книгу",
+          time: "10:00", 
+          isCompleted: true 
+        },
         {
+          id: 'a2',
           task: "Доделать главную страницу",
-          time: "20:00",
+          time: "15:00",
+          isCompleted: false,
+        },
+        {
+          id: 'a3',
+          task: "Доделать анимации",
+          time: "21:00",
+          isCompleted: false,
+        },
+        {
+          id: 'a4',
+          task: "Доделать главную страницу",
+          time: "15:00",
           isCompleted: false,
         },
       ],
@@ -21,10 +39,22 @@ const Home: FC = () => {
     {
       title: "Завтра",
       list: [
-        { task: "Почитать книгу", time: "10:00", isCompleted: true },
+        { 
+          id: 'b1', 
+          task: "Почитать книгу", 
+          time: "10:00", 
+          isCompleted: true 
+        },
         {
+          id: 'b2',
           task: "Доделать главную страницу",
-          time: "20:00",
+          time: "15:00",
+          isCompleted: false,
+        },
+        {
+          id: 'b3',
+          task: "Доделать анимации",
+          time: "21:00",
           isCompleted: false,
         },
       ],

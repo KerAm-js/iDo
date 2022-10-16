@@ -31,7 +31,7 @@ const TabsRender: FC<tabRenderProps> = ({
 
         const onPress = () => {
           Animated.sequence([
-            Animated.timing(tabScale, {toValue: 1.25, useNativeDriver: true, duration: 130, }),
+            Animated.timing(tabScale, {toValue: 0.8, useNativeDriver: true, duration: 130, }),
             Animated.timing(tabScale, {toValue: 1, useNativeDriver: true, duration: 90, }),
           ]).start();
 

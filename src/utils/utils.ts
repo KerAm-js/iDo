@@ -1,27 +1,29 @@
-import { texts } from "./texts"
+import { TaskType } from "../components/UI/Task/types";
+import { dynamicPropObject } from "./../types/global/dynamicPropObject";
+import { texts } from "./texts";
 
 export const getDate = (lang: string) => {
   const language = getLanguage(lang);
   const date = new Date().getDate();
   const month = language.months.fulls[new Date().getMonth()];
-  const weekDay = language.weekDays.fulls[new Date().getDay() - 1];
-  
+  const weekDay = language.weekDays.fulls[new Date().getDay()];
+
   return {
-    date: date + ' ' + month,
+    date: date + " " + month,
     weekDay,
-  }
-}
+  };
+};
 
 export const getLanguage = (lang: string) => {
   let language = texts.ru;
 
-  if (lang === 'de') {
+  if (lang === "de") {
     language = texts.de;
-  } else if (lang === 'en') {
+  } else if (lang === "en") {
     language = texts.en;
-  } else if (lang === 'ch') {
+  } else if (lang === "ch") {
     language = texts.ch;
   }
 
   return language;
-}
+};
