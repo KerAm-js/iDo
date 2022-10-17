@@ -18,10 +18,4 @@ export const taskStyles = StyleSheet.create({
     lineHeight: 19,
     paddingRight: 20,
   },
-  pressable: {
-    position: "absolute",
-    width: "30%",
-    height: "100%",
-    zIndex: 1,
-  }
 })

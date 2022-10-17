@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { LayoutAnimation, Text, View } from "react-native";
 import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
 import { title20 } from "../../../styles/global/texts";
@@ -14,15 +14,19 @@ import Animated, {
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
 import { taskListToObject } from "../../../utils/taskUI";
+import { TaskPropTypes } from "../Task/types";
+import { dynamicPropObject } from "../../../types/global/dynamicPropObject";
 
 const TaskMargin = 10;
 const TaskHeight = 63 + TaskMargin;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
   const [isListHidden, setIsListHidden] = useState(false);
-  const [data, setData] = useState(list);
+  const [data, setData] = useState<dynamicPropObject<number>>(taskListToObject(list));
   const positions = useSharedValue(taskListToObject(list))
   const opacity = useSharedValue(1);
+
+  const updateData = (list: dynamicPropObject<number>) => setData(list);
 
   const listContainerStyle = useAnimatedStyle(() => {
     return {
@@ -54,6 +58,10 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     opacity.value = withTiming(isListHidden ? 1 : 0, { duration: 200 });
   };
 
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
+
   return (
     <Animated.View
       key={title}
@@ -82,6 +90,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
             itemHeight={TaskHeight}
             component={Task}
             componentProps={item}
+            updateData={updateData}
           />
         ))}
       </Animated.View>

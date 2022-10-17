@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable } from "react-native";
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -24,6 +24,7 @@ const MovableItem: FC<MovableItemProps> = ({
   itemHeight,
   component: Component,
   componentProps,
+  updateData,
 }) => {
   const [isDragged, setIsDragged] = useState(false);
 
@@ -36,11 +37,11 @@ const MovableItem: FC<MovableItemProps> = ({
     (currentPosition, previousPosition) => {
       if (currentPosition !== previousPosition) {
         if (!isDragged) {
-          translateY.value = withSpring(currentPosition * itemHeight);
+          translateY.value = withSpring(currentPosition * itemHeight, {damping: 11});
         }
       }
     }
-  )
+  );
 
   const gestureEventHanlder =
     useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
@@ -52,28 +53,31 @@ const MovableItem: FC<MovableItemProps> = ({
             translateY.value,
             0,
             Object.keys(positions.value).length - 1,
-            itemHeight,
+            itemHeight
           );
 
           if (newTop / itemHeight !== positions.value[id] * itemHeight) {
             positions.value = moveTask(
               positions.value,
               positions.value[id],
-              newTop / itemHeight,
-            )
+              newTop / itemHeight
+            );
           }
         }
       },
       onFinish: () => {
-        opacity.value = withTiming(0, { duration: 200 });
-        const newTop = getNewTaskPosition(
-          translateY.value,
-          0,
-          Object.keys(positions.value).length - 1,
-          itemHeight,
-        );
-        translateY.value = withTiming(newTop);
-        runOnJS(setIsDragged)(false);
+        if (isDragged) {
+          opacity.value = withTiming(0, { duration: 200 });
+          const newTop = getNewTaskPosition(
+            translateY.value,
+            0,
+            Object.keys(positions.value).length - 1,
+            itemHeight
+          );
+          translateY.value = withSpring(newTop, {damping: 12});
+          runOnJS(setIsDragged)(false);
+          runOnJS(updateData)(positions.value);
+        }
       },
     });
 
@@ -90,13 +94,26 @@ const MovableItem: FC<MovableItemProps> = ({
   };
 
   return (
-    <PanGestureHandler onGestureEvent={gestureEventHanlder}>
-      <Animated.View
-        style={[movableItemStyles.container, shadowStyle, containerStyle, {zIndex: isDragged ? 10 : 0,}]}
-      >
-        <Component {...componentProps} onLongPress={onLongPress} />
-      </Animated.View>
-    </PanGestureHandler>
+    <Animated.View
+      style={[
+        movableItemStyles.container,
+        shadowStyle,
+        containerStyle,
+        { zIndex: isDragged ? 10 : 0 },
+      ]}
+    >
+      <PanGestureHandler onGestureEvent={gestureEventHanlder}>
+        <Animated.View
+          style={[movableItemStyles.panGestureContainer]}
+        >
+          <Pressable
+            onLongPress={onLongPress}
+            style={[movableItemStyles.pressable]}
+          ></Pressable>
+        </Animated.View>
+      </PanGestureHandler>
+      <Component {...componentProps} />
+    </Animated.View>
   );
 };
 

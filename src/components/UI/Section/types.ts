@@ -13,4 +13,5 @@ export type MovableItemProps = {
   itemHeight: number,
   component: FC<TaskPropTypes>,
   componentProps: TaskPropTypes,
+  updateData: (list: dynamicPropObject<number>) => void,
 }
