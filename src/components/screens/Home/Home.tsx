@@ -3,6 +3,7 @@ import { View } from "react-native";
 import { getDate } from "../../../utils/utils";
 import ScreenLayout from "../../Layouts/ScreenLayout/ScreenLayout";
 import Section from "../../UI/Section/Section";
+import { TaskType } from "../../UI/Task/types";
 
 const Home: FC = () => {
   const { date, weekDay } = getDate("ru");
@@ -14,24 +15,30 @@ const Home: FC = () => {
           id: 'a1', 
           task: "Почитать книгу",
           time: "10:00", 
-          isCompleted: true 
+          isCompleted: false 
         },
         {
           id: 'a2',
           task: "Доделать главную страницу",
-          time: "15:00",
+          time: "14:00",
           isCompleted: false,
         },
         {
           id: 'a3',
-          task: "Доделать анимации",
-          time: "21:00",
+          task: "Сделать анимации",
+          time: "17:00",
           isCompleted: false,
         },
         {
           id: 'a4',
-          task: "Доделать главную страницу",
-          time: "15:00",
+          task: "Спорт",
+          time: "19:00",
+          isCompleted: false,
+        },
+        {
+          id: 'a5',
+          task: "Отдых",
+          time: "21:00",
           isCompleted: false,
         },
       ],
@@ -55,7 +62,7 @@ const Home: FC = () => {
           id: 'b3',
           task: "Доделать анимации",
           time: "21:00",
-          isCompleted: false,
+          isCompleted: true,
         },
       ],
     },

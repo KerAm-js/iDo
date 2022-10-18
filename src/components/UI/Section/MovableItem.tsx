@@ -14,7 +14,11 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { shadowStyle } from "../../../styles/global/shadow";
-import { getNewTaskPosition, moveTask } from "../../../utils/taskUI";
+import {
+  getInsideLayoutTranslationY,
+  getNewTaskPosition,
+  moveTask,
+} from "../../../utils/taskUI";
 import { movableItemStyles } from "./style";
 import { MovableItemProps } from "./types";
 
@@ -28,7 +32,7 @@ const MovableItem: FC<MovableItemProps> = ({
 }) => {
   const [isDragged, setIsDragged] = useState(false);
 
-  const top = itemHeight * positions.value[id];
+  const top = itemHeight * positions.value[id] | 0;
   const translateY = useSharedValue(top);
   const opacity = useSharedValue(0);
 
@@ -37,7 +41,9 @@ const MovableItem: FC<MovableItemProps> = ({
     (currentPosition, previousPosition) => {
       if (currentPosition !== previousPosition) {
         if (!isDragged) {
-          translateY.value = withSpring(currentPosition * itemHeight, {damping: 11});
+          translateY.value = withSpring(currentPosition * itemHeight, {
+            damping: 11,
+          });
         }
       }
     }
@@ -48,12 +54,19 @@ const MovableItem: FC<MovableItemProps> = ({
       onStart: () => {},
       onActive: (event) => {
         if (isDragged) {
-          translateY.value = event.translationY + top;
+          const { translationY } = event;
           const newTop = getNewTaskPosition(
-            translateY.value,
+            translationY + top,
             0,
             Object.keys(positions.value).length - 1,
             itemHeight
+          );
+
+          translateY.value = getInsideLayoutTranslationY(
+            translationY + top,
+            0,
+            Object.keys(positions.value).length - 1,
+            itemHeight,
           );
 
           if (newTop / itemHeight !== positions.value[id] * itemHeight) {
@@ -74,7 +87,7 @@ const MovableItem: FC<MovableItemProps> = ({
             Object.keys(positions.value).length - 1,
             itemHeight
           );
-          translateY.value = withSpring(newTop, {damping: 12});
+          translateY.value = withSpring(newTop, { damping: 12 });
           runOnJS(setIsDragged)(false);
           runOnJS(updateData)(positions.value);
         }
@@ -103,9 +116,7 @@ const MovableItem: FC<MovableItemProps> = ({
       ]}
     >
       <PanGestureHandler onGestureEvent={gestureEventHanlder}>
-        <Animated.View
-          style={[movableItemStyles.panGestureContainer]}
-        >
+        <Animated.View style={[movableItemStyles.panGestureContainer]}>
           <Pressable
             onLongPress={onLongPress}
             style={[movableItemStyles.pressable]}

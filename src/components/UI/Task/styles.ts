@@ -1,3 +1,4 @@
+import { lineColors } from './../../../styles/global/colors';
 import { StyleSheet } from "react-native";
 import { cardColors } from "../../../styles/global/colors";
 
@@ -18,4 +19,20 @@ export const taskStyles = StyleSheet.create({
     lineHeight: 19,
     paddingRight: 20,
   },
+})
+
+export const completedMarkerStyles = StyleSheet.create({
+  container: {
+    paddingVertical: 4,
+    paddingHorizontal: 7,
+    flexDirection: "row",
+    alignItems: 'center',
+    backgroundColor: lineColors.grey,
+    maxWidth: 86,
+    borderRadius: 4,
+    marginBottom: 10,
+  },
+  icon: {
+    marginLeft: 2,
+  }
 })

@@ -16,12 +16,24 @@ export const getNewTaskPosition = (
   translateY: number,
   lowerBound: number,
   upperBound: number,
-  itemHeight: number
+  itemHeight: number,
 ) => {
   "worklet";
   const newTop = Math.round(translateY / itemHeight) * itemHeight;
   return Math.max(lowerBound, Math.min(newTop, upperBound * itemHeight));
 };
+
+export const getInsideLayoutTranslationY = (
+  translateY: number,
+  lowerBound: number,
+  upperBound: number,
+  itemHeight: number,
+) => {
+  'worklet';
+  const newLowerBound = (lowerBound * itemHeight) - 15;
+  const newUpperBound = (upperBound * itemHeight) + 5;
+  return Math.max(newLowerBound, Math.min(translateY, newUpperBound));
+}
 
 export const moveTask = (
   listObject: dynamicPropObject<number>,
@@ -40,7 +52,5 @@ export const moveTask = (
       newObject[id] = from;
     }
   }
-
   return newObject;
-
 };

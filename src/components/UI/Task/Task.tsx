@@ -5,9 +5,12 @@ import CheckButton from "../buttons/CheckButton/CheckButton";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
 
-const Task: FC<TaskPropTypes> = ({ task, time, isCompleted }) => {
+const Task: FC<TaskPropTypes> = ({ task, time, id, isCompleted, completeTask }) => {
   const [isChecked, setIsChecked] = useState(isCompleted);
-  const toggleChecked = () => setIsChecked((value) => !value);
+  const toggleChecked = () => {
+    completeTask(id);
+    setIsChecked((value) => !value);
+  };
 
   return (
     <View style={[taskStyles.container]}>
