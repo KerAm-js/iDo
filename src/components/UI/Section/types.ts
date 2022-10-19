@@ -1,4 +1,5 @@
-import { dynamicPropObject } from './../../../types/global/dynamicPropObject';
+import { PositionsObject } from './../../../types/global/PositionsObject';
+import { ListObject } from './../../../types/global/ListObject';
 import { TaskPropTypes, TaskType } from "../Task/types";
 import { FC } from 'react';
 
@@ -9,9 +10,12 @@ export type SectionProps = {
 
 export type MovableItemProps = {
   id: string,
-  positions: {value: dynamicPropObject<number>},
+  positions: {value: ListObject},
+  positionsState: PositionsObject,
   itemHeight: number,
   component: FC<TaskPropTypes>,
   componentProps: TaskPropTypes,
-  updateData: (list: dynamicPropObject<number>) => void,
+  upperBound: number,
+  updatePositionsState: (list: PositionsObject) => void,
+  updateUpperBound: (newUpperBound: number) => void,
 }

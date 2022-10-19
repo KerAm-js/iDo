@@ -13,30 +13,25 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
-import { taskListToObject } from "../../../utils/taskUI";
-import { dynamicPropObject } from "../../../types/global/dynamicPropObject";
+import { taskListToObject, taskListToPositionsObject } from "../../../utils/taskUI";
 import { TaskType } from "../Task/types";
 import CompletedMarker from "../Task/CompletedMarker";
+import { ListObject } from "../../../types/global/ListObject";
+import { PositionsObject } from "../../../types/global/PositionsObject";
 
 const TaskMargin = 10;
 const TaskHeight = 63 + TaskMargin;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
   const [isListHidden, setIsListHidden] = useState<boolean>(false);
-  const [isCompletedListHidden, setIsCompletedListHidden] =
-    useState<boolean>(false);
   const [data, setData] = useState<Array<TaskType>>(list);
-  const [positionsState, setPositionsState] = useState<
-    dynamicPropObject<number>
-  >(taskListToObject(list));
-  const completedTasks: Array<TaskType> = data.filter((el) => el.isCompleted);
-  const notCompletedTasks: Array<TaskType> = data.filter(
-    (el) => !el.isCompleted
-  );
-  const updateData = (list: dynamicPropObject<number>) =>
+  const [upperBound, setUpperBound] = useState<number>(data.length - 1);
+  const [positionsState, setPositionsState] = useState<PositionsObject>(taskListToPositionsObject(list));
+  const updatePositionState = (list: PositionsObject) =>
     setPositionsState(list);
+  const updateUpperBound = (newUpperBound: number) => setUpperBound(newUpperBound);
 
-  const positions = useSharedValue(positionsState);
+  const positions = useSharedValue<ListObject>(taskListToObject(data));
   const opacity = useSharedValue(1);
   const completedListOpacity = useSharedValue(1);
 
@@ -45,19 +40,6 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       opacity: opacity.value,
     };
   }, [opacity.value]);
-
-  const completedListContainerStyle = useAnimatedStyle(() => {
-    const completedListHeight = interpolate(
-      completedListOpacity.value,
-      [0, 1],
-      [0, completedTasks.length * TaskHeight]
-    );
-    return {
-      opacity: completedListOpacity.value,
-      height: completedListHeight,
-      backgroundColor: '#000'
-    };
-  }, [completedListOpacity.value, data]);
 
   const arrowStyle = useAnimatedStyle(() => {
     const iconRotation = interpolate(opacity.value, [0, 1], [-90, 0]);
@@ -71,21 +53,10 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   }, [opacity.value]);
 
   const containerStyle = useAnimatedStyle(() => {
-    const completedListHeight = interpolate(
-      completedListOpacity.value,
-      [0, 1],
-      [0, completedTasks.length * TaskHeight]
-    );
-    const completedMarkerHeight = completedTasks.length > 0 ? 20 + 16 : 0;
     const height = interpolate(
       opacity.value,
       [0, 1],
-      [
-        30,
-        notCompletedTasks.length * TaskHeight + 30 +
-          completedListHeight +
-          completedMarkerHeight,
-      ]
+      [30, data.length * TaskHeight + 30]
     );
     return {
       height,
@@ -98,13 +69,6 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     opacity.value = withTiming(isListHidden ? 1 : 0, { duration: 200 });
     completedListOpacity.value = withTiming(isListHidden ? 1 : 0, {
       duration: 100,
-    });
-  };
-
-  const toggleCompletedListVisible = () => {
-    setIsCompletedListHidden(!isCompletedListHidden);
-    completedListOpacity.value = withTiming(isCompletedListHidden ? 1 : 0, {
-      duration: 200,
     });
   };
 
@@ -122,15 +86,20 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     setData(tasksCopy);
   };
 
-  useEffect(() => {}, [completedListOpacity.value]);
+  // useEffect(() => {
+  //   console.log('state',positionsState)
+  // }, [data])
 
-  useEffect(() => {
-    positions.value = taskListToObject(notCompletedTasks);
-  }, [data]);
+  // useEffect(() => {
+  //   console.log(positionsState);
+  // }, [positionsState])
+
+  // useEffect(() => {
+  //   console.log(upperBound);
+  // }, [upperBound])
 
   return (
     <Animated.View
-      key={title}
       style={[sectionStyles.container, containerStyle]}
     >
       <View style={sectionStyles.headerContainer}>
@@ -148,41 +117,33 @@ const Section: FC<SectionProps> = ({ title, list }) => {
         style={[
           listContainerStyle,
           {
-            minHeight: (notCompletedTasks?.length * TaskHeight) | 0,
+            minHeight: (data?.length * TaskHeight) | 0,
           },
         ]}
       >
-        {notCompletedTasks?.map((item, index) => {
+        {data?.map((item, index) => {
           return (
             <MovableItem
               key={index + item.task}
               positions={positions}
+              positionsState={positionsState}
               id={item.id}
               itemHeight={TaskHeight}
               component={Task}
               componentProps={{ ...item, completeTask }}
-              updateData={updateData}
+              updatePositionsState={updatePositionState}
+              upperBound={upperBound}
+              updateUpperBound={updateUpperBound}
             />
           );
         })}
       </Animated.View>
-      {completedTasks.length > 0 && (
+      {/* {completedTasks.length > 0 && (
         <CompletedMarker
           onPress={toggleCompletedListVisible}
           opacity={completedListOpacity}
         />
-      )}
-      <Animated.View style={[completedListContainerStyle]}>
-        {completedTasks?.map((item, index) => {
-          return (
-            <Task
-              key={index + item.task}
-              {...item}
-              completeTask={completeTask}
-            />
-          );
-        })}
-      </Animated.View>
+      )} */}
     </Animated.View>
   );
 };
