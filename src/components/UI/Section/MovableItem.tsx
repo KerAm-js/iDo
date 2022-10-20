@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useRef, useState } from "react";
 import { Pressable } from "react-native";
 import {
   PanGestureHandler,
@@ -13,8 +13,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { shadowStyle } from "../../../styles/global/shadow";
-import { ListObject } from "../../../types/global/ListObject";
-import { PositionsObject } from "../../../types/global/PositionsObject";
 import {
   getInsideLayoutTranslationY,
   getNewTaskPosition,
@@ -30,31 +28,49 @@ const MovableItem: FC<MovableItemProps> = ({
   id,
   positions,
   positionsState,
+  opacity,
   itemHeight,
   component: Component,
   componentProps,
+  completedMarkerTop,
   updatePositionsState,
   upperBound,
   updateUpperBound,
+  markerOpacity,
 }) => {
   const [isDragged, setIsDragged] = useState(false);
-  const top = itemHeight * positions.value[id].position | 0;
+  const top = itemHeight * positions.value[id].position;
   const translateY = useSharedValue(top);
-  const opacity = useSharedValue(0);
+  const shadowOpacity = useSharedValue(0);
+  const timeOut: { current: ReturnType<typeof setTimeout> | null } =
+    useRef(null);
 
   useAnimatedReaction(
-    () => positions.value[id].position,
+    () => positions.value[id],
     (current, previous) => {
-      if (current !== previous) {
+      const isCompletedChanged = current?.isCompleted !== previous?.isCompleted
+      const isPositionChanged = current?.position !== previous?.position
+      const isCompleted = positions.value[id].isCompleted;
+
+      if (isPositionChanged || isCompletedChanged ) {
         if (!isDragged) {
-          translateY.value = withTiming(current * itemHeight, { duration: 300 });
+          const newTop = isCompleted ? 31 + current.position * itemHeight : current.position * itemHeight;
+          translateY.value = withTiming(newTop, {
+            duration: 300,
+          });
         }
+      }
+      if (isCompletedChanged) {
+        const newMarkerPosition = isCompleted ? upperBound + 1 : upperBound + 2
+        completedMarkerTop.value = withTiming(newMarkerPosition * itemHeight, {
+          duration: 300,
+        })
       }
     }
   );
 
   const onActiveGestureEvent = (translationY: number) => {
-    'worklet';
+    "worklet";
     if (isDragged) {
       const newTop = getNewTaskPosition(
         translationY + top,
@@ -67,7 +83,7 @@ const MovableItem: FC<MovableItemProps> = ({
         translationY + top,
         0,
         upperBound,
-        itemHeight,
+        itemHeight
       );
 
       if (newTop / itemHeight !== positions.value[id].position) {
@@ -78,12 +94,12 @@ const MovableItem: FC<MovableItemProps> = ({
         );
       }
     }
-  }
+  };
 
   const onFinishGestureEvent = () => {
-    'worklet';
+    "worklet";
     if (isDragged) {
-      opacity.value = withTiming(0, { duration: 300 });
+      shadowOpacity.value = withTiming(0, { duration: 300 });
       const newTop = getNewTaskPosition(
         translateY.value,
         0,
@@ -92,9 +108,11 @@ const MovableItem: FC<MovableItemProps> = ({
       );
       translateY.value = withTiming(newTop, { duration: 300 });
       runOnJS(setIsDragged)(false);
-      runOnJS(updatePositionsState)(listObjectToPositionsObject(positions.value));
+      runOnJS(updatePositionsState)(
+        listObjectToPositionsObject(positions.value)
+      );
     }
-  }
+  };
 
   const gestureEventHanlder =
     useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
@@ -109,28 +127,45 @@ const MovableItem: FC<MovableItemProps> = ({
 
   const containerStyle = useAnimatedStyle(() => {
     return {
-      shadowOpacity: opacity.value,
-      top: translateY.value
+      shadowOpacity: shadowOpacity.value,
+      top: translateY.value,
+      opacity: opacity.value,
     };
-  }, [positions, translateY, opacity]);
+  }, [positions, translateY, shadowOpacity, opacity]);
 
   const onLongPress = () => {
     setIsDragged(true);
-    opacity.value = withTiming(0.12, { duration: 300 });
+    shadowOpacity.value = withTiming(0.12, { duration: 300 });
   };
 
   const completeTask = (taskId: string) => {
     if (componentProps.isCompleted) {
-      positions.value = moveUncompletedTask(positions.value, positionsState, id, upperBound);
       updateUpperBound(upperBound + 1);
+      if (timeOut.current) {
+        clearTimeout(timeOut.current);
+        timeOut.current = null;
+      }
+      positions.value = moveUncompletedTask(
+        positions.value,
+        positionsState,
+        id
+      );
     } else {
-      setTimeout(() => {
-        positions.value = moveCompletedTask(positions.value, id, positions.value[id].position, upperBound);
-        updateUpperBound(upperBound - 1);
-      }, 500)
+      updateUpperBound(upperBound - 1);
+      timeOut.current = setTimeout(() => {
+        positions.value = moveCompletedTask(
+          positions.value,
+          id,
+          positions.value[id].position,
+          upperBound
+        );
+        if (markerOpacity.value < 1) {
+          markerOpacity.value = withTiming(1, { duration: 300 });
+        }
+      }, 500);
     }
     componentProps.completeTask(taskId);
-  }
+  };
 
   return (
     <Animated.View

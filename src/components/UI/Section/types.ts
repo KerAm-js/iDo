@@ -11,6 +11,9 @@ export type SectionProps = {
 export type MovableItemProps = {
   id: string,
   positions: {value: ListObject},
+  opacity: {value: number},
+  completedMarkerTop: {value: number},
+  markerOpacity: {value: number},
   positionsState: PositionsObject,
   itemHeight: number,
   component: FC<TaskPropTypes>,

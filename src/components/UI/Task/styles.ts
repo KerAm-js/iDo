@@ -31,6 +31,7 @@ export const completedMarkerStyles = StyleSheet.create({
     maxWidth: 86,
     borderRadius: 4,
     marginBottom: 10,
+    position: 'absolute',
   },
   icon: {
     marginLeft: 2,

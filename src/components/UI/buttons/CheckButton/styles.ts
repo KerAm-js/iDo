@@ -14,5 +14,6 @@ export const checkButtonStyles = StyleSheet.create({
   containerFill: {
     backgroundColor: backgroundColors.dark,
     borderColor: backgroundColors.dark,
+    borderWidth: 0,
   }
 })

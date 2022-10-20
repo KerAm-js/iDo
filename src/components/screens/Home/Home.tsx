@@ -14,47 +14,79 @@ const Home: FC = () => {
         { 
           id: 'a1', 
           task: "1",
-          time: "10:00", 
+          time: "19:00", 
           isCompleted: false 
         },
         {
           id: 'a2',
           task: "2",
-          time: "14:00",
+          time: "21:00",
           isCompleted: false,
         },
         {
           id: 'a3',
           task: "3",
-          time: "17:00",
+          time: "14:00",
           isCompleted: false,
         },
         {
           id: 'a4',
           task: "4",
-          time: "19:00",
+          time: "10:00",
           isCompleted: false,
         },
         {
           id: 'a5',
           task: "5",
+          time: "17:00",
+          isCompleted: false,
+        },
+      ],
+    },
+    {
+      title: "Завтра",
+      list: [
+        { 
+          id: 'a1', 
+          task: "1",
+          time: "19:00", 
+          isCompleted: false 
+        },
+        {
+          id: 'a2',
+          task: "2",
           time: "21:00",
+          isCompleted: false,
+        },
+        {
+          id: 'a3',
+          task: "3",
+          time: "14:00",
+          isCompleted: false,
+        },
+        {
+          id: 'a4',
+          task: "4",
+          time: "10:00",
+          isCompleted: false,
+        },
+        {
+          id: 'a5',
+          task: "5",
+          time: "17:00",
           isCompleted: false,
         },
       ],
     },
   ];
   return (
-    <>
-      <ScreenLayout title={date} subtitle={weekDay}>
-        <View>
-          {sections.map(({ title, list }, index) => {
-            return <Section key={title + index} title={title} list={list} />;
-          })}
-        </View>
-        <View style={{ height: 2000 }}></View>
-      </ScreenLayout>
-    </>
+    <ScreenLayout title={date} subtitle={weekDay}>
+      <View>
+        {sections.map(({ title, list }, index) => {
+          return <Section key={title + index} title={title} list={list} />;
+        })}
+      </View>
+    </ScreenLayout>
   );
 };
 

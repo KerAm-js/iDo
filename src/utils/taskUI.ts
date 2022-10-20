@@ -85,23 +85,6 @@ export const moveTask = (
     if (listObject[id].position === from) newObject[id].position = to;
     if (listObject[id].position === to) newObject[id].position = from;
   }
-
-  // for (let id in listObject) {
-  //   if (listObject[id].position === from) {
-  //     newObject[id].position = to;
-  //   }
-
-  //   if (listObject[id].position === to) {
-  //     newObject[id].position = from;
-  //   }
-  // }
-  // Object.keys(newObject).forEach(key => {
-  //   if (newObject[key].position !== listObject[key].position) {
-  //     console.log(true);
-  //   } else {
-  //     console.log(false);
-  //   }
-  // })
   return newObject;
 };
 
@@ -109,11 +92,11 @@ export const moveCompletedTask = (
   listObject: ListObject,
   id: string,
   from: number,
-  to: number
+  upperBound: number
 ): ListObject => {
   "worklet";
   const keys: Array<string> = taskObjectToPositionsList(listObject);
-  for (let i = from; i < to; i++) {
+  for (let i = from; i < upperBound; i++) {
     const curr = keys[i];
     const next = keys[i + 1];
     keys[i] = next;
@@ -131,7 +114,6 @@ export const moveUncompletedTask = (
   listObject: ListObject,
   positionsState: PositionsObject,
   id: string,
-  upperBound: number
 ): ListObject => {
   "worklet";
 
@@ -147,11 +129,7 @@ export const moveUncompletedTask = (
       uncompletedList.push(key);
     }
   })
-
-  console.log(uncompletedList.length);
-  console.log(completedList.length);
   uncompletedList?.sort((prev, curr) => positionsState[prev] - positionsState[curr]);
-
   const obj: ListObject = {};
 
   for (let i = 0; i < uncompletedList.length; i++) {
