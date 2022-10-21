@@ -14,6 +14,7 @@ import Animated, {
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
 import {
+  sortTasksByTime,
   taskListToObject,
   taskListToPositionsObject,
 } from "../../../utils/taskUI";
@@ -29,7 +30,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   const [isListHidden, setIsListHidden] = useState<boolean>(false);
   const [isCompletedListHidden, setIsCompletedListHidden] =
     useState<boolean>(false);
-  const [data, setData] = useState<Array<TaskType>>(list);
+  const [data, setData] = useState<Array<TaskType>>(sortTasksByTime(list));
   const [upperBound, setUpperBound] = useState<number>(data.length - 1);
   const [positionsState, setPositionsState] = useState<PositionsObject>(
     taskListToPositionsObject(list)
@@ -114,7 +115,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     if (upperBound === data.length - 1) {
       completedMarkerOpacity.value = withTiming(0, {duration: 100});
     }
-  }, [upperBound])
+  }, [upperBound]);
 
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>

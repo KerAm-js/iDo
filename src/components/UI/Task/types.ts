@@ -1,7 +1,7 @@
 export type TaskPropTypes = {
   id: string;
   task: string;
-  time: string;
+  time?: Date;
   isCompleted: boolean;
   completeTask: (id: string) => void;
 };
@@ -9,7 +9,7 @@ export type TaskPropTypes = {
 export type TaskType = {
   id: string;
   task: string;
-  time: string;
+  time?: Date;
   isCompleted: boolean;
 };
 

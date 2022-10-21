@@ -1,6 +1,7 @@
 export type ListObject = {
   [x: string] : {
     position: number,
-    isCompleted: boolean
+    isCompleted: boolean,
+    isTimed: boolean,
   }
 }

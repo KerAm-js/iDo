@@ -3,7 +3,6 @@ import { View } from "react-native";
 import { getDate } from "../../../utils/utils";
 import ScreenLayout from "../../Layouts/ScreenLayout/ScreenLayout";
 import Section from "../../UI/Section/Section";
-import { TaskType } from "../../UI/Task/types";
 
 const Home: FC = () => {
   const { date, weekDay } = getDate("ru");
@@ -11,69 +10,32 @@ const Home: FC = () => {
     {
       title: "Сегодня",
       list: [
-        { 
-          id: 'a1', 
-          task: "1",
-          time: "19:00", 
-          isCompleted: false 
-        },
-        {
-          id: 'a2',
-          task: "2",
-          time: "21:00",
-          isCompleted: false,
-        },
         {
           id: 'a3',
-          task: "3",
-          time: "14:00",
+          task: "Задача 3",
+          time: new Date(2022, 9, 21, 14, 0),
           isCompleted: false,
         },
         {
           id: 'a4',
-          task: "4",
-          time: "10:00",
+          task: "Задача 4",
           isCompleted: false,
         },
         {
           id: 'a5',
-          task: "5",
-          time: "17:00",
+          task: "Задача 5",
           isCompleted: false,
         },
-      ],
-    },
-    {
-      title: "Завтра",
-      list: [
         { 
           id: 'a1', 
-          task: "1",
-          time: "19:00", 
+          task: "Задача 1",
+          time: new Date(2022, 9, 21, 10, 0),
           isCompleted: false 
         },
         {
           id: 'a2',
-          task: "2",
-          time: "21:00",
-          isCompleted: false,
-        },
-        {
-          id: 'a3',
-          task: "3",
-          time: "14:00",
-          isCompleted: false,
-        },
-        {
-          id: 'a4',
-          task: "4",
-          time: "10:00",
-          isCompleted: false,
-        },
-        {
-          id: 'a5',
-          task: "5",
-          time: "17:00",
+          task: "Задача 2",
+          time: new Date(2022, 9, 21, 21, 0),
           isCompleted: false,
         },
       ],

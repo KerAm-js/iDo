@@ -13,6 +13,7 @@ export const taskStyles = StyleSheet.create({
     marginBottom: 10,
     justifyContent: 'space-between',
     alignItems: "center",
+    minHeight: 63,
   },
   title: {
     marginBottom: 6,

@@ -16,7 +16,7 @@ const Task: FC<TaskPropTypes> = ({ task, time, id, isCompleted, completeTask }) 
     <View style={[taskStyles.container]}>
       <View>
         <Text style={[text15, taskStyles.title]}>{task}</Text>
-        <Text style={[text11, textGrey]}>{time}</Text>
+        { time && <Text style={[text11, textGrey]}>{time.toTimeString().slice(0, 5)}</Text> }
       </View>
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
     </View>

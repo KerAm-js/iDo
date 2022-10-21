@@ -1,11 +1,30 @@
 import { ListObject } from "./../types/global/ListObject";
 import { TaskType } from "../components/UI/Task/types";
 import { PositionsObject } from "../types/global/PositionsObject";
+import { Value } from "react-native-reanimated";
+
+export const sortTasksByTime = (list: Array<TaskType>): Array<TaskType> => {
+  const listCopy = [...list];
+  listCopy.sort((prev, curr) => {
+
+    if (!prev.time && curr.time) {
+      return 1;
+    } else if (prev.time && !curr.time) {
+      return -1;
+    } else if (prev.time && curr.time) {
+      const prevTime = prev.time.valueOf();
+      const currTime = curr.time.valueOf();
+      return prevTime - currTime;
+    }
+    return 0;
+  })
+  return listCopy;
+}
 
 export const taskListToObject = (list: Array<TaskType>): ListObject => {
   const object: ListObject = {};
   list.reduce((prev, curr, index): ListObject => {
-    prev[curr.id] = { position: index, isCompleted: curr.isCompleted };
+    prev[curr.id] = { position: index, isCompleted: curr.isCompleted, isTimed: !!curr.time };
     return prev;
   }, object);
   return object;
@@ -56,8 +75,8 @@ export const getNewTaskPosition = (
   itemHeight: number
 ) => {
   "worklet";
-  const newTop = Math.round(translateY / itemHeight) * itemHeight;
-  return Math.max(lowerBound, Math.min(newTop, upperBound * itemHeight));
+  const newPosition = Math.round(translateY / itemHeight);
+  return Math.max(lowerBound, Math.min(newPosition, upperBound));
 };
 
 export const getInsideLayoutTranslationY = (
@@ -79,12 +98,29 @@ export const moveTask = (
 ): ListObject => {
   "worklet";
   const newObject: ListObject = {};
-
+  const fromItem: ListObject = {};
+  const toItem: ListObject = {}
+  let fromKey = Object.keys(fromItem)[0];
+  let toKey = Object.keys(toItem)[0];
+  
   for (let id in listObject) {
     newObject[id] = {...listObject[id]}
-    if (listObject[id].position === from) newObject[id].position = to;
-    if (listObject[id].position === to) newObject[id].position = from;
+    if (listObject[id].position === from) {
+      fromItem[id] = newObject[id]
+      fromKey = id;
+    } else if (listObject[id].position === to) {
+      toItem[id] = newObject[id];
+      toKey = id;
+    };
   }
+
+  if (!fromItem[fromKey].isTimed && !toItem[toKey].isTimed ) {
+    const fromPosition = fromItem[fromKey].position;
+    const toPosition = toItem[toKey].position;
+    fromItem[fromKey].position = toPosition;
+    toItem[toKey].position = fromPosition
+  }
+
   return newObject;
 };
 
@@ -134,12 +170,12 @@ export const moveUncompletedTask = (
 
   for (let i = 0; i < uncompletedList.length; i++) {
     const key = uncompletedList[i];
-    obj[key] = { position: i, isCompleted: false };
+    obj[key] = { position: i, isCompleted: false, isTimed: listObject[key].isTimed };
   }
 
   for (let i = 0; i < completedList.length; i++) {
     const key = completedList[i];
-    obj[key] = { position: i + uncompletedList.length, isCompleted: true };
+    obj[key] = { position: i + uncompletedList.length, isCompleted: true, isTimed: listObject[key].isTimed };
   }
 
   return obj;

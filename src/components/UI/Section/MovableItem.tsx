@@ -72,7 +72,7 @@ const MovableItem: FC<MovableItemProps> = ({
   const onActiveGestureEvent = (translationY: number) => {
     "worklet";
     if (isDragged) {
-      const newTop = getNewTaskPosition(
+      const newPosition = getNewTaskPosition(
         translationY + top,
         0,
         upperBound,
@@ -86,11 +86,11 @@ const MovableItem: FC<MovableItemProps> = ({
         itemHeight
       );
 
-      if (newTop / itemHeight !== positions.value[id].position) {
+      if (newPosition !== positions.value[id].position && !componentProps.time) {
         positions.value = moveTask(
           positions.value,
           positions.value[id].position,
-          newTop / itemHeight
+          newPosition,
         );
       }
     }
@@ -99,18 +99,17 @@ const MovableItem: FC<MovableItemProps> = ({
   const onFinishGestureEvent = () => {
     "worklet";
     if (isDragged) {
-      shadowOpacity.value = withTiming(0, { duration: 300 });
-      const newTop = getNewTaskPosition(
-        translateY.value,
-        0,
-        Object.keys(positions.value).length - 1,
-        itemHeight
-      );
-      translateY.value = withTiming(newTop, { duration: 300 });
+      if (componentProps.time) {
+        translateY.value = withTiming(top, { duration: 300 });
+      } else {
+        const newPosition = positions.value[id].position;
+        translateY.value = withTiming(newPosition * itemHeight, { duration: 300 });
+      }
       runOnJS(setIsDragged)(false);
       runOnJS(updatePositionsState)(
         listObjectToPositionsObject(positions.value)
       );
+      shadowOpacity.value = withTiming(0, { duration: 300 });
     }
   };
 
@@ -130,6 +129,7 @@ const MovableItem: FC<MovableItemProps> = ({
       shadowOpacity: shadowOpacity.value,
       top: translateY.value,
       opacity: opacity.value,
+      zIndex: shadowOpacity.value > 0 ? 1 : 0,
     };
   }, [positions, translateY, shadowOpacity, opacity]);
 
@@ -173,7 +173,6 @@ const MovableItem: FC<MovableItemProps> = ({
         movableItemStyles.container,
         shadowStyle,
         containerStyle,
-        { zIndex: isDragged ? 10 : 0 },
       ]}
     >
       <PanGestureHandler onGestureEvent={gestureEventHanlder}>
