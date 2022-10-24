@@ -9,7 +9,7 @@ import Animated, {
 import { SvgXml } from "react-native-svg";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
 import { textColors } from "../../../styles/global/colors";
-import { text11 } from "../../../styles/global/texts";
+import { text12 } from "../../../styles/global/texts";
 import { completedMarkerStyles } from "./styles";
 import { CompletedMarkerPropTypes } from "./types";
 
@@ -36,7 +36,7 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
   return (
     <Animated.View style={[containerStyle]}>
       <Pressable onPress={onPress} style={[completedMarkerStyles.container]}>
-        <Text style={[text11]}>Выполнено</Text>
+        <Text style={[text12]}>Выполнено</Text>
         <Animated.View style={[iconStyle]}>
           <SvgXml
             xml={arrowBottom}

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { View } from "react-native";
 import { backgroundColors } from "../../../styles/global/colors";
-import ScreenLayout from "../../Layouts/ScreenLayout/ScreenLayout";
+import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
 
 const Folders: FC = () => {
   return (

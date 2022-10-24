@@ -11,14 +11,14 @@ export const title30LineHeight: TextStyle = {
   lineHeight: 45
 }
 
-export const title20: TextStyle = {
-  fontSize: 20,
-  lineHeight: 20,
+export const title22: TextStyle = {
+  fontSize: 22,
+  lineHeight: 22,
   fontWeight: 'bold',
 };
-export const title20LineHeight: TextStyle = {
-  ...title20,
-  lineHeight: 30
+export const title22LineHeight: TextStyle = {
+  ...title22,
+  lineHeight: 31,
 }
 
 export const title18: TextStyle = {
@@ -31,24 +31,30 @@ export const title18LineHeight: TextStyle = {
   lineHeight: 27
 };
 
-export const subTitle15: TextStyle = {
-  fontSize: 15,
-  lineHeight: 15,
+export const subTitle16: TextStyle = {
+  fontSize: 16,
+  lineHeight: 16,
   fontWeight: '600',
 };
-export const subTitle15LineHeight: TextStyle = {
-  ...subTitle15,
-  lineHeight: 23
+export const subTitle16LineHeight: TextStyle = {
+  ...subTitle16,
+  lineHeight: 24
 };
 
-export const text15: TextStyle = {
-  fontSize: 15,
-  lineHeight: 15,
+export const text17: TextStyle = {
+  fontSize: 17,
+  lineHeight: 17,
+  fontWeight: '400',
+}
+
+export const text16: TextStyle = {
+  fontSize: 16,
+  lineHeight: 16,
   fontWeight: '400',
 };
-export const text15LineHeight: TextStyle = {
-  ...text15,
-  lineHeight: 27
+export const text16LineHeight: TextStyle = {
+  ...text16,
+  lineHeight: 24
 }
 
 export const text14: TextStyle = {
@@ -61,14 +67,14 @@ export const text14LineHeight: TextStyle = {
   lineHeight: 21
 }
 
-export const text11: TextStyle = {
-  fontSize: 11,
-  lineHeight: 11,
+export const text12: TextStyle = {
+  fontSize: 12,
+  lineHeight: 12,
   fontWeight: '400',
 };
-export const text11LineHeight: TextStyle = {
-  ...text11,
-  lineHeight: 17
+export const text12LineHeight: TextStyle = {
+  ...text12,
+  lineHeight: 18
 }
 
 export const textGrey: TextStyle = {

@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import { Text, SafeAreaView, View } from "react-native";
-import ScreenLayout from "../../Layouts/ScreenLayout/ScreenLayout";
+import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
 
 const Prefs: FC = () => {
   return (

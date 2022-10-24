@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import { Text, View } from "react-native";
 import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
-import { title20 } from "../../../styles/global/texts";
+import { title22 } from "../../../styles/global/texts";
 import { sectionStyles } from "./style";
 import { SectionProps } from "./types";
 import IconButton from "../buttons/IconButton/IconButton";
@@ -23,17 +23,19 @@ import CompletedMarker from "../Task/CompletedMarker";
 import { ListObject } from "../../../types/global/ListObject";
 import { PositionsObject } from "../../../types/global/PositionsObject";
 
-const TaskMargin = 10;
-const TaskHeight = 63 + TaskMargin;
+const TaskMargin = 9;
+const TaskHeight = 64 + TaskMargin;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
+  const sortedList = sortTasksByTime(list)
+
   const [isListHidden, setIsListHidden] = useState<boolean>(false);
   const [isCompletedListHidden, setIsCompletedListHidden] =
     useState<boolean>(false);
-  const [data, setData] = useState<Array<TaskType>>(sortTasksByTime(list));
+  const [data, setData] = useState<Array<TaskType>>(sortedList);
   const [upperBound, setUpperBound] = useState<number>(data.length - 1);
   const [positionsState, setPositionsState] = useState<PositionsObject>(
-    taskListToPositionsObject(list)
+    taskListToPositionsObject(sortedList)
   );
   const updatePositionState = (list: PositionsObject) =>
     setPositionsState(list);
@@ -120,7 +122,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
       <View style={sectionStyles.headerContainer}>
-        <Text style={title20}>{title}</Text>
+        <Text style={title22}>{title}</Text>
         <Animated.View style={[arrowStyle]}>
           <IconButton
             xml={arrowBottomGrey}
