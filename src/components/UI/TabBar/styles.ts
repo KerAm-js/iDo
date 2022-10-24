@@ -4,7 +4,6 @@ import { backgroundColors, textColors } from "../../../styles/global/colors"
 export const tabBarStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    backgroundColor: backgroundColors.dark,
     paddingHorizontal: 0,
   },
   buttonContainer: {
@@ -30,20 +29,21 @@ export const tabBarStyles = StyleSheet.create({
     alignItems: 'center',
   },
   circleButton: {
-    backgroundColor: textColors.white,
-    shadowColor: textColors.white,
-    shadowRadius: 10,
-    shadowOpacity: 0.7,
-    shadowOffset: {
-      height: 0,
-      width: 0,
-    },
     alignItems: 'center',
     justifyContent: 'center',
     width: 46,
     height: 46,
     borderRadius: 30,
     marginTop: 10,
+  },
+  circleButtonShadows: {
+    shadowColor: textColors.blue,
+    shadowRadius: 5,
+    shadowOpacity: 0.35,
+    shadowOffset: {
+      height: 0,
+      width: 0,
+    },
   },
   circleButtonIcon: {
     width: 16,

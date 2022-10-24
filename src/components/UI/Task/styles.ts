@@ -1,12 +1,12 @@
 import { moveTask } from './../../../utils/taskUI';
-import { lineColors } from './../../../styles/global/colors';
+import { backgroundColors, lineColors, textColors } from './../../../styles/global/colors';
 import { StyleSheet } from "react-native";
 import { cardColors } from "../../../styles/global/colors";
 import { regularBorderRadius } from '../../../styles/global/borderRadiuses';
 
 export const taskStyles = StyleSheet.create({
   container: {
-    backgroundColor: cardColors.while,
+    backgroundColor: cardColors.white,
     borderRadius: regularBorderRadius,
     paddingHorizontal: 15,
     flexDirection: "row",
@@ -30,7 +30,7 @@ export const completedMarkerStyles = StyleSheet.create({
     paddingHorizontal: 7,
     flexDirection: "row",
     alignItems: 'center',
-    backgroundColor: lineColors.grey,
+    backgroundColor: cardColors.white,
     borderRadius: 4,
     marginBottom: 10,
     position: 'absolute',

@@ -12,8 +12,8 @@ export const checkButtonStyles = StyleSheet.create({
     justifyContent: "center",
   },
   containerFill: {
-    backgroundColor: backgroundColors.dark,
-    borderColor: backgroundColors.dark,
+    backgroundColor: backgroundColors.blue,
+    borderColor: backgroundColors.blue,
     borderWidth: 0,
   }
 })

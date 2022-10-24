@@ -1,7 +1,6 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FC, useState } from "react";
 import {
-  headerBackgroundStyle,
   headerStyle,
   headerTitleStyle,
 } from "../../../styles/header";
@@ -17,6 +16,8 @@ import BottomPopup from "../../UI/BottomPopup/BottomPopup";
 import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { circles } from "../../../../assets/icons/circles";
 import { SwitchItemsState } from "../../UI/BottomPopup/types";
+import { StyleSheet } from "react-native";
+import { BlurView } from "expo-blur";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
@@ -56,9 +57,11 @@ const TabNavigator: FC = () => {
         screenOptions={{
           headerStyle,
           headerTitleStyle,
-          headerBackgroundContainerStyle: headerBackgroundStyle,
           headerRightContainerStyle: { paddingRight: 20 },
           headerLeftContainerStyle: { paddingLeft: 20 },
+          headerTransparent: true,
+          tabBarStyle: { position: 'absolute' },
+          tabBarBackground: () => <BlurView tint="light" intensity={70} style={StyleSheet.absoluteFill} />,
           headerRight: () => (
             <IconButton
               onClick={showModal}

@@ -5,7 +5,6 @@ import { backgroundColors, lineColors } from "../../../styles/global/colors";
 export const bottomPopupStyles = StyleSheet.create({
   container: {
     paddingBottom: 80,
-    paddingHorizontal: 20,
     paddingTop: 30,
     borderTopRightRadius: bigBorderRadius,
     borderTopLeftRadius: bigBorderRadius,
@@ -16,6 +15,7 @@ export const bottomPopupStyles = StyleSheet.create({
   },
   title: {
     marginBottom: 15,
+    marginLeft: 20,
   },
   listItem: {
     flexDirection: 'row',
@@ -24,6 +24,7 @@ export const bottomPopupStyles = StyleSheet.create({
     minHeight: 49,
     alignItems: "center",
     justifyContent: 'space-between',
+    paddingHorizontal: 20,
   },
   checkIcon: {
     width: 15,

@@ -1,10 +1,12 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { Animated, Text, View } from "react-native";
+import { Animated, Text, StyleSheet, View } from "react-native";
 import { headerStyle } from "../../../styles/header";
 import { screenLayoutStyles } from "./styles";
 import { ScreenLayoutProps } from "./types";
 import { subTitle16, textGrey, title30 } from "../../../styles/global/texts";
+import { useHeaderHeight } from "@react-navigation/elements";
+import { BlurView } from "expo-blur";
 
 
 const ScreenLayout: FC<ScreenLayoutProps> = ({
@@ -17,6 +19,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
 }) => {
   const [headerShown, setHeaderShown] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
+  const headerHeight = useHeaderHeight();
 
   const navigation = useNavigation();
 
@@ -33,6 +36,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
   });
 
   const headerOpactiy = useRef(new Animated.Value(0)).current;
+  const headerBackgroundOpacity = useRef(new Animated.Value(0)).current;
 
   const handleScroll = (event: any) => {
     if (event.nativeEvent.contentOffset.y > 35 && !headerShown) {
@@ -40,14 +44,24 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
       Animated.timing(headerOpactiy, {
         toValue: 1,
         useNativeDriver: true,
-        duration: 180,
+        duration: 200,
+      }).start();
+      Animated.timing(headerBackgroundOpacity, {
+        toValue: 1,
+        useNativeDriver: true,
+        duration: 200,
       }).start();
     } else if (event.nativeEvent.contentOffset.y <= 35 && headerShown) {
       setHeaderShown(false);
       Animated.timing(headerOpactiy, {
         toValue: 0,
         useNativeDriver: true,
-        duration: 180,
+        duration: 200,
+      }).start();
+      Animated.timing(headerBackgroundOpacity, {
+        toValue: 0,
+        useNativeDriver: true,
+        duration: 200,
       }).start();
     }
   };
@@ -55,6 +69,11 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
   useEffect(() => {
     navigation.setOptions({
       headerStyle: [{ opacity: headerOpactiy }, headerStyle],
+      headerBackground: () => (
+        <Animated.View style={[StyleSheet.absoluteFill, { opacity: headerBackgroundOpacity }]}>
+          <BlurView tint="default" intensity={80} style={[StyleSheet.absoluteFill]} />
+        </Animated.View>
+      ),
     });
   }, []);
 
@@ -73,7 +92,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
         ],
         { useNativeDriver: true, listener: handleScroll }
       )}
-      style={[screenLayoutStyles.container]}
+      style={[screenLayoutStyles.container, { paddingTop: headerHeight }]}
     >
       <View style={[screenLayoutStyles.headingContainer]}>
         <View style={[screenLayoutStyles.titleContainer]}>

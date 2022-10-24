@@ -10,7 +10,7 @@ const SwitchItem: FC<SwithItemPropType> = ({ title, value, onChange }) => {
     <View style={[ bottomPopupStyles.listItem ]}>
       <Text style={[ text17 ]}>{title}</Text>
       <Switch trackColor={{
-        true: backgroundColors.dark
+        true: backgroundColors.blue
       }} value={value} onValueChange={onChange} />
     </View>
   )

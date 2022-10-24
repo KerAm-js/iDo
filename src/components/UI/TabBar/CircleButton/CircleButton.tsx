@@ -3,6 +3,7 @@ import { Animated, Pressable } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { tabBarStyles } from "../styles";
 import { circleButtonProps } from "./types";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const CircleButton: FC<circleButtonProps> = ({ xml, onClick }) => {
   const buttonScale = useRef(new Animated.Value(1)).current;
@@ -16,14 +17,19 @@ const CircleButton: FC<circleButtonProps> = ({ xml, onClick }) => {
   }
 
   return (
-    <Animated.View style={[{transform: [{ scale: buttonScale }]}]}>
-      <Pressable style={[tabBarStyles.circleButton]} onPress={clickHanlder}>
-        <SvgXml
-          xml={xml}
-          style={tabBarStyles.circleButtonIcon}
-          width={tabBarStyles.circleButtonIcon.width}
-          height={tabBarStyles.circleButtonIcon.height}
-        />
+    <Animated.View style={[{transform: [{ scale: buttonScale }]}, tabBarStyles.circleButtonShadows]}>
+      <Pressable onPress={clickHanlder}>
+        <LinearGradient
+          colors={['#248DFF', '#0271EA']}
+          style={[tabBarStyles.circleButton]}
+        >
+          <SvgXml
+            xml={xml}
+            style={tabBarStyles.circleButtonIcon}
+            width={tabBarStyles.circleButtonIcon.width}
+            height={tabBarStyles.circleButtonIcon.height}
+          />
+        </LinearGradient>
       </Pressable>
     </Animated.View>
   )

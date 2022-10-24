@@ -22,6 +22,7 @@ import { TaskType } from "../Task/types";
 import CompletedMarker from "../Task/CompletedMarker";
 import { ListObject } from "../../../types/global/ListObject";
 import { PositionsObject } from "../../../types/global/PositionsObject";
+import { textColors } from "../../../styles/global/colors";
 
 const TaskMargin = 9;
 const TaskHeight = 64 + TaskMargin;
@@ -122,7 +123,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
       <View style={sectionStyles.headerContainer}>
-        <Text style={title22}>{title}</Text>
+        <Text style={[title22]}>{title}</Text>
         <Animated.View style={[arrowStyle]}>
           <IconButton
             xml={arrowBottomGrey}
