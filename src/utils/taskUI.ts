@@ -1,12 +1,10 @@
 import { ListObject } from "./../types/global/ListObject";
 import { TaskType } from "../components/UI/Task/types";
 import { PositionsObject } from "../types/global/PositionsObject";
-import { Value } from "react-native-reanimated";
 
 export const sortTasksByTime = (list: Array<TaskType>): Array<TaskType> => {
   const listCopy = [...list];
   listCopy.sort((prev, curr) => {
-
     if (!prev.time && curr.time) {
       return 1;
     } else if (prev.time && !curr.time) {
@@ -17,14 +15,18 @@ export const sortTasksByTime = (list: Array<TaskType>): Array<TaskType> => {
       return prevTime - currTime;
     }
     return 0;
-  })
+  });
   return listCopy;
-}
+};
 
 export const taskListToObject = (list: Array<TaskType>): ListObject => {
   const object: ListObject = {};
   list.reduce((prev, curr, index): ListObject => {
-    prev[curr.id] = { position: index, isCompleted: curr.isCompleted, isTimed: !!curr.time };
+    prev[curr.id] = {
+      position: index,
+      isCompleted: curr.isCompleted,
+      time: curr?.time?.toString(),
+    };
     return prev;
   }, object);
   return object;
@@ -44,13 +46,13 @@ export const taskListToPositionsObject = (
 export const listObjectToPositionsObject = (
   list: ListObject
 ): PositionsObject => {
-  'worklet';
+  "worklet";
   const newPositionState: PositionsObject = {};
   for (let id in list) {
-    newPositionState[id] = list[id].position
+    newPositionState[id] = list[id].position;
   }
   return newPositionState;
-}
+};
 
 export const taskObjectToPositionsList = (list: ListObject): Array<string> => {
   const arr = [];
@@ -99,26 +101,26 @@ export const moveTask = (
   "worklet";
   const newObject: ListObject = {};
   const fromItem: ListObject = {};
-  const toItem: ListObject = {}
+  const toItem: ListObject = {};
   let fromKey = Object.keys(fromItem)[0];
   let toKey = Object.keys(toItem)[0];
-  
+
   for (let id in listObject) {
-    newObject[id] = {...listObject[id]}
+    newObject[id] = { ...listObject[id] };
     if (listObject[id].position === from) {
-      fromItem[id] = newObject[id]
+      fromItem[id] = newObject[id];
       fromKey = id;
     } else if (listObject[id].position === to) {
       toItem[id] = newObject[id];
       toKey = id;
-    };
+    }
   }
 
-  if (!fromItem[fromKey].isTimed && !toItem[toKey].isTimed ) {
+  if (!fromItem[fromKey].time && !toItem[toKey].time) {
     const fromPosition = fromItem[fromKey].position;
     const toPosition = toItem[toKey].position;
     fromItem[fromKey].position = toPosition;
-    toItem[toKey].position = fromPosition
+    toItem[toKey].position = fromPosition;
   }
 
   return newObject;
@@ -149,33 +151,69 @@ export const moveCompletedTask = (
 export const moveUncompletedTask = (
   listObject: ListObject,
   positionsState: PositionsObject,
-  id: string,
+  id: string
 ): ListObject => {
   "worklet";
 
+  const timedUncompletedlist: Array<string> = [];
   const uncompletedList: Array<string> = [];
   const completedList: Array<string> = [];
 
-  Object.keys(listObject).forEach(key => {
-    if (key === id) {
+  Object.keys(listObject).forEach((key) => {
+    if (key === id && listObject[id].time) {
+      timedUncompletedlist.push(key);
+    } else if (listObject[key].time && !listObject[key].isCompleted) {
+      timedUncompletedlist.push(key);
+    } else if (key === id && !listObject[id].time) {
       uncompletedList.push(key);
-    } else if (listObject[key].isCompleted ) {
+    } else if (listObject[key].isCompleted) {
       completedList.push(key);
     } else {
       uncompletedList.push(key);
     }
-  })
-  uncompletedList?.sort((prev, curr) => positionsState[prev] - positionsState[curr]);
-  const obj: ListObject = {};
+  });
 
-  for (let i = 0; i < uncompletedList.length; i++) {
-    const key = uncompletedList[i];
-    obj[key] = { position: i, isCompleted: false, isTimed: listObject[key].isTimed };
+  timedUncompletedlist.sort((prev, curr) => {
+    const prevDateString = listObject[prev]?.time;
+    const currDateString = listObject[curr]?.time;
+    if (prevDateString && currDateString) {
+      return new Date(prevDateString).valueOf() - new Date(currDateString).valueOf();
+    }
+    return 0;
+  });
+
+  uncompletedList.sort(
+    (prev, curr) => positionsState[prev] - positionsState[curr]
+  );
+
+  const obj: ListObject = {};
+  for (let i = 0; i < timedUncompletedlist.length; i++) {
+    const key = timedUncompletedlist[i];
+    obj[key] = {
+      position: 0 + i,
+      isCompleted: false,
+      time: listObject[key].time,
+    };
   }
 
+  let length = timedUncompletedlist.length;
+  for (let i = 0; i < uncompletedList.length; i++) {
+    const key = uncompletedList[i];
+    obj[key] = {
+      position: length + i,
+      isCompleted: false,
+      time: listObject[key].time,
+    };
+  }
+
+  length = length + uncompletedList.length;
   for (let i = 0; i < completedList.length; i++) {
     const key = completedList[i];
-    obj[key] = { position: i + uncompletedList.length, isCompleted: true, isTimed: listObject[key].isTimed };
+    obj[key] = {
+      position: length + i,
+      isCompleted: true,
+      time: listObject[key].time,
+    };
   }
 
   return obj;

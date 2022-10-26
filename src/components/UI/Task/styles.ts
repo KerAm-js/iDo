@@ -1,5 +1,3 @@
-import { moveTask } from './../../../utils/taskUI';
-import { backgroundColors, lineColors, textColors } from './../../../styles/global/colors';
 import { StyleSheet } from "react-native";
 import { cardColors } from "../../../styles/global/colors";
 import { regularBorderRadius } from '../../../styles/global/borderRadiuses';

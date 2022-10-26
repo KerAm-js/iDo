@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { bigBorderRadius } from "../../../styles/global/borderRadiuses";
-import { backgroundColors, lineColors } from "../../../styles/global/colors";
+import { cardColors, lineColors } from "../../../styles/global/colors";
 
 export const bottomPopupStyles = StyleSheet.create({
   container: {
@@ -8,10 +8,11 @@ export const bottomPopupStyles = StyleSheet.create({
     paddingTop: 30,
     borderTopRightRadius: bigBorderRadius,
     borderTopLeftRadius: bigBorderRadius,
-    backgroundColor: backgroundColors.white,
+    backgroundColor: cardColors.white,
     position: 'absolute',
     bottom: 0,
     width: '100%',
+    zIndex: 100,
   },
   title: {
     marginBottom: 15,
@@ -26,8 +27,4 @@ export const bottomPopupStyles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
   },
-  checkIcon: {
-    width: 15,
-    height: 12,
-  }
 })

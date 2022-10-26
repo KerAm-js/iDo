@@ -2,9 +2,10 @@ import { PositionsObject } from './../../../types/global/PositionsObject';
 import { ListObject } from './../../../types/global/ListObject';
 import { TaskPropTypes, TaskType } from "../Task/types";
 import { FC } from 'react';
+import { HomePeriodsKeys } from '../../../types/constants';
 
 export type SectionProps = {
-  title: string,
+  title: HomePeriodsKeys,
   list: Array<TaskType>,
 }
 

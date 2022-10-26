@@ -1,3 +1,4 @@
+import { FOR_TODAY, FOR_TOMORROW, FOR_WEEK, FOR_MONTH } from './../../../utils/constants';
 import { Languages } from '../../../types/data/languageTexts';
 import { Dispatch, SetStateAction } from "react";
 import { GestureResponderEvent } from "react-native";
@@ -9,8 +10,8 @@ export type BottomPopupPropType<ListType extends "switch" | "check"> =
         title: string;
         listType: 'switch';
         list: null;
-        state: SwitchItemsState;
-        updateState: Dispatch<SetStateAction<SwitchItemsState>>;
+        state: HomePeriodsState;
+        updateState: Dispatch<SetStateAction<HomePeriodsState>>;
       }
     : {
         visible: boolean;
@@ -21,8 +22,12 @@ export type BottomPopupPropType<ListType extends "switch" | "check"> =
         updateState: Dispatch<SetStateAction<keyof Languages>>;
       };
 
-export type SwitchItemsState = {
-  [key: string]: boolean;
+export type HomePeriodsState = {
+  [key: string]: boolean,
+  [FOR_TODAY]: boolean,
+  [FOR_TOMORROW]: boolean,
+  [FOR_WEEK]: boolean,
+  [FOR_MONTH]: boolean,
 };
 
 export type SwithItemPropType = {

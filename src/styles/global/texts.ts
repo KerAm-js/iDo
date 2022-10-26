@@ -60,7 +60,7 @@ export const text16LineHeight: TextStyle = {
 export const text14: TextStyle = {
   fontSize: 14,
   lineHeight: 14,
-  fontWeight: '500',
+  fontWeight: '400',
 };
 export const text14LineHeight: TextStyle = {
   ...text14,

@@ -77,9 +77,10 @@ const BottomPopup: FC<BottomPopupPropType<"switch" | "check">> = ({
                 />
               );
             })
-          : list.map((lang) => {
+          : list.map((lang, index) => {
               return (
                 <CheckItem
+                  key={lang + index}
                   title={languageTexts['ru'].languages[lang]}
                   onPress={() => onCheck(lang)}
                   isChecked={state === lang}

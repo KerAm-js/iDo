@@ -33,8 +33,8 @@ const ModalLayout: FC<ModalLayoutPropType> = ({ children, visible, close }) => {
       <Pressable onPress={close}>
         <Animated.View style={[ modalLayoutStyles.backdrop, backdropStyle ]}>
         </Animated.View>
-        {children}
-    </Pressable>
+      </Pressable>
+      {children}
     </Animated.View>
   )
 }

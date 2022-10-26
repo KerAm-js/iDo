@@ -1,7 +1,10 @@
+import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../types/constants";
+
 export type TaskPropTypes = {
   id: string;
   task: string;
   time?: Date;
+  timeType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK | FOR_MONTH;
   isCompleted: boolean;
   completeTask: (id: string) => void;
 };

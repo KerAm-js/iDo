@@ -7,7 +7,7 @@ import { ScreenLayoutProps } from "./types";
 import { subTitle16, textGrey, title30 } from "../../../styles/global/texts";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { BlurView } from "expo-blur";
-
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 
 const ScreenLayout: FC<ScreenLayoutProps> = ({
   children,
@@ -18,10 +18,12 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
   subtitleComponent: SubtitleComponent,
 }) => {
   const [headerShown, setHeaderShown] = useState(false);
-  const scrollY = useRef(new Animated.Value(0)).current;
   const headerHeight = useHeaderHeight();
-
+  const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation();
+
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerOpactiy = useRef(new Animated.Value(0)).current;
 
   const titleScale = scrollY.interpolate({
     inputRange: [-100, 0],
@@ -35,18 +37,16 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
     extrapolate: "clamp",
   });
 
-  const headerOpactiy = useRef(new Animated.Value(0)).current;
-  const headerBackgroundOpacity = useRef(new Animated.Value(0)).current;
+  const headerBackgroundOpacity = scrollY.interpolate({
+    inputRange: [20, 35],
+    outputRange: [0, 1],
+    extrapolate: "clamp",
+  })
 
   const handleScroll = (event: any) => {
     if (event.nativeEvent.contentOffset.y > 35 && !headerShown) {
       setHeaderShown(true);
       Animated.timing(headerOpactiy, {
-        toValue: 1,
-        useNativeDriver: true,
-        duration: 200,
-      }).start();
-      Animated.timing(headerBackgroundOpacity, {
         toValue: 1,
         useNativeDriver: true,
         duration: 200,
@@ -58,11 +58,6 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
         useNativeDriver: true,
         duration: 200,
       }).start();
-      Animated.timing(headerBackgroundOpacity, {
-        toValue: 0,
-        useNativeDriver: true,
-        duration: 200,
-      }).start();
     }
   };
 
@@ -70,8 +65,17 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
     navigation.setOptions({
       headerStyle: [{ opacity: headerOpactiy }, headerStyle],
       headerBackground: () => (
-        <Animated.View style={[StyleSheet.absoluteFill, { opacity: headerBackgroundOpacity }]}>
-          <BlurView tint="default" intensity={80} style={[StyleSheet.absoluteFill]} />
+        <Animated.View
+          style={[
+            StyleSheet.absoluteFill,
+            { opacity: headerBackgroundOpacity, position: "absolute" },
+          ]}
+        >
+          <BlurView
+            tint="default"
+            intensity={70}
+            style={[StyleSheet.absoluteFill]}
+          />
         </Animated.View>
       ),
     });
@@ -111,6 +115,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
         {SubtitleComponent}
       </View>
       {children}
+      <View style={{ height: tabBarHeight + 200 }} />
     </Animated.ScrollView>
   );
 };

@@ -22,7 +22,9 @@ import { TaskType } from "../Task/types";
 import CompletedMarker from "../Task/CompletedMarker";
 import { ListObject } from "../../../types/global/ListObject";
 import { PositionsObject } from "../../../types/global/PositionsObject";
-import { textColors } from "../../../styles/global/colors";
+import { languageTexts } from "../../../utils/languageTexts";
+import ClearList from "../ClearList/ClearList";
+import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
 
 const TaskMargin = 9;
 const TaskHeight = 64 + TaskMargin;
@@ -34,6 +36,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   const [isCompletedListHidden, setIsCompletedListHidden] =
     useState<boolean>(false);
   const [data, setData] = useState<Array<TaskType>>(sortedList);
+  const positions = useSharedValue<ListObject>(taskListToObject(data));
   const [upperBound, setUpperBound] = useState<number>(data.length - 1);
   const [positionsState, setPositionsState] = useState<PositionsObject>(
     taskListToPositionsObject(sortedList)
@@ -42,8 +45,6 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     setPositionsState(list);
   const updateUpperBound = (newUpperBound: number) =>
     setUpperBound(newUpperBound);
-
-  const positions = useSharedValue<ListObject>(taskListToObject(data));
   const opacity = useSharedValue(1);
   const completedListOpacity = useSharedValue(1);
   const completedMarkerTop = useSharedValue((upperBound + 2) * TaskHeight);
@@ -67,11 +68,17 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   }, [opacity.value]);
 
   const containerStyle = useAnimatedStyle(() => {
-    const listheight = interpolate(
-      completedListOpacity.value, 
-      [0, 1],
-      [data.filter(task => !task.isCompleted).length * TaskHeight, data.length * TaskHeight]
-    )
+    const listheight = data.length > 0 
+      ? interpolate(
+        completedListOpacity.value, 
+        [0, 1],
+        [data.filter(task => !task.isCompleted).length * TaskHeight, data.length * TaskHeight]
+      )
+      : interpolate(
+        completedListOpacity.value, 
+        [0, 1],
+        [0, 220]
+      )
     const baseHeight = interpolate(
       completedMarkerOpacity.value,
       [0, 1],
@@ -123,7 +130,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
       <View style={sectionStyles.headerContainer}>
-        <Text style={[title22]}>{title}</Text>
+        <Text style={[title22]}>{languageTexts['ru'].periods[title]}</Text>
         <Animated.View style={[arrowStyle]}>
           <IconButton
             xml={arrowBottomGrey}
@@ -141,25 +148,29 @@ const Section: FC<SectionProps> = ({ title, list }) => {
           },
         ]}
       >
-        {data?.map((item, index) => {
-          return (
-            <MovableItem
-              key={item.task + index}
-              positions={positions}
-              positionsState={positionsState}
-              markerOpacity={completedMarkerOpacity}
-              id={item.id}
-              itemHeight={TaskHeight}
-              component={Task}
-              componentProps={{ ...item, completeTask }}
-              updatePositionsState={updatePositionState}
-              upperBound={upperBound}
-              completedMarkerTop={completedMarkerTop}
-              updateUpperBound={updateUpperBound}
-              opacity={item.isCompleted ? completedListOpacity : opacity}
-            />
-          );
-        })}
+        {data?.length > 0 
+          ? data.map((item, index) => {
+              return (
+                <MovableItem
+                  key={item.task + index}
+                  positions={positions}
+                  positionsState={positionsState}
+                  markerOpacity={completedMarkerOpacity}
+                  id={item.id}
+                  itemHeight={TaskHeight}
+                  component={Task}
+                  componentProps={{ ...item, completeTask, timeType: title }}
+                  updatePositionsState={updatePositionState}
+                  upperBound={upperBound}
+                  completedMarkerTop={completedMarkerTop}
+                  updateUpperBound={updateUpperBound}
+                  opacity={item.isCompleted ? completedListOpacity : opacity}
+                />
+              );})
+            : title === FOR_WEEK || title === FOR_MONTH 
+              ? <ClearList title={`${languageTexts['ru'].periods[title]} больше задач нет`} />
+              : <ClearList title={`Добавьте задачи ${languageTexts['ru'].periods[title].toLowerCase()}`} />
+          }
         <CompletedMarker
           top={completedMarkerTop}
           onPress={toggleCompletedListVisible}
