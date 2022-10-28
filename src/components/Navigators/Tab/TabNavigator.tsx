@@ -12,37 +12,38 @@ import Stats from "../../screens/Stats/Stats";
 import TabBar from "../../UI/TabBar/TabBar";
 import { getDate } from "../../../utils/date";
 import ModalLayout from "../../Layouts/Modal/ModalLayout";
-import BottomPopup from "../../UI/BottomPopup/BottomPopup";
 import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { circles } from "../../../../assets/icons/circles";
-import { HomePeriodsState } from "../../UI/BottomPopup/types";
 import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../utils/constants";
+import SwitchPopup from "../../Popups/SwitchPopup/SwitchPopup";
+import { SwitchPopupStateType } from "../../Popups/SwitchPopup/types";
+import AddTaskPopup from "../../Popups/AddTaskPopup/AddTaskPopup";
+import { Keyboard } from "react-native";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
 const TabNavigator: FC = () => {
+  const [addTaskModalVisible, setAddTaskModalVisible] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
-  const [periodsState, setPeriodsState] = useState<HomePeriodsState>({
+  const [periodsState, setPeriodsState] = useState<SwitchPopupStateType>({
     [FOR_TODAY]: true,
-    [FOR_TOMORROW]: true,
-    [FOR_WEEK]: true,
-    [FOR_MONTH]: true,
+    [FOR_TOMORROW]: false,
+    [FOR_WEEK]: false,
+    [FOR_MONTH]: false,
   });
 
-  const showModal = () => {
-    setModalVisible(true);
-  };
+  const showModal = () => setModalVisible(true);
+  const closeModal = () => setModalVisible(false);
 
-  const closeModal = () => {
-    setModalVisible(false);
-  };
+  const showAddTaskModal = () => setAddTaskModalVisible(true);
+  const closeAddTaskModal = () => setAddTaskModalVisible(false);
 
   const { date } = getDate("ru");
 
   return (
     <>
       <ModalLayout visible={modalVisible} close={closeModal}>
-        <BottomPopup
+        <SwitchPopup 
           title="Категории задач"
           visible={modalVisible}
           state={periodsState}
@@ -51,8 +52,14 @@ const TabNavigator: FC = () => {
           updateState={setPeriodsState}
         />
       </ModalLayout>
+      <ModalLayout visible={addTaskModalVisible} close={closeAddTaskModal}>
+        <AddTaskPopup 
+          visible={addTaskModalVisible}
+          handleKeyboard={true}
+        />
+      </ModalLayout>
       <Tab.Navigator
-        tabBar={(props) => <TabBar {...props} />}
+        tabBar={(props) => <TabBar onBigButtonClick={showAddTaskModal} {...props} />}
         screenOptions={{
           headerStyle,
           headerTitleStyle,

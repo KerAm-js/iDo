@@ -12,37 +12,37 @@ const tasks = [
   {
     id: "a1",
     task: "Задача 1",
-    time: new Date(2022, 9, 26, 10, 0),
+    time: new Date(2022, 9, 27, 10, 0),
     isCompleted: false,
   },
   {
     id: "a2",
     task: "Задача 2",
     isCompleted: false,
-    time: new Date(2022, 9, 26, 14, 0),
+    time: new Date(2022, 9, 27, 14, 0),
   },
   {
     id: "a3",
     task: "Задача 3",
     isCompleted: false,
-    time: new Date(2022, 9, 26, 15, 0),
+    time: new Date(2022, 9, 27, 15, 0),
   },
   {
     id: "a4",
     task: "Задача 4",
-    time: new Date(2022, 9, 26, 21, 0),
+    time: new Date(2022, 9, 27, 21, 0),
     isCompleted: false,
   },
   {
     id: "a5",
     task: "Задача 5",
-    time: new Date(2022, 9, 27, 10, 0),
+    time: new Date(2022, 9, 28, 10, 0),
     isCompleted: false,
   },
   {
     id: "a6",
     task: "Задача 6",
-    time: new Date(2022, 9, 27, 21, 0),
+    time: new Date(2022, 9, 28, 21, 0),
     isCompleted: false,
   },
   {

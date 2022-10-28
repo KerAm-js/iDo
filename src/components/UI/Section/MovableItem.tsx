@@ -35,6 +35,7 @@ const MovableItem: FC<MovableItemProps> = ({
   completedMarkerTop,
   updatePositionsState,
   upperBound,
+  upperBoundMax,
   updateUpperBound,
   markerOpacity,
 }) => {
@@ -61,7 +62,16 @@ const MovableItem: FC<MovableItemProps> = ({
         }
       }
       if (isCompletedChanged) {
-        const newMarkerPosition = isCompleted ? upperBound + 1 : upperBound + 2
+        let newMarkerPosition = upperBound;
+        if (isCompleted) {
+          newMarkerPosition = upperBound === upperBoundMax ? upperBound : upperBound + 1;
+        } else {
+          if (upperBound === upperBoundMax) {
+            newMarkerPosition = upperBound;
+          } else {
+            newMarkerPosition = upperBound === upperBoundMax - 1 ? upperBound + 1 : upperBound + 2;
+          }
+        }
         completedMarkerTop.value = withTiming(newMarkerPosition * itemHeight, {
           duration: 300,
         })

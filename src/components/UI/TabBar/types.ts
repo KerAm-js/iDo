@@ -1,3 +1,4 @@
+import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { NavigationHelpers } from '@react-navigation/native';
 import { ParamListBase } from '@react-navigation/native';
 import { TabNavigationState } from '@react-navigation/native';
@@ -9,4 +10,8 @@ export type tabRenderProps = {
   descriptors: BottomTabDescriptorMap,
   navigation: NavigationHelpers<ParamListBase, BottomTabNavigationEventMap>,
   number: number,
+}
+
+export interface TabBarPropTypes extends BottomTabBarProps {
+  onBigButtonClick: () => void
 }

@@ -28,25 +28,4 @@ export const tabBarStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
   },
-  circleButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 46,
-    height: 46,
-    borderRadius: 30,
-    marginTop: 10,
-  },
-  circleButtonShadows: {
-    shadowColor: textColors.blue,
-    shadowRadius: 5,
-    shadowOpacity: 0.35,
-    shadowOffset: {
-      height: 0,
-      width: 0,
-    },
-  },
-  circleButtonIcon: {
-    width: 16,
-    height: 16,
-  }
 })

@@ -1,7 +1,7 @@
 import { HomePeriodsKeys } from './../types/constants';
 import { SectionsType } from './../components/screens/Home/types';
 import { TaskType } from "./../components/UI/Task/types";
-import { HomePeriodsState } from "./../components/UI/BottomPopup/types";
+import { HomePeriodsState } from "../components/UI/PopupItems/types";
 import { getLastDateOfCurrentMonth } from "./date";
 import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "./constants";
 

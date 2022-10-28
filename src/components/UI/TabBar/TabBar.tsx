@@ -1,14 +1,17 @@
 import { View } from "react-native";
 import { tabBarStyles } from "./styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import CircleButton from "./CircleButton/CircleButton";
+import CircleButton from "../buttons/CircleButton/CircleButton";
 import { plus } from "../../../../assets/icons/plus";
 import TabsRender from "./TabsRender";
 import { FC } from "react";
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { TabBarPropTypes } from "./types";
 
-const TabBar: FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
+const TabBar: FC<TabBarPropTypes> = ({ state, descriptors, navigation, onBigButtonClick }) => {
   const { bottom } = useSafeAreaInsets();
+  const onCircleButtonClick = () => {
+    setTimeout(onBigButtonClick, 200);
+  }
   return (
     <View style={[tabBarStyles.container, { paddingBottom: bottom + 10 || 25 }]}>
       <TabsRender
@@ -19,7 +22,7 @@ const TabBar: FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
         number={1}
       />
       <View style={[tabBarStyles.circleButtonContainer, ]}>
-        <CircleButton xml={plus} onClick={() => console.log('clicked')} />
+        <CircleButton xml={plus} onClick={onCircleButtonClick} size="big" />
       </View>
       <TabsRender
         routes={state.routes.slice(2)}

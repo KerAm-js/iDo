@@ -20,6 +20,7 @@ export type MovableItemProps = {
   component: FC<TaskPropTypes>,
   componentProps: TaskPropTypes,
   upperBound: number,
+  upperBoundMax: number,
   updatePositionsState: (list: PositionsObject) => void,
   updateUpperBound: (newUpperBound: number) => void,
 }

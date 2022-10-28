@@ -47,6 +47,16 @@ export const text17: TextStyle = {
   fontWeight: '400',
 }
 
+export const text17Input: TextStyle = {
+  ...text17,
+  lineHeight: 21,
+}
+
+export const text17LineHeight: TextStyle = {
+  ...text17,
+  lineHeight: 25
+}
+
 export const text16: TextStyle = {
   fontSize: 16,
   lineHeight: 16,
@@ -62,10 +72,16 @@ export const text14: TextStyle = {
   lineHeight: 14,
   fontWeight: '400',
 };
+
+export const text14Input: TextStyle = {
+  ...text14,
+  lineHeight: 18,
+};
+
 export const text14LineHeight: TextStyle = {
   ...text14,
   lineHeight: 21
-}
+};
 
 export const text12: TextStyle = {
   fontSize: 12,

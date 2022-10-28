@@ -24,6 +24,6 @@ export const movableItemStyles = StyleSheet.create({
     position: "absolute",
     width: "30%",
     height: "100%",
-    zIndex: 1,
+    zIndex: 100,
   }
 })

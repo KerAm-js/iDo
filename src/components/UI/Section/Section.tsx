@@ -47,7 +47,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     setUpperBound(newUpperBound);
   const opacity = useSharedValue(1);
   const completedListOpacity = useSharedValue(1);
-  const completedMarkerTop = useSharedValue((upperBound + 2) * TaskHeight);
+  const completedMarkerTop = useSharedValue((upperBound) * TaskHeight);
   const completedMarkerOpacity = useSharedValue(0);
 
   const listContainerStyle = useAnimatedStyle(() => {
@@ -123,7 +123,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 
   useEffect(() => {
     if (upperBound === data.length - 1) {
-      completedMarkerOpacity.value = withTiming(0, {duration: 100});
+      completedMarkerOpacity.value = withTiming(0, {duration: 300});
     }
   }, [upperBound]);
 
@@ -148,6 +148,12 @@ const Section: FC<SectionProps> = ({ title, list }) => {
           },
         ]}
       >
+        <CompletedMarker
+          top={completedMarkerTop}
+          onPress={toggleCompletedListVisible}
+          completedListOpacity={completedListOpacity}
+          opacity={completedMarkerOpacity}
+        />
         {data?.length > 0 
           ? data.map((item, index) => {
               return (
@@ -162,6 +168,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
                   componentProps={{ ...item, completeTask, timeType: title }}
                   updatePositionsState={updatePositionState}
                   upperBound={upperBound}
+                  upperBoundMax={data.length - 1}
                   completedMarkerTop={completedMarkerTop}
                   updateUpperBound={updateUpperBound}
                   opacity={item.isCompleted ? completedListOpacity : opacity}
@@ -171,12 +178,6 @@ const Section: FC<SectionProps> = ({ title, list }) => {
               ? <ClearList title={`${languageTexts['ru'].periods[title]} больше задач нет`} />
               : <ClearList title={`Добавьте задачи ${languageTexts['ru'].periods[title].toLowerCase()}`} />
           }
-        <CompletedMarker
-          top={completedMarkerTop}
-          onPress={toggleCompletedListVisible}
-          completedListOpacity={completedListOpacity}
-          opacity={completedMarkerOpacity}
-        />
       </Animated.View>
     </Animated.View>
   );

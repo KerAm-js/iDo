@@ -4,7 +4,7 @@ import { SvgXml } from "react-native-svg";
 import { iconButtonStyle } from "./style";
 import { iconButtonProps } from "./types";
 
-const IconButton: FC<iconButtonProps> = ({ onClick, xml, align = 'center', justify = 'center', iconWidth, iconHeight }) => {
+const IconButton: FC<iconButtonProps> = ({ onClick, xml, align = 'center', justify = 'center', iconWidth, iconHeight, style, }) => {
   return (
     <Pressable
       onPress={onClick}
@@ -13,7 +13,8 @@ const IconButton: FC<iconButtonProps> = ({ onClick, xml, align = 'center', justi
         {
           alignItems: align === 'center' ? 'center' : `flex-${align}`,
           justifyContent: justify === 'center' ? 'center' : `flex-${justify}`,
-        }
+        },
+        style,
       ]}
     >
       <SvgXml xml={xml} width={iconWidth} height={iconHeight} />

@@ -18,13 +18,4 @@ export const bottomPopupStyles = StyleSheet.create({
     marginBottom: 15,
     marginLeft: 20,
   },
-  listItem: {
-    flexDirection: 'row',
-    borderBottomColor: lineColors.grey,
-    borderBottomWidth: 1,
-    minHeight: 49,
-    alignItems: "center",
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-  },
 })

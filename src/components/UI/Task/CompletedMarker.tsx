@@ -29,7 +29,7 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
   const containerStyle = useAnimatedStyle(() => {
     return {
       top: top.value,
-      opacity: opacity.value
+      opacity: opacity.value,
     };
   });
 
