@@ -1,12 +1,12 @@
-import { HomePeriodsKeys } from './../types/constants';
+import { SwitchPopupStateType } from './../components/Popups/SwitchPopup/types';
 import { SectionsType } from './../components/screens/Home/types';
 import { TaskType } from "./../components/UI/Task/types";
-import { HomePeriodsState } from "../components/UI/PopupItems/types";
 import { getLastDateOfCurrentMonth } from "./date";
 import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "./constants";
+import { HomePeriodsKeys } from '../types/constants';
 
 export const getSections = (
-  periodsState: HomePeriodsState,
+  periodsState: SwitchPopupStateType,
   tasks: Array<TaskType>
 ): SectionsType[] => {
   let periods: Array<HomePeriodsKeys> = Object.keys(periodsState).filter(key => periodsState[key]);
@@ -30,7 +30,7 @@ export const getSections = (
 
   tasks.forEach((task) => {
 
-    if (task.time && task.time.getFullYear() - currYear === 0) {
+    if (task?.time && task.time.getFullYear() - currYear === 0) {
       const monthDiff = task.time.getMonth() - currMonth;
 
       if (monthDiff === 0) {

@@ -1,12 +1,13 @@
+import { SwitchPopupStateType } from './../../Popups/SwitchPopup/types';
 import { TaskType } from './../../UI/Task/types';
-import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from '../../../types/constants';
-import { HomePeriodsState } from '../../UI/PopupItems/types';
+import { HomePeriodsKeys } from '../../../types/constants';
+
 export type HomePropType = {
-  periodsState: HomePeriodsState,
+  periodsState: SwitchPopupStateType,
   showSettingModal: () => void,
 }
 
 export type SectionsType = {
-  title: FOR_TODAY | FOR_TOMORROW | FOR_WEEK | FOR_MONTH,
+  title: HomePeriodsKeys,
   list: Array<TaskType>
 }

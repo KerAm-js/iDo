@@ -14,11 +14,8 @@ import Animated, {
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
 import {
-  sortTasksByTime,
   taskListToObject,
   taskListToPositionsObject,
-  updateListObjectAfterTaskAdding,
-  updatePositionsObjectAfterTaskAdding,
 } from "../../../utils/taskUI";
 import CompletedMarker from "../Task/CompletedMarker";
 import { ListObject } from "../../../types/global/ListObject";
@@ -26,30 +23,30 @@ import { GesturePositionsType } from "../../../types/global/GesturePositions";
 import { languageTexts } from "../../../utils/languageTexts";
 import ClearList from "../ClearList/ClearList";
 import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { taskSelector } from "../../../redux/selectors/taskSelector";
+import {
+  changeGesturePositionsAction,
+  completeTaskAction,
+} from "../../../redux/actions/taskActions";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { useDispatch } from "react-redux";
-import { completeTaskAction } from "../../../redux/actions/taskActions";
 
 const TaskMargin = 9;
 const TaskHeight = 64 + TaskMargin;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
-  const sortedList = sortTasksByTime(list);
   const dispatch: AppDispatch = useDispatch();
+  const { gesturePositions } = useSelector(taskSelector);
+
   const [isListHidden, setIsListHidden] = useState<boolean>(false);
   const [isCompletedListHidden, setIsCompletedListHidden] =
     useState<boolean>(false);
   const positions = useSharedValue<ListObject>(taskListToObject(list));
   const [upperBound, setUpperBound] = useState<number>(list.length - 1);
-  const [positionsState, setPositionsState] = useState<GesturePositionsType>(
-    taskListToPositionsObject(sortedList)
-  );
-
   const updatePositionState = (list: GesturePositionsType) =>
-    setPositionsState(list);
+    dispatch(changeGesturePositionsAction(list));
   const updateUpperBound = (newUpperBound: number) =>
     setUpperBound(newUpperBound);
-
   const opacity = useSharedValue(1);
   const completedListOpacity = useSharedValue(1);
   const completedMarkerTop = useSharedValue(upperBound * TaskHeight);
@@ -78,7 +75,10 @@ const Section: FC<SectionProps> = ({ title, list }) => {
         ? interpolate(
             completedListOpacity.value,
             [0, 1],
-            [(upperBound + 1) * TaskHeight, list.length * TaskHeight]
+            [
+              list.filter((task) => !task.isCompleted).length * TaskHeight,
+              list.length * TaskHeight,
+            ]
           )
         : interpolate(completedListOpacity.value, [0, 1], [0, 220]);
     const baseHeight = interpolate(
@@ -106,7 +106,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   };
 
   const completeTask = (id: string) => {
-    dispatch(completeTaskAction(list, id));
+    dispatch(completeTaskAction(id));
   };
 
   useEffect(() => {
@@ -116,21 +116,9 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   }, [upperBound]);
 
   useEffect(() => {
-    if (list.length > 0) {
-      positions.value = updateListObjectAfterTaskAdding(
-        positions.value,
-        list[0]
-      );
-      completedMarkerTop.value = withTiming(
-        completedMarkerTop.value + TaskHeight,
-        { duration: 300 }
-      );
-      setUpperBound(upperBound + 1);
-      setPositionsState(
-        updatePositionsObjectAfterTaskAdding(positionsState, list[0])
-      );
-    }
-  }, [list.length]);
+    positions.value = taskListToObject(list);
+    updatePositionState(taskListToPositionsObject(list));
+  }, [list]);
 
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
@@ -165,7 +153,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
               <MovableItem
                 key={item.task + index}
                 positions={positions}
-                positionsState={positionsState}
+                positionsState={gesturePositions}
                 markerOpacity={completedMarkerOpacity}
                 id={item.id}
                 itemHeight={TaskHeight}

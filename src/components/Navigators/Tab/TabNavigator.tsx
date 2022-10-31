@@ -18,7 +18,6 @@ import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../utils/con
 import SwitchPopup from "../../Popups/SwitchPopup/SwitchPopup";
 import { SwitchPopupStateType } from "../../Popups/SwitchPopup/types";
 import AddTaskPopup from "../../Popups/AddTaskPopup/AddTaskPopup";
-import { Keyboard } from "react-native";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 

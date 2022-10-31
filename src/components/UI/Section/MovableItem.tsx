@@ -1,11 +1,15 @@
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { Pressable } from "react-native";
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
 } from "react-native-gesture-handler";
 import Animated, {
+  BounceInRight,
+  FadeIn,
+  FadeInRight,
   runOnJS,
+  SlideInRight,
   useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedStyle,
@@ -40,41 +44,26 @@ const MovableItem: FC<MovableItemProps> = ({
   markerOpacity,
 }) => {
   const [isDragged, setIsDragged] = useState(false);
-  const top = itemHeight * positions.value[id].position;
+  const top = itemHeight * positions?.value[id]?.position | 0;
   const translateY = useSharedValue(top);
   const shadowOpacity = useSharedValue(0);
   const timeOut: { current: ReturnType<typeof setTimeout> | null } =
     useRef(null);
 
   useAnimatedReaction(
-    () => positions.value[id],
+    () => positions?.value[id],
     (current, previous) => {
       const isCompletedChanged = current?.isCompleted !== previous?.isCompleted
       const isPositionChanged = current?.position !== previous?.position
-      const isCompleted = positions.value[id].isCompleted;
+      const isCompleted = positions?.value[id]?.isCompleted;
 
       if (isPositionChanged || isCompletedChanged ) {
         if (!isDragged) {
-          const newTop = isCompleted ? 31 + current.position * itemHeight : current.position * itemHeight;
+          const newTop = isCompleted ? 31 + current?.position * itemHeight : current?.position * itemHeight;
           translateY.value = withTiming(newTop, {
             duration: 300,
           });
         }
-      }
-      if (isCompletedChanged) {
-        let newMarkerPosition = upperBound;
-        if (isCompleted) {
-          newMarkerPosition = upperBound === upperBoundMax ? upperBound : upperBound + 1;
-        } else {
-          if (upperBound === upperBoundMax) {
-            newMarkerPosition = upperBound;
-          } else {
-            newMarkerPosition = upperBound === upperBoundMax - 1 ? upperBound + 1 : upperBound + 2;
-          }
-        }
-        completedMarkerTop.value = withTiming(newMarkerPosition * itemHeight, {
-          duration: 300,
-        })
       }
     }
   );
@@ -82,7 +71,7 @@ const MovableItem: FC<MovableItemProps> = ({
   const onActiveGestureEvent = (translationY: number) => {
     "worklet";
     if (isDragged) {
-      const newPosition = getNewTaskPosition(
+      const newPosition = getNewTaskPosition( 
         translationY + top,
         0,
         upperBound,
@@ -96,10 +85,10 @@ const MovableItem: FC<MovableItemProps> = ({
         itemHeight
       );
 
-      if (newPosition !== positions.value[id].position && !componentProps.time) {
+      if (newPosition !== positions?.value[id]?.position && !componentProps?.time) {
         positions.value = moveTask(
-          positions.value,
-          positions.value[id].position,
+          positions?.value,
+          positions?.value[id]?.position,
           newPosition,
         );
       }
@@ -112,7 +101,7 @@ const MovableItem: FC<MovableItemProps> = ({
       if (componentProps.time) {
         translateY.value = withTiming(top, { duration: 300 });
       } else {
-        const newPosition = positions.value[id].position;
+        const newPosition = positions?.value[id]?.position;
         translateY.value = withTiming(newPosition * itemHeight, { duration: 300 });
       }
       runOnJS(setIsDragged)(false);
@@ -150,25 +139,37 @@ const MovableItem: FC<MovableItemProps> = ({
 
   const completeTask = (taskId: string) => {
     if (componentProps.isCompleted) {
-      updateUpperBound(upperBound + 1);
+      const newUpperBound = upperBound + 1;
       if (timeOut.current) {
         clearTimeout(timeOut.current);
         timeOut.current = null;
       }
+
+      updateUpperBound(newUpperBound);
       positions.value = moveUncompletedTask(
         positions.value,
         positionsState,
         id
       );
+      if (newUpperBound !== upperBoundMax) {
+        completedMarkerTop.value = withTiming(completedMarkerTop.value + itemHeight, {
+          duration: 300,
+        })
+      }
     } else {
       updateUpperBound(upperBound - 1);
       timeOut.current = setTimeout(() => {
         positions.value = moveCompletedTask(
           positions.value,
           id,
-          positions.value[id].position,
+          positions?.value[id]?.position,
           upperBound
         );
+        if (upperBound !== upperBoundMax) {
+          completedMarkerTop.value = withTiming(completedMarkerTop.value - itemHeight, {
+            duration: 300,
+          })
+        }
         if (markerOpacity.value < 1) {
           markerOpacity.value = withTiming(1, { duration: 300 });
         }
@@ -179,6 +180,7 @@ const MovableItem: FC<MovableItemProps> = ({
 
   return (
     <Animated.View
+      entering={(top === 0 && !positions?.value[id]) && SlideInRight.delay(200)}
       style={[
         movableItemStyles.container,
         shadowStyle,

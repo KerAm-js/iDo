@@ -3,8 +3,6 @@ import { Pressable, Text } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedStyle,
-  useSharedValue,
-  withTiming,
 } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
@@ -31,7 +29,7 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
       top: top.value,
       opacity: opacity.value,
     };
-  });
+  }, [top.value, opacity.value]);
 
   return (
     <Animated.View style={[containerStyle]}>

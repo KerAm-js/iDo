@@ -5,15 +5,15 @@ export const circleButtonStyles = StyleSheet.create({
   container: {
     alignItems: 'center',
     justifyContent: 'center',
-    width: 46,
-    height: 46,
+    width: 50,
+    height: 50,
     borderRadius: 30,
     marginTop: 10,
   },
   shadows: {
     shadowColor: textColors.blue,
-    shadowRadius: 5,
-    shadowOpacity: 0.35,
+    shadowRadius: 3,
+    shadowOpacity: 0.3,
     shadowOffset: {
       height: 0,
       width: 0,
@@ -24,12 +24,12 @@ export const circleButtonStyles = StyleSheet.create({
     height: 16,
   },
   containerSmall: {
-    width: 30,
-    height: 30,
+    width: 36,
+    height: 36,
     marginTop: 0,
   },
   iconSmall: {
-    width: 12,
-    height: 12,
+    width: 14,
+    height: 14,
   }
 })

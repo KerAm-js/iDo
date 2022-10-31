@@ -7,7 +7,7 @@ export const backgroundColors = {
   white: '#f5f5f6',
   blue: '#007AFF',
   dark: '#242426',
-  backdrop: 'rgba(0, 0, 0, 0.3)',
+  backdrop: 'rgba(0, 0, 0, 0.2)',
 }
 
 export const textColors = {

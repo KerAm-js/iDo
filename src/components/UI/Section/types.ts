@@ -1,4 +1,4 @@
-import { PositionsObject } from './../../../types/global/PositionsObject';
+import { GesturePositionsType } from '../../../types/global/GesturePositions';
 import { ListObject } from './../../../types/global/ListObject';
 import { TaskPropTypes, TaskType } from "../Task/types";
 import { FC } from 'react';
@@ -15,12 +15,12 @@ export type MovableItemProps = {
   opacity: {value: number},
   completedMarkerTop: {value: number},
   markerOpacity: {value: number},
-  positionsState: PositionsObject,
+  positionsState: GesturePositionsType,
   itemHeight: number,
   component: FC<TaskPropTypes>,
   componentProps: TaskPropTypes,
   upperBound: number,
   upperBoundMax: number,
-  updatePositionsState: (list: PositionsObject) => void,
+  updatePositionsState: (list: GesturePositionsType) => void,
   updateUpperBound: (newUpperBound: number) => void,
 }

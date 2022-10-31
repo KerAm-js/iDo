@@ -1,6 +1,6 @@
 import { ListObject } from "./../types/global/ListObject";
 import { TaskType } from "../components/UI/Task/types";
-import { PositionsObject } from "../types/global/PositionsObject";
+import { GesturePositionsType } from "../types/global/GesturePositions";
 
 export const sortTasksByTime = (list: Array<TaskType>): Array<TaskType> => {
   const listCopy = [...list];
@@ -32,11 +32,42 @@ export const taskListToObject = (list: Array<TaskType>): ListObject => {
   return object;
 };
 
+export const updateListObjectAfterTaskAdding = (
+  listObject: ListObject,
+  newTask: TaskType
+): ListObject => {
+  const newListObject: ListObject = {};
+  for (let key in listObject) {
+    newListObject[key] = {
+      ...listObject[key],
+      position: listObject[key].position + 1,
+    };
+  }
+  newListObject[newTask.id] = {
+    position: 0,
+    isCompleted: newTask.isCompleted,
+    time: newTask?.time?.toString(),
+  };
+  return newListObject;
+};
+
+export const updatePositionsObjectAfterTaskAdding = (
+  positionsObject: GesturePositionsType,
+  newTask: TaskType
+): GesturePositionsType => {
+  const newPositionsObject: GesturePositionsType = {};
+  for (let key in positionsObject) {
+    newPositionsObject[key] = positionsObject[key] + 1;
+  }
+  newPositionsObject[newTask.id] = 0;
+  return newPositionsObject;
+};
+
 export const taskListToPositionsObject = (
   list: Array<TaskType>
-): PositionsObject => {
-  const object: PositionsObject = {};
-  list.reduce((prev, curr, index): PositionsObject => {
+): GesturePositionsType => {
+  const object: GesturePositionsType = {};
+  list.reduce((prev, curr, index): GesturePositionsType => {
     prev[curr.id] = index;
     return prev;
   }, object);
@@ -45,9 +76,9 @@ export const taskListToPositionsObject = (
 
 export const listObjectToPositionsObject = (
   list: ListObject
-): PositionsObject => {
+): GesturePositionsType => {
   "worklet";
-  const newPositionState: PositionsObject = {};
+  const newPositionState: GesturePositionsType = {};
   for (let id in list) {
     newPositionState[id] = list[id].position;
   }
@@ -62,7 +93,9 @@ export const taskObjectToPositionsList = (list: ListObject): Array<string> => {
   return arr;
 };
 
-export const positionsObjectToList = (list: PositionsObject): Array<string> => {
+export const positionsObjectToList = (
+  list: GesturePositionsType
+): Array<string> => {
   const arr = [];
   for (let id in list) {
     arr[list[id]] = id;
@@ -150,7 +183,7 @@ export const moveCompletedTask = (
 
 export const moveUncompletedTask = (
   listObject: ListObject,
-  positionsState: PositionsObject,
+  positionsState: GesturePositionsType,
   id: string
 ): ListObject => {
   "worklet";
@@ -177,7 +210,9 @@ export const moveUncompletedTask = (
     const prevDateString = listObject[prev]?.time;
     const currDateString = listObject[curr]?.time;
     if (prevDateString && currDateString) {
-      return new Date(prevDateString).valueOf() - new Date(currDateString).valueOf();
+      return (
+        new Date(prevDateString).valueOf() - new Date(currDateString).valueOf()
+      );
     }
     return 0;
   });
