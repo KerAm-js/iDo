@@ -24,7 +24,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   const [task, setTask] = useState<string>("");
   const { tasks } = useSelector(taskSelector);
   const dispatch: AppDispatch = useDispatch();
-  const taskInput = useRef<TextInput>(null);
+  const taskInput = useRef<TextInput | null>(null);
 
   const addTask = () => {
     if (task.length > 0) {
@@ -54,7 +54,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       <TextInput
         value={task}
         onChangeText={(text) => setTask(text)}
-        ref={(ref) => (taskInput.current = ref)}
+        ref={taskInput}
         placeholder="Задача"
         style={[text17Input, addTaskPopupStyles.input]}
       />

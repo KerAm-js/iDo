@@ -7,6 +7,7 @@ export type TaskPropTypes = {
   timeType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK | FOR_MONTH;
   isCompleted: boolean;
   completeTask: (id: string) => void;
+  deleteTask: (id: string) => void;
 };
 
 export type TaskType = {

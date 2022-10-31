@@ -11,10 +11,11 @@ export const backgroundColors = {
 }
 
 export const textColors = {
-  white: '#fff',
+  white: '#FFF',
   black: '#000',
   grey: '#999',
-  blue: '#007AFF'
+  blue: '#007AFF',
+  red: '#FF3B30'
 }
 
 export const cardColors = {

@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react";
+import React, { FC, useEffect, useRef } from "react";
 import { View } from "react-native";
 import { circles } from "../../../../assets/icons/circles";
 import { getSections } from "../../../utils/utils";
@@ -19,7 +19,7 @@ const Home: FC<HomePropType> = ({ showSettingModal, periodsState }) => {
     <ScreenLayout
       title={date}
       subtitle={weekDay}
-      headingLeft={
+      headingRight={
         <IconButton
           onClick={showSettingModal}
           xml={circles}

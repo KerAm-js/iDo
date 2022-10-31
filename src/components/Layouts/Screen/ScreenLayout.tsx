@@ -12,8 +12,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 const ScreenLayout: FC<ScreenLayoutProps> = ({
   children,
   title,
-  headingLeft: HeaderLeft,
-  headerRight: HeaderRight,
+  headingRight: HeadingRight,
   subtitle,
   subtitleComponent: SubtitleComponent,
 }) => {
@@ -109,7 +108,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
           >
             {title}
           </Animated.Text>
-          {HeaderLeft}
+          {HeadingRight}
         </View>
         {subtitle && <Text style={[subTitle16, textGrey]}>{subtitle}</Text>}
         {SubtitleComponent}

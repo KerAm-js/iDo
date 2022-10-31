@@ -51,6 +51,22 @@ export const updateListObjectAfterTaskAdding = (
   return newListObject;
 };
 
+export const updateListObjectAfterTaskDeleting = (
+  listObject: ListObject,
+  id: string
+): ListObject => {
+  const deletedPosition: number = listObject[id].position;
+  const newListObject: ListObject = {};
+  for (let key in listObject) {
+    newListObject[key] = { ...listObject[key] }
+    if (listObject[key].position > deletedPosition) {
+      newListObject[key].position -= 1;
+    }
+  }
+  delete newListObject[id];
+  return newListObject;
+}
+
 export const updatePositionsObjectAfterTaskAdding = (
   positionsObject: GesturePositionsType,
   newTask: TaskType
@@ -62,6 +78,23 @@ export const updatePositionsObjectAfterTaskAdding = (
   newPositionsObject[newTask.id] = 0;
   return newPositionsObject;
 };
+
+export const updatePositionsObjectAfterTaskDeleting = (
+  positionsObject: GesturePositionsType,
+  id: string
+): GesturePositionsType => {
+  const deletedPosition: number = positionsObject[id];
+  const newPositionsObject: GesturePositionsType = {};
+  for (let key in positionsObject) {
+    if (positionsObject[key] > deletedPosition) {
+      newPositionsObject[key] = positionsObject[key] - 1;
+    } else {
+      newPositionsObject[key] = positionsObject[key];
+    }
+  }
+  delete newPositionsObject[id];
+  return newPositionsObject;
+}
 
 export const taskListToPositionsObject = (
   list: Array<TaskType>

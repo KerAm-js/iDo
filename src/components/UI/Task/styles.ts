@@ -7,11 +7,11 @@ export const taskStyles = StyleSheet.create({
     backgroundColor: cardColors.white,
     borderRadius: regularBorderRadius,
     paddingHorizontal: 15,
+    paddingVertical: 13,
     flexDirection: "row",
-    marginBottom: 9,
     justifyContent: 'space-between',
     alignItems: "center",
-    minHeight: 64,
+    minHeight: 60,
   },
   title: {
     lineHeight: 20,

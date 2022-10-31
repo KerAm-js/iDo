@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
 import { title22 } from "../../../styles/global/texts";
@@ -18,7 +18,9 @@ import {
   taskListToObject,
   taskListToPositionsObject,
   updateListObjectAfterTaskAdding,
+  updateListObjectAfterTaskDeleting,
   updatePositionsObjectAfterTaskAdding,
+  updatePositionsObjectAfterTaskDeleting,
 } from "../../../utils/taskUI";
 import CompletedMarker from "../Task/CompletedMarker";
 import { ListObject } from "../../../types/global/ListObject";
@@ -28,10 +30,10 @@ import ClearList from "../ClearList/ClearList";
 import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { useDispatch } from "react-redux";
-import { completeTaskAction } from "../../../redux/actions/taskActions";
+import { completeTaskAction, deleteTaskAction } from "../../../redux/actions/taskActions";
 
-const TaskMargin = 9;
-const TaskHeight = 64 + TaskMargin;
+const TaskMargin = 10;
+const TaskHeight = 60 + TaskMargin;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
   const sortedList = sortTasksByTime(list);
@@ -44,6 +46,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   const [positionsState, setPositionsState] = useState<GesturePositionsType>(
     taskListToPositionsObject(sortedList)
   );
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const updatePositionState = (list: GesturePositionsType) =>
     setPositionsState(list);
@@ -109,6 +112,23 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     dispatch(completeTaskAction(list, id));
   };
 
+  const deleteTask = (id: string) => {
+    setIsDeleting(true);
+    dispatch(deleteTaskAction(id));
+    positions.value = updateListObjectAfterTaskDeleting(
+      positions.value,
+      id
+    );
+    completedMarkerTop.value = withTiming(
+      completedMarkerTop.value - TaskHeight,
+      { duration: 300 }
+    );
+    setUpperBound(upperBound - 1);
+    setPositionsState(
+      updatePositionsObjectAfterTaskDeleting(positionsState, id)
+    );
+  };
+
   useEffect(() => {
     if (upperBound === list.length - 1) {
       completedMarkerOpacity.value = withTiming(0, { duration: 300 });
@@ -116,7 +136,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   }, [upperBound]);
 
   useEffect(() => {
-    if (list.length > 0) {
+    if (list.length > 0 && !isDeleting) {
       positions.value = updateListObjectAfterTaskAdding(
         positions.value,
         list[0]
@@ -129,6 +149,9 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       setPositionsState(
         updatePositionsObjectAfterTaskAdding(positionsState, list[0])
       );
+    } 
+    if (isDeleting) {
+      setIsDeleting(false);
     }
   }, [list.length]);
 
@@ -170,7 +193,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
                 id={item.id}
                 itemHeight={TaskHeight}
                 component={Task}
-                componentProps={{ ...item, completeTask, timeType: title }}
+                componentProps={{ ...item, completeTask, deleteTask, timeType: title }}
                 updatePositionsState={updatePositionState}
                 upperBound={upperBound}
                 upperBoundMax={list.length - 1}

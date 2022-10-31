@@ -1,5 +1,5 @@
 import { GesturePositionsType } from './../../types/global/GesturePositions';
-import { CHANGE_GESTURE_POSITIONS, UPDATE_TASKS } from "./../constants/task";
+import { CHANGE_GESTURE_POSITIONS, DELETE_TASK, UPDATE_TASKS } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
 
@@ -24,6 +24,13 @@ export const taskReducer = (
         tasks: [action.task, ...state.tasks],
         gesturePositions: newGesturePositions
       };
+    };
+    case DELETE_TASK: {
+      const tasks = state.tasks.filter(task => task.id !== action.id);
+      return {
+        ...state,
+        tasks,
+      }
     };
     case UPDATE_TASKS: {
       return {

@@ -1,21 +1,22 @@
-import React, { FC, useEffect, useRef, useState } from "react";
-import { Pressable } from "react-native";
+import React, { FC, useRef, useState } from "react";
+import { Dimensions, Pressable, View } from "react-native";
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
 } from "react-native-gesture-handler";
 import Animated, {
-  BounceInRight,
-  FadeIn,
-  FadeInRight,
+  interpolate,
   runOnJS,
   SlideInRight,
   useAnimatedGestureHandler,
   useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
+  withSpring,
   withTiming,
 } from "react-native-reanimated";
+import { SvgXml } from "react-native-svg";
+import { trashRed } from "../../../../assets/icons/trash";
 import { shadowStyle } from "../../../styles/global/shadow";
 import {
   getInsideLayoutTranslationY,
@@ -44,8 +45,12 @@ const MovableItem: FC<MovableItemProps> = ({
   markerOpacity,
 }) => {
   const [isDragged, setIsDragged] = useState(false);
-  const top = itemHeight * positions?.value[id]?.position | 0;
+  const { width: SCREEN_WIDTH } = Dimensions.get("screen");
+  const translateThreshold = SCREEN_WIDTH * -0.3;
+  const top = (itemHeight * positions?.value[id]?.position) | 0;
   const translateY = useSharedValue(top);
+  const translateX = useSharedValue(0);
+  const trashIconOpacity = useSharedValue(0);
   const shadowOpacity = useSharedValue(0);
   const timeOut: { current: ReturnType<typeof setTimeout> | null } =
     useRef(null);
@@ -53,13 +58,15 @@ const MovableItem: FC<MovableItemProps> = ({
   useAnimatedReaction(
     () => positions?.value[id],
     (current, previous) => {
-      const isCompletedChanged = current?.isCompleted !== previous?.isCompleted
-      const isPositionChanged = current?.position !== previous?.position
+      const isCompletedChanged = current?.isCompleted !== previous?.isCompleted;
+      const isPositionChanged = current?.position !== previous?.position;
       const isCompleted = positions?.value[id]?.isCompleted;
 
-      if (isPositionChanged || isCompletedChanged ) {
+      if (isPositionChanged || isCompletedChanged) {
         if (!isDragged) {
-          const newTop = isCompleted ? 31 + current?.position * itemHeight : current?.position * itemHeight;
+          const newTop = isCompleted
+            ? 31 + current?.position * itemHeight
+            : current?.position * itemHeight;
           translateY.value = withTiming(newTop, {
             duration: 300,
           });
@@ -68,10 +75,10 @@ const MovableItem: FC<MovableItemProps> = ({
     }
   );
 
-  const onActiveGestureEvent = (translationY: number) => {
+  const onActiveGestureEvent = (translationX: number, translationY: number) => {
     "worklet";
     if (isDragged) {
-      const newPosition = getNewTaskPosition( 
+      const newPosition = getNewTaskPosition(
         translationY + top,
         0,
         upperBound,
@@ -85,12 +92,22 @@ const MovableItem: FC<MovableItemProps> = ({
         itemHeight
       );
 
-      if (newPosition !== positions?.value[id]?.position && !componentProps?.time) {
+      if (
+        newPosition !== positions?.value[id]?.position &&
+        !componentProps?.time
+      ) {
         positions.value = moveTask(
           positions?.value,
           positions?.value[id]?.position,
-          newPosition,
+          newPosition
         );
+      }
+    } else {
+      translateX.value = translationX;
+      if ((translateX.value < translateThreshold && trashIconOpacity.value < 1)) {
+        trashIconOpacity.value = withTiming(1, { duration: 300 });
+      } else if (translateX.value > translateThreshold) {
+        trashIconOpacity.value = withTiming(0, { duration: 300 });
       }
     }
   };
@@ -102,13 +119,26 @@ const MovableItem: FC<MovableItemProps> = ({
         translateY.value = withTiming(top, { duration: 300 });
       } else {
         const newPosition = positions?.value[id]?.position;
-        translateY.value = withTiming(newPosition * itemHeight, { duration: 300 });
+        translateY.value = withTiming(newPosition * itemHeight, {
+          duration: 300,
+        });
       }
       runOnJS(setIsDragged)(false);
       runOnJS(updatePositionsState)(
         listObjectToPositionsObject(positions.value)
       );
       shadowOpacity.value = withTiming(0, { duration: 300 });
+    } else {
+      if (translateX.value < translateThreshold && !componentProps.isCompleted) {
+        translateX.value = withSpring(-SCREEN_WIDTH, { damping: 13 });
+        trashIconOpacity.value = withTiming(0, { duration: 300 }, (isFinished) => {
+          if (isFinished && componentProps.deleteTask) {
+            runOnJS(componentProps.deleteTask)(id);
+          }
+        });
+      } else {
+        translateX.value = withSpring(0, { damping: 13 });
+      }
     }
   };
 
@@ -116,7 +146,7 @@ const MovableItem: FC<MovableItemProps> = ({
     useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
       onStart: () => {},
       onActive: (event) => {
-        onActiveGestureEvent(event?.translationY);
+        onActiveGestureEvent(event?.translationX, event?.translationY);
       },
       onFinish: () => {
         onFinishGestureEvent();
@@ -131,6 +161,18 @@ const MovableItem: FC<MovableItemProps> = ({
       zIndex: shadowOpacity.value > 0 ? 1 : 0,
     };
   }, [positions, translateY, shadowOpacity, opacity]);
+
+  const taskContainerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+    };
+  }, [translateX]);
+
+  const trashIconStyle = useAnimatedStyle(() => {
+    return {
+      opacity: trashIconOpacity.value,
+    };
+  }, [translateX]);
 
   const onLongPress = () => {
     setIsDragged(true);
@@ -152,9 +194,12 @@ const MovableItem: FC<MovableItemProps> = ({
         id
       );
       if (newUpperBound !== upperBoundMax) {
-        completedMarkerTop.value = withTiming(completedMarkerTop.value + itemHeight, {
-          duration: 300,
-        })
+        completedMarkerTop.value = withTiming(
+          completedMarkerTop.value + itemHeight,
+          {
+            duration: 300,
+          }
+        );
       }
     } else {
       updateUpperBound(upperBound - 1);
@@ -166,9 +211,12 @@ const MovableItem: FC<MovableItemProps> = ({
           upperBound
         );
         if (upperBound !== upperBoundMax) {
-          completedMarkerTop.value = withTiming(completedMarkerTop.value - itemHeight, {
-            duration: 300,
-          })
+          completedMarkerTop.value = withTiming(
+            completedMarkerTop.value - itemHeight,
+            {
+              duration: 300,
+            }
+          );
         }
         if (markerOpacity.value < 1) {
           markerOpacity.value = withTiming(1, { duration: 300 });
@@ -180,12 +228,12 @@ const MovableItem: FC<MovableItemProps> = ({
 
   return (
     <Animated.View
-      entering={(top === 0 && !positions?.value[id]) && SlideInRight.delay(200)}
-      style={[
-        movableItemStyles.container,
-        shadowStyle,
-        containerStyle,
-      ]}
+      entering={
+        top === 0 && !positions?.value[id]
+          ? SlideInRight.springify().damping(14).delay(100)
+          : undefined
+      }
+      style={[movableItemStyles.container, shadowStyle, containerStyle]}
     >
       <PanGestureHandler onGestureEvent={gestureEventHanlder}>
         <Animated.View style={[movableItemStyles.panGestureContainer]}>
@@ -195,7 +243,17 @@ const MovableItem: FC<MovableItemProps> = ({
           ></Pressable>
         </Animated.View>
       </PanGestureHandler>
-      <Component {...componentProps} completeTask={completeTask} />
+      <Animated.View style={[trashIconStyle, movableItemStyles.trashIconContainer]}>
+        <SvgXml
+          xml={trashRed}
+          width={movableItemStyles.trashIcon.width}
+          height={movableItemStyles.trashIcon.height}
+          style={movableItemStyles.trashIcon}
+        />
+      </Animated.View>
+      <Animated.View style={[taskContainerStyle]}>
+        <Component {...componentProps} completeTask={completeTask} />
+      </Animated.View>
     </Animated.View>
   );
 };

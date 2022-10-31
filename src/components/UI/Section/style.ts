@@ -15,6 +15,7 @@ export const movableItemStyles = StyleSheet.create({
   container: {
     position: "absolute", 
     width: '100%',
+    justifyContent: 'center',
   },
   pressable: {
     width: "100%",
@@ -22,8 +23,19 @@ export const movableItemStyles = StyleSheet.create({
   },
   panGestureContainer: {
     position: "absolute",
-    width: "30%",
+    right: 42,
+    width: "22%",
     height: "100%",
     zIndex: 100,
+  },
+  trashIcon: {
+    width: 24,
+    height: 24,
+  },
+  trashIconContainer: {
+    position: "absolute",
+    right: 20,
+    width: 24,
+    height: 24,
   }
 })
