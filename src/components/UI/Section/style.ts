@@ -24,7 +24,7 @@ export const movableItemStyles = StyleSheet.create({
   panGestureContainer: {
     position: "absolute",
     right: 42,
-    width: "22%",
+    width: "25%",
     height: "100%",
     zIndex: 100,
   },

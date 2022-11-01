@@ -4,9 +4,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { bell } from "../../../../assets/icons/bell";
 import { clock } from "../../../../assets/icons/clock";
 import { flag } from "../../../../assets/icons/flag";
+import { penFill } from "../../../../assets/icons/penFill";
 import { plus } from "../../../../assets/icons/plus";
 import { repeat } from "../../../../assets/icons/repeat";
-import { addTaskAction } from "../../../redux/actions/taskActions";
+import {
+  addTaskAction,
+  chooseTaskToEdit,
+  editTaskAction,
+} from "../../../redux/actions/taskActions";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { text14Input, text17Input } from "../../../styles/global/texts";
@@ -21,29 +26,72 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   title,
   handleKeyboard,
 }) => {
-  const [task, setTask] = useState<string>("");
-  const { tasks } = useSelector(taskSelector);
+  const { tasks, taskToEdit } = useSelector(taskSelector);
   const dispatch: AppDispatch = useDispatch();
+  const [task, setTask] = useState<string>("");
+  const [circleButtonDisabled, setCircleButtonDisabled] = useState<boolean>(false);
+  const [description, setDescription] = useState<string>("");
   const taskInput = useRef<TextInput | null>(null);
 
-  const addTask = () => {
+  const setDefaults = () => {
+    setTask("");
+    setDescription("");
+  };
+
+  const onSubmit = () => {
     if (task.length > 0) {
       dispatch(
-        addTaskAction({
-          id: `a${tasks.length}`,
-          isCompleted: false,
-          task,
-        })
+        !!taskToEdit
+          ? editTaskAction({
+              id: taskToEdit.id,
+              isCompleted: taskToEdit.isCompleted,
+              task,
+              description,
+            })
+          : addTaskAction({
+              id: `a${tasks.length}`,
+              isCompleted: false,
+              task,
+              description,
+            })
       );
-      setTask('');
+      setDefaults();
+      if (!!taskToEdit) {
+        dispatch(chooseTaskToEdit(undefined));
+      }
     }
   };
 
   useEffect(() => {
-    if (visible) {
+    if (visible && !taskToEdit) {
       taskInput.current?.focus();
     }
   }, [visible]);
+
+  useEffect(() => {
+    if (taskToEdit) {
+      setTask(taskToEdit?.task || "");
+      setDescription(taskToEdit?.description || "");
+    } else {
+      setDefaults();
+    }
+  }, [taskToEdit]);
+
+  useEffect(() => {
+    if (!!taskToEdit) {
+      if (task === taskToEdit.task && description === taskToEdit.description) {
+        setCircleButtonDisabled(true);
+      } else {
+        setCircleButtonDisabled(false);
+      }
+    } else {
+      if (task.length > 0) {
+        setCircleButtonDisabled(false);
+      } else {
+        setCircleButtonDisabled(true);
+      }
+    }
+  }, [task, description])
 
   return (
     <BottomPopup
@@ -59,6 +107,8 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         style={[text17Input, addTaskPopupStyles.input]}
       />
       <TextInput
+        value={description}
+        onChangeText={(text) => setDescription(text)}
         placeholder="Описание"
         style={[text14Input, addTaskPopupStyles.input]}
       />
@@ -89,7 +139,12 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             style={addTaskPopupStyles.iconButton}
           />
         </View>
-        <CircleButton xml={plus} size="small" onClick={addTask} />
+        <CircleButton
+          xml={!!taskToEdit ? penFill : plus}
+          size="small"
+          disabled={circleButtonDisabled}
+          onClick={onSubmit}
+        />
       </View>
     </BottomPopup>
   );

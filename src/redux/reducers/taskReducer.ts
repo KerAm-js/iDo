@@ -1,17 +1,18 @@
 import { GesturePositionsType } from './../../types/global/GesturePositions';
-import { CHANGE_GESTURE_POSITIONS, DELETE_TASK, UPDATE_TASKS } from "./../constants/task";
+import { CHANGE_GESTURE_POSITIONS, CHOOSE_TASK_TO_EDIT, DELETE_TASK, EDIT_TASK, UPDATE_TASKS } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
 
 const initialState: TaskState = {
   tasks: [],
   gesturePositions: {},
+  taskToEdit: undefined,
 };
 
 export const taskReducer = (
   state: TaskState = initialState,
   action: TaskAction
-) => {
+): TaskState => {
   switch (action.type) {
     case ADD_TASK: {
       const newGesturePositions: GesturePositionsType = {};
@@ -30,6 +31,19 @@ export const taskReducer = (
       return {
         ...state,
         tasks,
+      }
+    };
+    case EDIT_TASK: {
+      const tasks = state.tasks.map(task => task.id === action.task.id ? action.task : task); 
+      return {
+        ...state,
+        tasks
+      }
+    };
+    case CHOOSE_TASK_TO_EDIT: {
+      return {
+        ...state,
+        taskToEdit: action.task 
       }
     };
     case UPDATE_TASKS: {

@@ -1,5 +1,8 @@
 import React, { FC, useState } from "react";
-import { Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import { useDispatch } from "react-redux";
+import { chooseTaskToEdit } from "../../../redux/actions/taskActions";
+import { AppDispatch } from "../../../redux/types/appDispatch";
 import { text12, text16, textGrey } from "../../../styles/global/texts";
 import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
 import { getDate } from "../../../utils/date";
@@ -7,7 +10,11 @@ import CheckButton from "../buttons/CheckButton/CheckButton";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
 
-const Task: FC<TaskPropTypes> = ({ task, time, timeType, id, isCompleted, completeTask }) => {
+const Task: FC<TaskPropTypes> = ({ task, time, timeType, id, description, isCompleted, completeTask }) => {
+  const dispatch: AppDispatch = useDispatch();
+  const openEditTaskPopup = () => dispatch(chooseTaskToEdit({
+    task, time, id, isCompleted, description
+  }))
   const [isChecked, setIsChecked] = useState(isCompleted);
   const toggleChecked = () => {
     completeTask(id);
@@ -23,7 +30,7 @@ const Task: FC<TaskPropTypes> = ({ task, time, timeType, id, isCompleted, comple
   }
 
   return (
-    <View style={[taskStyles.container]}>
+    <Pressable style={[taskStyles.container]} onPress={openEditTaskPopup}>
       <View>
         <Text style={[text16, taskStyles.title]}>{task}</Text>
         { 
@@ -31,7 +38,7 @@ const Task: FC<TaskPropTypes> = ({ task, time, timeType, id, isCompleted, comple
         }
       </View>
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
-    </View>
+    </Pressable>
   );
 };
 

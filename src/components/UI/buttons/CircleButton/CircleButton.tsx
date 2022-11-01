@@ -4,12 +4,15 @@ import { SvgXml } from "react-native-svg";
 import { circleButtonStyles } from "./styles";
 import { circleButtonProps } from "./types";
 import { LinearGradient } from "expo-linear-gradient";
-import { backgroundColors } from "../../../../styles/global/colors";
+import { backgroundColors, textColors } from "../../../../styles/global/colors";
 
-const CircleButton: FC<circleButtonProps> = ({ xml, onClick, size }) => {
+const CircleButton: FC<circleButtonProps> = ({ xml, onClick, disabled, size }) => {
   const buttonScale = useRef(new Animated.Value(1)).current;
 
   const clickHanlder = () => {
+    if (disabled) {
+      return;
+    }
     Animated.sequence([
       Animated.timing(buttonScale, {
         toValue: 0.8,
@@ -25,6 +28,8 @@ const CircleButton: FC<circleButtonProps> = ({ xml, onClick, size }) => {
     onClick();
   };
 
+  const color = disabled ? textColors.grey : backgroundColors.blue;
+
   return (
     <Animated.View
       style={[
@@ -34,7 +39,7 @@ const CircleButton: FC<circleButtonProps> = ({ xml, onClick, size }) => {
     >
       <Pressable onPress={clickHanlder}>
         <LinearGradient
-          colors={ size === 'big' ? ["#248DFF", "#0271EA"] : [backgroundColors.blue, backgroundColors.blue]}
+          colors={ size === 'big' ? ["#248DFF", "#0271EA"] : [color, color]}
           style={[
             circleButtonStyles.container, size === 'small' && circleButtonStyles.containerSmall,
           ]}

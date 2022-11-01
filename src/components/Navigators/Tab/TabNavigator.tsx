@@ -18,10 +18,16 @@ import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../utils/con
 import SwitchPopup from "../../Popups/SwitchPopup/SwitchPopup";
 import { SwitchPopupStateType } from "../../Popups/SwitchPopup/types";
 import AddTaskPopup from "../../Popups/AddTaskPopup/AddTaskPopup";
+import { useDispatch, useSelector } from "react-redux";
+import { taskSelector } from "../../../redux/selectors/taskSelector";
+import { AppDispatch } from "../../../redux/types/appDispatch";
+import { chooseTaskToEdit } from "../../../redux/actions/taskActions";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
 const TabNavigator: FC = () => {
+  const { taskToEdit } = useSelector(taskSelector);
+  const dispatch: AppDispatch = useDispatch();
   const [addTaskModalVisible, setAddTaskModalVisible] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [periodsState, setPeriodsState] = useState<SwitchPopupStateType>({
@@ -33,9 +39,14 @@ const TabNavigator: FC = () => {
 
   const showModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
-
   const showAddTaskModal = () => setAddTaskModalVisible(true);
-  const closeAddTaskModal = () => setAddTaskModalVisible(false);
+  const closeAddTaskModal = () => {
+    if (taskToEdit) {
+      dispatch(chooseTaskToEdit(undefined));
+    } else {
+      setAddTaskModalVisible(false);
+    }
+  };
 
   const { date } = getDate("ru");
 
@@ -51,9 +62,9 @@ const TabNavigator: FC = () => {
           updateState={setPeriodsState}
         />
       </ModalLayout>
-      <ModalLayout visible={addTaskModalVisible} close={closeAddTaskModal}>
+      <ModalLayout visible={addTaskModalVisible || !!taskToEdit} close={closeAddTaskModal}>
         <AddTaskPopup 
-          visible={addTaskModalVisible}
+          visible={addTaskModalVisible || !!taskToEdit}
           handleKeyboard={true}
         />
       </ModalLayout>

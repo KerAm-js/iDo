@@ -1,4 +1,4 @@
-import { DELETE_TASK } from './../constants/task';
+import { CHOOSE_TASK_TO_EDIT, DELETE_TASK, EDIT_TASK } from './../constants/task';
 import { GesturePositionsType } from './../../types/global/GesturePositions';
 import { Dispatch } from '@reduxjs/toolkit';
 import { ADD_TASK, CHANGE_GESTURE_POSITIONS, UPDATE_TASKS } from '../constants/task';
@@ -10,6 +10,14 @@ export const addTaskAction = (task: TaskType) => (dispath: Dispatch) => {
 
 export const deleteTaskAction = (id: string) => (dispatch: Dispatch) => {
   dispatch({ type: DELETE_TASK, id });
+}
+
+export const editTaskAction = (task: TaskType) => (dispatch: Dispatch) => {
+  dispatch({ type: EDIT_TASK, task, });
+}
+
+export const chooseTaskToEdit = (task: TaskType | undefined) => (dispatch: Dispatch) => {
+  dispatch({ type: CHOOSE_TASK_TO_EDIT, task });
 }
 
 export const completeTaskAction = (tasks: Array<TaskType>, id: string) => (dispatch: Dispatch) => {

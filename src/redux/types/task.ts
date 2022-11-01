@@ -6,6 +6,7 @@ import { TaskType } from "../../components/UI/Task/types"
 export type TaskState = {
   tasks: Array<TaskType>,
   gesturePositions: GesturePositionsType,
+  taskToEdit: TaskType | undefined,
 }
 
 export interface TaskAction extends Action {

@@ -3,6 +3,7 @@ import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../types/con
 export type TaskPropTypes = {
   id: string;
   task: string;
+  description: string;
   time?: Date;
   timeType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK | FOR_MONTH;
   isCompleted: boolean;
@@ -13,8 +14,9 @@ export type TaskPropTypes = {
 export type TaskType = {
   id: string;
   task: string;
-  time?: Date;
   isCompleted: boolean;
+  time?: Date;
+  description: string;
 };
 
 export type CompletedMarkerPropTypes = {
