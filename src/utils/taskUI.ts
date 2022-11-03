@@ -20,15 +20,19 @@ export const sortTasksByTime = (list: Array<TaskType>): Array<TaskType> => {
 };
 
 export const taskListToObject = (list: Array<TaskType>): ListObject => {
+  const completedList: Array<TaskType> = [];
+  const unCompletedList: Array<TaskType> = [];
+  list.forEach(task => task.isCompleted ? completedList.push(task) : unCompletedList.push(task));
+  const newList = unCompletedList.concat(completedList);
+  
   const object: ListObject = {};
-  list.reduce((prev, curr, index): ListObject => {
-    prev[curr.id] = {
+  newList.forEach((task: TaskType, index: number) => {
+    object[task.id] = {
       position: index,
-      isCompleted: curr.isCompleted,
-      time: curr?.time?.toString(),
+      isCompleted: task.isCompleted,
+      time: task?.time?.toString(),
     };
-    return prev;
-  }, object);
+  });
   return object;
 };
 
@@ -36,6 +40,7 @@ export const updateListObjectAfterTaskAdding = (
   listObject: ListObject,
   newTask: TaskType
 ): ListObject => {
+  'worklet';
   const newListObject: ListObject = {};
   for (let key in listObject) {
     newListObject[key] = {
@@ -71,6 +76,7 @@ export const updatePositionsObjectAfterTaskAdding = (
   positionsObject: GesturePositionsType,
   newTask: TaskType
 ): GesturePositionsType => {
+  'worklet';
   const newPositionsObject: GesturePositionsType = {};
   for (let key in positionsObject) {
     newPositionsObject[key] = positionsObject[key] + 1;
@@ -99,11 +105,15 @@ export const updatePositionsObjectAfterTaskDeleting = (
 export const taskListToPositionsObject = (
   list: Array<TaskType>
 ): GesturePositionsType => {
+  const completedList: Array<TaskType> = [];
+  const unCompletedList: Array<TaskType> = [];
+  list.forEach(task => task.isCompleted ? completedList.push(task) : unCompletedList.push(task));
+  const newList = unCompletedList.concat(completedList);
+  
   const object: GesturePositionsType = {};
-  list.reduce((prev, curr, index): GesturePositionsType => {
-    prev[curr.id] = index;
-    return prev;
-  }, object);
+  newList.forEach((task: TaskType, index: number) => {
+    object[task.id] = index
+  });
   return object;
 };
 

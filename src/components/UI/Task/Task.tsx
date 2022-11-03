@@ -10,11 +10,26 @@ import CheckButton from "../buttons/CheckButton/CheckButton";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
 
-const Task: FC<TaskPropTypes> = ({ task, time, timeType, id, description, isCompleted, completeTask }) => {
+const Task: FC<TaskPropTypes> = ({
+  task,
+  time,
+  timeType,
+  id,
+  description,
+  isCompleted,
+  completeTask,
+}) => {
   const dispatch: AppDispatch = useDispatch();
-  const openEditTaskPopup = () => dispatch(chooseTaskToEdit({
-    task, time, id, isCompleted, description
-  }))
+  const openEditTaskPopup = () =>
+    dispatch(
+      chooseTaskToEdit({
+        task,
+        time,
+        id,
+        isCompleted,
+        description,
+      })
+    );
   const [isChecked, setIsChecked] = useState(isCompleted);
   const toggleChecked = () => {
     completeTask(id);
@@ -24,21 +39,23 @@ const Task: FC<TaskPropTypes> = ({ task, time, timeType, id, description, isComp
   let timeString = time?.toTimeString().slice(0, 5);
 
   if (time && timeType === FOR_WEEK) {
-    timeString = getDate("ru", {date: time}).weekDay;
+    timeString = getDate("ru", { date: time }).weekDay;
   } else if (time && timeType === FOR_MONTH) {
-    timeString = getDate("ru", {date: time}).date;
+    timeString = getDate("ru", { date: time }).date;
   }
 
   return (
-    <Pressable style={[taskStyles.container]} onPress={openEditTaskPopup}>
-      <View>
-        <Text style={[text16, taskStyles.title]}>{task}</Text>
-        { 
-          timeString && <Text style={[taskStyles.subTitle, text12, textGrey]}>{timeString}</Text>
-        }
-      </View>
+    <View style={[taskStyles.container]}>
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
-    </Pressable>
+      <Pressable style={[taskStyles.textContainer]} onPress={openEditTaskPopup}>
+        <Text style={[text16, taskStyles.title]}>{task}</Text>
+        {timeString && (
+          <Text style={[taskStyles.subTitle, text12, textGrey]}>
+            {timeString}
+          </Text>
+        )}
+      </Pressable>
+    </View>
   );
 };
 

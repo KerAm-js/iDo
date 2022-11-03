@@ -6,21 +6,23 @@ export const taskStyles = StyleSheet.create({
   container: {
     backgroundColor: cardColors.white,
     borderRadius: regularBorderRadius,
-    paddingHorizontal: 15,
-    paddingVertical: 13,
+    paddingRight: 15,
+    paddingLeft: 15,
     flexDirection: "row",
-    justifyContent: 'space-between',
     alignItems: "center",
     minHeight: 60,
   },
   title: {
-    // marginLeft: 10,
     lineHeight: 20,
     paddingRight: 20,
   },
   subTitle: {
     marginTop: 7,
-    // marginLeft: 10,
+  },
+  textContainer: {
+    paddingVertical: 13,
+    paddingLeft: 15,
+    flex: 1,
   }
 })
 

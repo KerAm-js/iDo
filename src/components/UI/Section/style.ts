@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 export const sectionStyles = StyleSheet.create({
   container: {
     marginBottom: 30,
+    overflow: 'hidden',
   },
   headerContainer: {
     flexDirection: "row",
@@ -23,8 +24,8 @@ export const movableItemStyles = StyleSheet.create({
   },
   panGestureContainer: {
     position: "absolute",
-    right: 42,
-    width: "25%",
+    right: 0,
+    width: "30%",
     height: "100%",
     zIndex: 100,
   },

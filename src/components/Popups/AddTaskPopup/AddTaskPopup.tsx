@@ -26,7 +26,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   title,
   handleKeyboard,
 }) => {
-  const { tasks, taskToEdit } = useSelector(taskSelector);
+  const { taskToEdit } = useSelector(taskSelector);
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
   const [circleButtonDisabled, setCircleButtonDisabled] = useState<boolean>(false);
@@ -49,7 +49,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               description,
             })
           : addTaskAction({
-              id: `a${tasks.length}`,
+              id: `${new Date().toString()}`,
               isCompleted: false,
               task,
               description,
@@ -79,7 +79,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
 
   useEffect(() => {
     if (!!taskToEdit) {
-      if (task === taskToEdit.task && description === taskToEdit.description) {
+      if ((task === taskToEdit.task && description === taskToEdit.description) || task.length === 0) {
         setCircleButtonDisabled(true);
       } else {
         setCircleButtonDisabled(false);

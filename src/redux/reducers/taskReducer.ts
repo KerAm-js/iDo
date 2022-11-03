@@ -4,7 +4,32 @@ import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
 
 const initialState: TaskState = {
-  tasks: [],
+  tasks: [
+    // {
+    //   id: new Date('2022-11-02T03:24:01').toString(),
+    //   task: '1',
+    //   description: '',
+    //   isCompleted: true,
+    // },
+    // {
+    //   id: new Date('2022-11-02T03:25:01').toString(),
+    //   task: '2',
+    //   description: '',
+    //   isCompleted: false,
+    // },
+    // {
+    //   id: new Date('2022-11-02T03:26:01').toString(),
+    //   task: '3',
+    //   description: '',
+    //   isCompleted: true,
+    // },
+    // {
+    //   id: new Date('2022-11-02T03:27:01').toString(),
+    //   task: '4',
+    //   description: '',
+    //   isCompleted: false,
+    // },
+  ],
   gesturePositions: {},
   taskToEdit: undefined,
 };

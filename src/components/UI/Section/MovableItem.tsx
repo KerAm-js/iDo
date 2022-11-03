@@ -1,5 +1,6 @@
+import { current } from "@reduxjs/toolkit";
 import React, { FC, useRef, useState } from "react";
-import { Dimensions, Pressable, View } from "react-native";
+import { Dimensions, Pressable } from "react-native";
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -45,8 +46,11 @@ const MovableItem: FC<MovableItemProps> = ({
 }) => {
   const [isDragged, setIsDragged] = useState(false);
   const { width: SCREEN_WIDTH } = Dimensions.get("screen");
-  const translateThreshold = SCREEN_WIDTH * -0.4;
-  const top = (itemHeight * positions?.value[id]?.position) | 0;
+  const translateThreshold = SCREEN_WIDTH * -0.3;
+  const top =
+    (itemHeight * positions?.value[id]?.position +
+      (positions?.value[id]?.isCompleted || false ? 31 : 0)) |
+    0;
   const translateY = useSharedValue(top);
   const translateX = useSharedValue(0);
   const trashIconOpacity = useSharedValue(0);
@@ -104,7 +108,7 @@ const MovableItem: FC<MovableItemProps> = ({
     } else {
       translateX.value = translationX;
       trashIconOpacity.value = withTiming(
-        translationX < translateThreshold && !componentProps.isCompleted
+        translationX < translateThreshold
           ? 1
           : 0,
         { duration: 150 }
@@ -144,6 +148,7 @@ const MovableItem: FC<MovableItemProps> = ({
           }
         );
       } else {
+        trashIconOpacity.value = withTiming(0 , {duration: 150});
         translateX.value = withSpring(0, { damping: 13 });
       }
     }
@@ -181,23 +186,9 @@ const MovableItem: FC<MovableItemProps> = ({
     };
   }, [translateX]);
 
-  const trashGreyIconStyle = useAnimatedStyle(() => {
-    const opacity = withTiming(
-      translateX.value < translateThreshold && !positions.value[id].isCompleted
-        ? 0
-        : 1,
-      {
-        duration: 150,
-      }
-    );
-    return {
-      opacity,
-    };
-  }, [translateX]);
-
   const onLongPress = () => {
     setIsDragged(true);
-    shadowOpacity.value = withTiming(0.12, { duration: 300 });
+    shadowOpacity.value = withTiming(0.1, { duration: 300 });
   };
 
   const completeTask = (taskId: string) => {
@@ -214,13 +205,15 @@ const MovableItem: FC<MovableItemProps> = ({
         positionsState,
         id
       );
-      if (newUpperBound !== upperBoundMax) {
+      if (newUpperBound < upperBoundMax) {
         completedMarkerTop.value = withTiming(
           completedMarkerTop.value + itemHeight,
           {
             duration: 300,
           }
         );
+      } else if (newUpperBound === upperBoundMax) {
+        markerOpacity.value = withTiming(0, { duration: 300 });
       }
     } else {
       updateUpperBound(upperBound - 1);
@@ -229,9 +222,9 @@ const MovableItem: FC<MovableItemProps> = ({
           positions.value,
           id,
           positions?.value[id]?.position,
-          upperBound
+          upperBound <= upperBoundMax ? upperBound : upperBoundMax
         );
-        if (upperBound !== upperBoundMax) {
+        if (upperBound < upperBoundMax) {
           completedMarkerTop.value = withTiming(
             completedMarkerTop.value - itemHeight,
             {
@@ -265,24 +258,23 @@ const MovableItem: FC<MovableItemProps> = ({
         </Animated.View>
       </PanGestureHandler>
       <Animated.View
-        style={[movableItemStyles.trashIconContainer, trashGreyIconStyle]}
-      >
-        <SvgXml
-          xml={trashGrey}
-          width={movableItemStyles.trashIcon.width}
-          height={movableItemStyles.trashIcon.height}
-          style={movableItemStyles.trashIcon}
-        />
-      </Animated.View>
-      <Animated.View
         style={[movableItemStyles.trashIconContainer, trashIconStyle]}
       >
-        <SvgXml
-          xml={trashRed}
-          width={movableItemStyles.trashIcon.width}
-          height={movableItemStyles.trashIcon.height}
-          style={movableItemStyles.trashIcon}
-        />
+        {componentProps.isCompleted ? (
+          <SvgXml
+            xml={trashGrey}
+            width={movableItemStyles.trashIcon.width}
+            height={movableItemStyles.trashIcon.height}
+            style={movableItemStyles.trashIcon}
+          />
+        ) : (
+          <SvgXml
+            xml={trashRed}
+            width={movableItemStyles.trashIcon.width}
+            height={movableItemStyles.trashIcon.height}
+            style={movableItemStyles.trashIcon}
+          />
+        )}
       </Animated.View>
       <Animated.View style={[taskContainerStyle]}>
         <Component {...componentProps} completeTask={completeTask} />
