@@ -9,7 +9,6 @@ import Task from "../Task/Task";
 import Animated, {
   interpolate,
   runOnJS,
-  useAnimatedReaction,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -38,13 +37,23 @@ import {
 
 const TaskMargin = 10;
 const TaskHeight = 60 + TaskMargin;
+const emptyListHeight = 220;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
   const completedTasks = list.filter((task) => task.isCompleted);
+  const baseHeight = 30;
+  const listHeight =
+    list.length > 0
+      ? list.length * TaskHeight +
+        (completedTasks.length > 0 ? 36 : 0) +
+        baseHeight
+      : emptyListHeight;
+
   const dispatch: AppDispatch = useDispatch();
   const [isListHidden, setIsListHidden] = useState<boolean>(false);
   const [isCompletedListHidden, setIsCompletedListHidden] =
     useState<boolean>(false);
+
   const positions = useSharedValue<ListObject>(taskListToObject(list));
   const [upperBound, setUpperBound] = useState<number>(
     list.length - 1 - completedTasks.length
@@ -60,6 +69,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     setUpperBound(newUpperBound);
 
   const opacity = useSharedValue(1);
+  const height = useSharedValue(listHeight);
   const completedListOpacity = useSharedValue(1);
   const completedMarkerTop = useSharedValue(
     upperBound === list.length - 1
@@ -71,22 +81,9 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   );
 
   const containerStyle = useAnimatedStyle(() => {
-    const listheight =
-      list.length > 0
-        ? interpolate(
-            completedListOpacity.value,
-            [0, 1],
-            [(upperBound + 1) * TaskHeight, list.length * TaskHeight]
-          )
-        : interpolate(completedListOpacity.value, [0, 1], [0, 220]);
-    const baseHeight = interpolate(
-      completedMarkerOpacity.value,
-      [0, 1],
-      [listheight, listheight + 36]
-    );
-    const height = interpolate(opacity.value, [0, 1], [30, baseHeight + 30]);
     return {
-      height,
+      height: height.value,
+      overflow: opacity.value === 1 ? "visible" : "hidden",
     };
   }, [opacity.value, list.length, completedListOpacity.value]);
 
@@ -109,11 +106,21 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 
   const toggleListVisible = () => {
     setIsListHidden((value) => !value);
+    height.value = withTiming(isListHidden ? listHeight : 30, {
+      duration: 300,
+    });
     opacity.value = withTiming(isListHidden ? 1 : 0, { duration: 300 });
   };
 
   const toggleCompletedListVisible = () => {
     setIsCompletedListHidden((value) => !value);
+    Animated.block([]);
+    height.value = withTiming(
+      isCompletedListHidden
+        ? listHeight
+        : listHeight - completedTasks.length * TaskHeight,
+      { duration: 300 }
+    );
     completedListOpacity.value = withTiming(isCompletedListHidden ? 1 : 0, {
       duration: 300,
     });
@@ -126,7 +133,9 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   const deleteTask = (id: string) => {
     setIsDeleting(true);
     dispatch(deleteTaskAction(id));
-    positions.value = updateListObjectAfterTaskDeleting(positions.value, id);
+    const newPositions = updateListObjectAfterTaskDeleting(positions.value, id);
+    positions.value = newPositions;
+    height.value = withTiming(list.length === 1 ? emptyListHeight : height.value - TaskHeight, { duration: list.length === 1 ? 200 : 300 });
     completedMarkerTop.value = withTiming(
       completedMarkerTop.value - TaskHeight,
       { duration: 300 }
@@ -139,16 +148,23 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 
   useEffect(() => {
     if (list.length > 0 && !isDeleting && !positions.value[list[0].id]) {
-      positions.value = updateListObjectAfterTaskAdding(
+      const newPositions = updateListObjectAfterTaskAdding(
         positions.value,
         list[0]
       );
+      positions.value = newPositions;
+      height.value = withTiming(
+        list.length === 1 ? listHeight : height.value + TaskHeight,
+        { duration: 300 }
+      );
       completedMarkerTop.value = withTiming(
         completedMarkerTop.value + TaskHeight,
-        { duration: 300, },
-      )
+        { duration: 300 }
+      );
       setUpperBound(upperBound + 1);
-      setPositionsState(updatePositionsObjectAfterTaskAdding(positionsState, list[0]));
+      setPositionsState(
+        updatePositionsObjectAfterTaskAdding(positionsState, list[0])
+      );
     }
     if (isDeleting) {
       setIsDeleting(false);
@@ -193,6 +209,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
                 positionsState={positionsState}
                 markerOpacity={completedMarkerOpacity}
                 id={item.id}
+                sectionHeight={height}
                 itemHeight={TaskHeight}
                 component={Task}
                 componentProps={{

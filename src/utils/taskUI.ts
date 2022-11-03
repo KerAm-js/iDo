@@ -76,7 +76,6 @@ export const updatePositionsObjectAfterTaskAdding = (
   positionsObject: GesturePositionsType,
   newTask: TaskType
 ): GesturePositionsType => {
-  'worklet';
   const newPositionsObject: GesturePositionsType = {};
   for (let key in positionsObject) {
     newPositionsObject[key] = positionsObject[key] + 1;

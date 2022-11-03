@@ -4,6 +4,7 @@ import { SvgXml } from "react-native-svg";
 import { check } from "../../../../../assets/icons/check";
 import { checkButtonStyles } from "./styles";
 import { propType } from "./types";
+import * as Haptics from 'expo-haptics';
 
 const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
   const scale = useRef(new Animated.Value(isCompleted ? 0 : 1.8)).current;
@@ -14,6 +15,7 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
 
   const handleClick = () => {
     onClick();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!isCompleted) {
       Animated.sequence([
         Animated.timing(scale, {

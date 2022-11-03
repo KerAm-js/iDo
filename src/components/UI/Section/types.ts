@@ -16,6 +16,7 @@ export type MovableItemProps = {
   completedMarkerTop: {value: number},
   markerOpacity: {value: number},
   positionsState: GesturePositionsType,
+  sectionHeight: {value: number},
   itemHeight: number,
   component: FC<TaskPropTypes>,
   componentProps: TaskPropTypes,

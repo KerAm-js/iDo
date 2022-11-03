@@ -1,5 +1,6 @@
 import React, { FC, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
 import { useDispatch } from "react-redux";
 import { chooseTaskToEdit } from "../../../redux/actions/taskActions";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -20,6 +21,7 @@ const Task: FC<TaskPropTypes> = ({
   completeTask,
 }) => {
   const dispatch: AppDispatch = useDispatch();
+  const tranlsationX = useSharedValue(0);
   const openEditTaskPopup = () =>
     dispatch(
       chooseTaskToEdit({
@@ -34,7 +36,16 @@ const Task: FC<TaskPropTypes> = ({
   const toggleChecked = () => {
     completeTask(id);
     setIsChecked((value) => !value);
+    if (!isCompleted) tranlsationX.value = withRepeat(withTiming(15, {duration: 200}), 2, true);
   };
+
+  const textContainerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {translateX: tranlsationX.value}
+      ]
+    }
+  })
 
   let timeString = time?.toTimeString().slice(0, 5);
 
@@ -48,12 +59,14 @@ const Task: FC<TaskPropTypes> = ({
     <View style={[taskStyles.container]}>
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
       <Pressable style={[taskStyles.textContainer]} onPress={openEditTaskPopup}>
-        <Text style={[text16, taskStyles.title]}>{task}</Text>
-        {timeString && (
-          <Text style={[taskStyles.subTitle, text12, textGrey]}>
-            {timeString}
-          </Text>
-        )}
+        <Animated.View style={textContainerStyle}>
+          <Text style={[text16, taskStyles.title]}>{task}</Text>
+          {timeString && (
+            <Text style={[taskStyles.subTitle, text12, textGrey]}>
+              {timeString}
+            </Text>
+          )}
+        </Animated.View>
       </Pressable>
     </View>
   );

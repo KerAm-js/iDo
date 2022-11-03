@@ -34,6 +34,7 @@ const MovableItem: FC<MovableItemProps> = ({
   positions,
   positionsState,
   opacity,
+  sectionHeight,
   itemHeight,
   component: Component,
   componentProps,
@@ -213,6 +214,7 @@ const MovableItem: FC<MovableItemProps> = ({
           }
         );
       } else if (newUpperBound === upperBoundMax) {
+        sectionHeight.value = withTiming(sectionHeight.value - 36, {duration: 300});
         markerOpacity.value = withTiming(0, { duration: 300 });
       }
     } else {
@@ -233,6 +235,7 @@ const MovableItem: FC<MovableItemProps> = ({
           );
         }
         if (markerOpacity.value < 1) {
+          sectionHeight.value = withTiming(sectionHeight.value + 36, {duration: 300});
           markerOpacity.value = withTiming(1, { duration: 300 });
         }
       }, 500);
