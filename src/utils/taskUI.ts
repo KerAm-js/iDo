@@ -60,6 +60,7 @@ export const updateListObjectAfterTaskDeleting = (
   listObject: ListObject,
   id: string
 ): ListObject => {
+  'worklet'
   const deletedPosition: number = listObject[id].position;
   const newListObject: ListObject = {};
   for (let key in listObject) {

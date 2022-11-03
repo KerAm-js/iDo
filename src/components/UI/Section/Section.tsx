@@ -8,10 +8,10 @@ import IconButton from "../buttons/IconButton/IconButton";
 import Task from "../Task/Task";
 import Animated, {
   interpolate,
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
+  withDelay
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
 import {
@@ -70,6 +70,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 
   const opacity = useSharedValue(1);
   const height = useSharedValue(listHeight);
+  const emptyListImageOpacity = useSharedValue(list.length === 0 ? 1 : 0);
   const completedListOpacity = useSharedValue(1);
   const completedMarkerTop = useSharedValue(
     upperBound === list.length - 1
@@ -104,6 +105,12 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     };
   }, [opacity.value]);
 
+  const emptyListImageContainerStyle = useAnimatedStyle(() => {
+    return {
+      opacity: emptyListImageOpacity.value
+    }
+  })
+
   const toggleListVisible = () => {
     setIsListHidden((value) => !value);
     height.value = withTiming(isListHidden ? listHeight : 30, {
@@ -133,37 +140,42 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   const deleteTask = (id: string) => {
     setIsDeleting(true);
     dispatch(deleteTaskAction(id));
-    const newPositions = updateListObjectAfterTaskDeleting(positions.value, id);
-    positions.value = newPositions;
-    height.value = withTiming(list.length === 1 ? emptyListHeight : height.value - TaskHeight, { duration: list.length === 1 ? 200 : 300 });
-    completedMarkerTop.value = withTiming(
-      completedMarkerTop.value - TaskHeight,
-      { duration: 300 }
-    );
+    positions.value = updateListObjectAfterTaskDeleting(positions.value, id);
     setUpperBound(upperBound - 1);
     setPositionsState(
       updatePositionsObjectAfterTaskDeleting(positionsState, id)
+    );
+    height.value = withTiming(
+      list.length === 1 ? emptyListHeight : height.value - TaskHeight,
+      { duration: 300 }
+    );
+    if (list.length === 1) {
+      emptyListImageOpacity.value = withDelay(300, withTiming(1, {duration: 300}));
+    }
+    completedMarkerTop.value = withTiming(
+      completedMarkerTop.value - TaskHeight,
+      { duration: 300 }
     );
   };
 
   useEffect(() => {
     if (list.length > 0 && !isDeleting && !positions.value[list[0].id]) {
-      const newPositions = updateListObjectAfterTaskAdding(
+      positions.value = updateListObjectAfterTaskAdding(
         positions.value,
         list[0]
-      );
-      positions.value = newPositions;
-      height.value = withTiming(
-        list.length === 1 ? listHeight : height.value + TaskHeight,
-        { duration: 300 }
-      );
-      completedMarkerTop.value = withTiming(
-        completedMarkerTop.value + TaskHeight,
-        { duration: 300 }
       );
       setUpperBound(upperBound + 1);
       setPositionsState(
         updatePositionsObjectAfterTaskAdding(positionsState, list[0])
+      );
+      height.value = withTiming(
+        list.length === 1 ? listHeight : height.value + TaskHeight,
+        { duration: 300 }
+      );
+      emptyListImageOpacity.value = 0;
+      completedMarkerTop.value = withTiming(
+        completedMarkerTop.value + TaskHeight,
+        { duration: 300 }
       );
     }
     if (isDeleting) {
@@ -227,16 +239,20 @@ const Section: FC<SectionProps> = ({ title, list }) => {
               />
             );
           })
-        ) : title === FOR_WEEK || title === FOR_MONTH ? (
-          <ClearList
-            title={`${languageTexts["ru"].periods[title]} больше задач нет`}
-          />
         ) : (
-          <ClearList
-            title={`Добавьте задачи ${languageTexts["ru"].periods[
-              title
-            ].toLowerCase()}`}
-          />
+          <Animated.View style={[emptyListImageContainerStyle]}>
+            {title === FOR_WEEK || title === FOR_MONTH ? (
+              <ClearList
+                title={`${languageTexts["ru"].periods[title]} больше задач нет`}
+              />
+            ) : (
+              <ClearList
+                title={`Добавьте задачи ${languageTexts["ru"].periods[
+                  title
+                ].toLowerCase()}`}
+              />
+            )}
+          </Animated.View>
         )}
       </Animated.View>
     </Animated.View>
