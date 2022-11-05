@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { cardColors } from "../../../styles/global/colors";
+import { backgroundColors, cardColors, textColors } from "../../../styles/global/colors";
 import { regularBorderRadius } from '../../../styles/global/borderRadiuses';
 
 export const taskStyles = StyleSheet.create({
@@ -14,16 +14,20 @@ export const taskStyles = StyleSheet.create({
   },
   title: {
     lineHeight: 20,
-    paddingRight: 20,
+    paddingLeft: 5,
+    paddingRight: 5,
   },
   subTitle: {
     marginTop: 7,
+    paddingLeft: 5,
   },
   textContainer: {
     paddingVertical: 13,
-    paddingLeft: 15,
+    alignItems: 'flex-start',
+    width: '100%',
+    paddingLeft: 10,
     flex: 1,
-  }
+  },
 })
 
 export const completedMarkerStyles = StyleSheet.create({

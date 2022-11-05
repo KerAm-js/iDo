@@ -129,7 +129,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       { duration: 300 }
     );
     completedListOpacity.value = withTiming(isCompletedListHidden ? 1 : 0, {
-      duration: 300,
+      duration: 200,
     });
   };
 
@@ -150,7 +150,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       { duration: 300 }
     );
     if (list.length === 1) {
-      emptyListImageOpacity.value = withDelay(300, withTiming(1, {duration: 300}));
+      emptyListImageOpacity.value = withDelay(200, withTiming(1, {duration: 300}));
     }
     completedMarkerTop.value = withTiming(
       completedMarkerTop.value - TaskHeight,

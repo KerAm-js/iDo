@@ -22,6 +22,8 @@ const Task: FC<TaskPropTypes> = ({
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const tranlsationX = useSharedValue(0);
+  const textOpacity = useSharedValue(1);
+
   const openEditTaskPopup = () =>
     dispatch(
       chooseTaskToEdit({
@@ -36,11 +38,13 @@ const Task: FC<TaskPropTypes> = ({
   const toggleChecked = () => {
     completeTask(id);
     setIsChecked((value) => !value);
-    if (!isCompleted) tranlsationX.value = withRepeat(withTiming(15, {duration: 200}), 2, true);
+    textOpacity.value = withTiming( !isCompleted ? 0.5 : 1, {duration: 200, easing: Easing.out(Easing.quad)});
+    if (!isCompleted) tranlsationX.value = withRepeat(withTiming(8, {duration: 200, easing: Easing.out(Easing.quad)}), 2, true);
   };
 
   const textContainerStyle = useAnimatedStyle(() => {
     return {
+      opacity: textOpacity.value,
       transform: [
         {translateX: tranlsationX.value}
       ]
@@ -60,7 +64,7 @@ const Task: FC<TaskPropTypes> = ({
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
       <Pressable style={[taskStyles.textContainer]} onPress={openEditTaskPopup}>
         <Animated.View style={textContainerStyle}>
-          <Text style={[text16, taskStyles.title]}>{task}</Text>
+          <Text style={[text16, taskStyles.title]} numberOfLines={1}>{task}</Text>
           {timeString && (
             <Text style={[taskStyles.subTitle, text12, textGrey]}>
               {timeString}

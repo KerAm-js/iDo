@@ -5,6 +5,7 @@ export type LanguageTextsType = {
       shorts: Array<string>
     },
     months: {
+      names: Array<string>,
       fulls: Array<string>,
       shorts: Array<string>
     },

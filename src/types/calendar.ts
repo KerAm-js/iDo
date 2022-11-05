@@ -1,0 +1,1 @@
+export type CalendarItemType = Array<Array<{ date: Date, isCurrentMonth: boolean }>>

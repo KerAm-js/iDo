@@ -22,6 +22,20 @@ export const languageTexts: LanguageTextsType = {
       ]
     },
     months: {
+      names: [
+        "Январь",
+        "Февраль",
+        "Март",
+        "Апрель",
+        "Май",
+        "Июнь",
+        "Июль",
+        "Август",
+        "Сентябрь",
+        "Октябрь",
+        "Ноябрь",
+        "Декабрь",
+      ],
       fulls: [
         "Января",
         "Февраля",
@@ -96,6 +110,7 @@ export const languageTexts: LanguageTextsType = {
       ]
     },
     months: {
+      names: [],
       fulls: [
         "Января",
         "Февраля",
@@ -166,6 +181,7 @@ export const languageTexts: LanguageTextsType = {
       ]
     },
     months: {
+      names: [],
       fulls: [
         "Января",
         "Февраля",
@@ -236,6 +252,7 @@ export const languageTexts: LanguageTextsType = {
       ]
     },
     months: {
+      names: [],
       fulls: [
         "Января",
         "Февраля",

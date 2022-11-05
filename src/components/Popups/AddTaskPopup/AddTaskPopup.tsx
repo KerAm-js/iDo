@@ -25,6 +25,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   visible,
   title,
   handleKeyboard,
+  openCalendar,
 }) => {
   const { taskToEdit } = useSelector(taskSelector);
   const dispatch: AppDispatch = useDispatch();
@@ -119,6 +120,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
+            onClick={openCalendar}
           />
           <IconButton
             xml={flag}

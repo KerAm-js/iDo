@@ -96,3 +96,7 @@ export const text12LineHeight: TextStyle = {
 export const textGrey: TextStyle = {
   color: textColors.grey,
 }
+
+export const textBold: TextStyle = {
+  fontWeight: 'bold',
+}

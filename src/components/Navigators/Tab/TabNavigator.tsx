@@ -22,6 +22,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { chooseTaskToEdit } from "../../../redux/actions/taskActions";
+import CalendarPopup from "../../Popups/CalendarPopup/CalendarPopup";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
@@ -29,6 +30,7 @@ const TabNavigator: FC = () => {
   const { taskToEdit } = useSelector(taskSelector);
   const dispatch: AppDispatch = useDispatch();
   const [addTaskModalVisible, setAddTaskModalVisible] = useState<boolean>(false);
+  const [calendarModalVisible, setCalendarModalVisible] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [periodsState, setPeriodsState] = useState<SwitchPopupStateType>({
     [FOR_TODAY]: true,
@@ -37,9 +39,10 @@ const TabNavigator: FC = () => {
     [FOR_MONTH]: false,
   });
 
-  const showModal = () => setModalVisible(true);
+  const openModal = () => setModalVisible(true);
   const closeModal = () => setModalVisible(false);
-  const showAddTaskModal = () => setAddTaskModalVisible(true);
+
+  const openAddTaskModal = () => setAddTaskModalVisible(true);
   const closeAddTaskModal = () => {
     if (taskToEdit) {
       dispatch(chooseTaskToEdit(undefined));
@@ -47,6 +50,16 @@ const TabNavigator: FC = () => {
       setAddTaskModalVisible(false);
     }
   };
+
+  const openCalendar = () => {
+    setAddTaskModalVisible(false);
+    setCalendarModalVisible(true);
+  }
+
+  const closeCalendar = () => {
+    setCalendarModalVisible(false);
+    setAddTaskModalVisible(true);
+  } 
 
   const { date } = getDate("ru");
 
@@ -66,10 +79,17 @@ const TabNavigator: FC = () => {
         <AddTaskPopup 
           visible={addTaskModalVisible || !!taskToEdit}
           handleKeyboard={true}
+          openCalendar={openCalendar}
+        />
+      </ModalLayout>
+      <ModalLayout visible={calendarModalVisible} close={closeCalendar}>
+        <CalendarPopup 
+          visible={calendarModalVisible}
+          // title="Срок"
         />
       </ModalLayout>
       <Tab.Navigator
-        tabBar={(props) => <TabBar onBigButtonClick={showAddTaskModal} {...props} />}
+        tabBar={(props) => <TabBar onBigButtonClick={openAddTaskModal} {...props} />}
         screenOptions={{
           headerStyle,
           headerTitleStyle,
@@ -78,7 +98,7 @@ const TabNavigator: FC = () => {
           headerTransparent: true,
           headerRight: () => (
             <IconButton
-              onClick={showModal}
+              onClick={openModal}
               xml={circles}
               iconWidth={23}
               iconHeight={5}
@@ -88,7 +108,7 @@ const TabNavigator: FC = () => {
       >
         <Tab.Screen
           name="Home"
-          children={() => <Home periodsState={periodsState} showSettingModal={showModal} />}
+          children={() => <Home periodsState={periodsState} showSettingModal={openModal} />}
           options={{
             title: date,
             tabBarLabel: "Главная",
