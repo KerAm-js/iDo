@@ -1,4 +1,4 @@
-import { CalendarItemType } from "./../types/calendar";
+import { CalendarMonthItemType } from "../components/UI/Calendar/types";
 import { languageTexts } from "./languageTexts";
 
 export const getDate = (
@@ -41,8 +41,8 @@ export const geDaysToWeekEnd = () => {
 export const getCalendarArray = (
   month: number,
   year: number
-): CalendarItemType => {
-  const result: CalendarItemType = [[], [], [], [], [], []];
+): CalendarMonthItemType => {
+  const result: CalendarMonthItemType = [[], [], [], [], [], []];
   const firstWeekDayOfMonth = new Date(year, month, 1).getDay() || 7;
   let isCurrentMonth = false;
 

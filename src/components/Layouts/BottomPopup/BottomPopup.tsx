@@ -30,7 +30,9 @@ const BottomPopup: FC<BottomPopupPropType> = ({
   const onLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
     HEIGHT.current = height;
-    translateY.value = height;
+    if (!visible) {
+      translateY.value = height;
+    }
   };
 
   useEffect(() => {
@@ -42,10 +44,13 @@ const BottomPopup: FC<BottomPopupPropType> = ({
     translateY.value = withTiming(newTranslateY, {
       duration: keyboardHeight > 0 ? 400 : 200,
     });
+  }, [visible, keyboardHeight]);
+
+  useEffect(() => {
     if (!visible && handleKeyboard) {
       Keyboard.dismiss();
     }
-  }, [visible, keyboardHeight]);
+  }, [visible])
 
   return (
     <Animated.View

@@ -1,11 +1,8 @@
 import { StyleSheet } from "react-native";
-import { backgroundColors, cardColors, textColors } from "../../../styles/global/colors";
-import { regularBorderRadius } from '../../../styles/global/borderRadiuses';
+import { cardColors } from "../../../styles/global/colors";
 
 export const taskStyles = StyleSheet.create({
   container: {
-    backgroundColor: cardColors.white,
-    borderRadius: regularBorderRadius,
     paddingRight: 15,
     paddingLeft: 15,
     flexDirection: "row",

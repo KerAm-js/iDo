@@ -1,5 +1,8 @@
 export type LanguageTextsType = {
   [key: string]: {
+    words: {
+      [key: string]: string,
+    }
     weekDays: {
       fulls: Array<string>,
       shorts: Array<string>

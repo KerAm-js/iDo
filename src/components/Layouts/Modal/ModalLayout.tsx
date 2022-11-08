@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from "react";
-import { Pressable } from "react-native";
+import { Keyboard, Pressable } from "react-native";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { modalLayoutStyles } from "./styles";
 import { ModalLayoutPropType } from "./types";

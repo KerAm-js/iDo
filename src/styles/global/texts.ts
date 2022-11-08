@@ -100,3 +100,7 @@ export const textGrey: TextStyle = {
 export const textBold: TextStyle = {
   fontWeight: 'bold',
 }
+
+export const textSemiBold: TextStyle = {
+  fontWeight: '600',
+}

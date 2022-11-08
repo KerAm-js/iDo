@@ -1,9 +1,18 @@
 import React, { FC, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { SquircleView } from "react-native-figma-squircle";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from "react-native-reanimated";
 import { useDispatch } from "react-redux";
 import { chooseTaskToEdit } from "../../../redux/actions/taskActions";
 import { AppDispatch } from "../../../redux/types/appDispatch";
+import { borderSmoothing, regularBorderRadius } from "../../../styles/global/borderRadiuses";
+import { cardColors } from "../../../styles/global/colors";
 import { text12, text16, textGrey } from "../../../styles/global/texts";
 import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
 import { getDate } from "../../../utils/date";
@@ -38,18 +47,24 @@ const Task: FC<TaskPropTypes> = ({
   const toggleChecked = () => {
     completeTask(id);
     setIsChecked((value) => !value);
-    textOpacity.value = withTiming( !isCompleted ? 0.5 : 1, {duration: 200, easing: Easing.out(Easing.quad)});
-    if (!isCompleted) tranlsationX.value = withRepeat(withTiming(8, {duration: 200, easing: Easing.out(Easing.quad)}), 2, true);
+    textOpacity.value = withTiming(!isCompleted ? 0.5 : 1, {
+      duration: 200,
+      easing: Easing.out(Easing.quad),
+    });
+    if (!isCompleted)
+      tranlsationX.value = withRepeat(
+        withTiming(8, { duration: 200, easing: Easing.out(Easing.quad) }),
+        2,
+        true
+      );
   };
 
   const textContainerStyle = useAnimatedStyle(() => {
     return {
       opacity: textOpacity.value,
-      transform: [
-        {translateX: tranlsationX.value}
-      ]
-    }
-  })
+      transform: [{ translateX: tranlsationX.value }],
+    };
+  });
 
   let timeString = time?.toTimeString().slice(0, 5);
 
@@ -60,11 +75,20 @@ const Task: FC<TaskPropTypes> = ({
   }
 
   return (
-    <View style={[taskStyles.container]}>
+    <SquircleView
+      style={[taskStyles.container]}
+      squircleParams={{
+        cornerSmoothing: borderSmoothing,
+        cornerRadius: regularBorderRadius,
+        fillColor: cardColors.white
+      }}
+    >
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
       <Pressable style={[taskStyles.textContainer]} onPress={openEditTaskPopup}>
         <Animated.View style={textContainerStyle}>
-          <Text style={[text16, taskStyles.title]} numberOfLines={1}>{task}</Text>
+          <Text style={[text16, taskStyles.title]} numberOfLines={1}>
+            {task}
+          </Text>
           {timeString && (
             <Text style={[taskStyles.subTitle, text12, textGrey]}>
               {timeString}
@@ -72,7 +96,7 @@ const Task: FC<TaskPropTypes> = ({
           )}
         </Animated.View>
       </Pressable>
-    </View>
+    </SquircleView>
   );
 };
 

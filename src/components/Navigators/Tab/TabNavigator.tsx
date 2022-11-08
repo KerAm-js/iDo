@@ -85,7 +85,8 @@ const TabNavigator: FC = () => {
       <ModalLayout visible={calendarModalVisible} close={closeCalendar}>
         <CalendarPopup 
           visible={calendarModalVisible}
-          // title="Срок"
+          handleKeyboard={true}
+          title="Срок"
         />
       </ModalLayout>
       <Tab.Navigator

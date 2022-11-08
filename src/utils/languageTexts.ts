@@ -86,9 +86,15 @@ export const languageTexts: LanguageTextsType = {
       ru: 'Русский',
       ch: 'Чеченский',
       de: 'Немецкий'
+    },
+    words: {
+      choose: 'Выбрать',
     }
   },
   en: {
+    words: {
+      choose: 'Выбрать',
+    },
     weekDays: {
       fulls: [
       "Воскресенье",
@@ -160,6 +166,9 @@ export const languageTexts: LanguageTextsType = {
     }
   },
   de: {
+    words: {
+      choose: 'Выбрать',
+    },
     weekDays: {
       fulls: [
       "Воскресенье",
@@ -231,6 +240,9 @@ export const languageTexts: LanguageTextsType = {
     }
   },
   ch: {
+    words: {
+      choose: 'Выбрать',
+    },
     weekDays: {
       fulls: [
       "Воскресенье",
