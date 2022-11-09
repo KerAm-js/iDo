@@ -11,6 +11,7 @@ export type SectionProps = {
 
 export type MovableItemProps = {
   id: string,
+  index: number,
   positions: {value: ListObject},
   opacity: {value: number},
   completedMarkerTop: {value: number},

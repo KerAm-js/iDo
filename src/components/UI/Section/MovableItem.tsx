@@ -31,6 +31,7 @@ import { MovableItemProps } from "./types";
 
 const MovableItem: FC<MovableItemProps> = ({
   id,
+  index,
   positions,
   positionsState,
   opacity,
@@ -48,10 +49,9 @@ const MovableItem: FC<MovableItemProps> = ({
   const [isDragged, setIsDragged] = useState(false);
   const { width: SCREEN_WIDTH } = Dimensions.get("screen");
   const translateThreshold = SCREEN_WIDTH * -0.3;
-  const top =
+  const top = positions.value[id] ?
     (itemHeight * positions?.value[id]?.position +
-      (positions?.value[id]?.isCompleted || false ? 31 : 0)) |
-    0;
+      (positions?.value[id]?.isCompleted ? 31 : 0)) : index * itemHeight
   const translateY = useSharedValue(top);
   const translateX = useSharedValue(0);
   const trashIconOpacity = useSharedValue(0);
@@ -246,8 +246,8 @@ const MovableItem: FC<MovableItemProps> = ({
   return (
     <Animated.View
       entering={
-        top === 0 && !positions?.value[id]
-          ? SlideInRight.springify().damping(14).delay(100)
+        !positions?.value[id]
+          ? SlideInRight.springify().damping(14)
           : undefined
       }
       style={[movableItemStyles.container, shadowStyle, containerStyle]}

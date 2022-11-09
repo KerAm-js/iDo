@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, Text } from "react-native";
 import { SquircleView } from "react-native-figma-squircle";
 import { borderSmoothing, littleBorderRadius } from "../../../styles/global/borderRadiuses";
 import { SvgXml } from "react-native-svg";

@@ -1,12 +1,16 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
-import { Alert, Keyboard, Pressable, ScrollView, View } from "react-native";
+import React, { FC, useEffect, useState } from "react";
+import { Keyboard, ScrollView, View } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useDispatch, useSelector } from "react-redux";
 import { clock, clockActive } from "../../../../assets/icons/clock";
+import { updateNewTaskData } from "../../../redux/actions/taskActions";
+import { taskSelector } from "../../../redux/selectors/taskSelector";
+import { AppDispatch } from "../../../redux/types/appDispatch";
 import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants";
 import { getDate } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -21,8 +25,11 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   visible,
   title,
   handleKeyboard,
+  closePopup,
 }) => {
   const texts = languageTexts["ru"];
+  const dispatch: AppDispatch = useDispatch();
+  const { newTaskData } = useSelector(taskSelector);
   const [time, setTime] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [state, setState] = useState<string>("");
@@ -40,29 +47,58 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 
   const calendarHeight = useSharedValue(0);
 
+  const setDefaults = () => {
+    setTime("");
+    setState("");
+    setDate(new Date());
+    setCalendarShown(false);
+    setChooseItemTitle(texts.words[CHOOSE]);
+  };
+
   const saveTime = () => {
-    setDate(
-      new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        Number.parseInt(time.slice(0, 2)),
-        Number.parseInt(time.slice(3, 5))
+    const hours = Number(time.slice(0, 2));
+    const minutes = Number(time.slice(3, 5));
+    const isTimeCorrect = isNaN(hours) && isNaN(minutes);
+    dispatch(
+      updateNewTaskData(
+        time && isTimeCorrect
+          ? {
+            timeType: 'time',
+            time: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+              hours,
+              minutes,
+            ).toString(),
+          }
+          : {
+            timeType: 'day',
+            time: new Date(
+              date.getFullYear(),
+              date.getMonth(),
+              date.getDate(),
+              23,
+              59,
+              59,
+              999,
+            ).toString(),
+          }
       )
     );
     Keyboard.dismiss();
-    Alert.alert(
-      `Срок задачи \n${new Date(
-        date.getFullYear(),
-        date.getMonth(),
-        date.getDate(),
-        Number.parseInt(time.slice(0, 2)),
-        Number.parseInt(time.slice(3, 5))
-      ).toLocaleString()}`
-    );
+    closePopup();
   };
 
   const onTimeChange = (value: string) => {
+    const hours = value.slice(0, 2);
+    const minutes = value.slice(3, 5);
+    if (
+      (hours.length > 0 && isNaN(Number(hours))) ||
+      (minutes.length > 0 && isNaN(Number(minutes)))
+    ) {
+      return;
+    }
     if (value.length === 1 && Number.parseInt(value) > 2) {
       return;
     } else if (value.length === 2 && Number.parseInt(value) > 23) {
@@ -123,8 +159,10 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   }, [calendarShown]);
 
   useEffect(() => {
-    console.log(date.toLocaleString());
-  }, [date]);
+    if (!newTaskData.time) {
+      setDefaults();
+    }
+  }, [visible]);
 
   return (
     <BottomPopup

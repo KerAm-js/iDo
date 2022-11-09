@@ -1,21 +1,24 @@
+import { TimeType } from './../../../redux/types/task';
 import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../types/constants";
 
 export type TaskPropTypes = {
   id: string;
   task: string;
   description: string;
-  time?: Date;
-  timeType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK | FOR_MONTH;
+  time?: string;
+  timeType?: TimeType,
+  sectionType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK | FOR_MONTH;
   isCompleted: boolean;
   completeTask: (id: string) => void;
   deleteTask: (id: string) => void;
 };
 
-export type TaskType = {
+export interface TaskType {
   id: string;
   task: string;
   isCompleted: boolean;
-  time?: Date;
+  time?: string;
+  timeType?: TimeType,
   description: string;
 };
 

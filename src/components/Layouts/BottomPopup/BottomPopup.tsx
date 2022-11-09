@@ -5,6 +5,7 @@ import Animated, {
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useKeyboard } from "../../../hooks/useKeyboard";
 import { title22 } from "../../../styles/global/texts";
 import { bottomPopupStyles } from "./styles";
@@ -18,12 +19,14 @@ const BottomPopup: FC<BottomPopupPropType> = ({
 }) => {
   const HEIGHT = useRef(0);
   const keyboardHeight = useKeyboard();
+  const { bottom: paddingBottom } = useSafeAreaInsets()
 
   const translateY = useSharedValue(0);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
+      paddingBottom: paddingBottom + 20,
     };
   }, [translateY]);
 
@@ -37,12 +40,12 @@ const BottomPopup: FC<BottomPopupPropType> = ({
 
   useEffect(() => {
     const newTranslateY = visible
-      ? handleKeyboard 
-          ? 0 - keyboardHeight + bottomPopupStyles.container.paddingBottom - 20
+      ? handleKeyboard && keyboardHeight
+          ? 0 - keyboardHeight + paddingBottom
           : 0
       : HEIGHT.current
     translateY.value = withTiming(newTranslateY, {
-      duration: keyboardHeight > 0 ? 400 : 200,
+      duration: keyboardHeight > 0 ? 400 : 300,
     });
   }, [visible, keyboardHeight]);
 
@@ -55,7 +58,7 @@ const BottomPopup: FC<BottomPopupPropType> = ({
   return (
     <Animated.View
       onLayout={onLayout}
-      style={[bottomPopupStyles.container, containerStyle, { minHeight: 180 }]}
+      style={[bottomPopupStyles.container, containerStyle]}
     >
       <View>
         {title && (

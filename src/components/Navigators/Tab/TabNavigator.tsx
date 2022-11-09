@@ -34,7 +34,7 @@ const TabNavigator: FC = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [periodsState, setPeriodsState] = useState<SwitchPopupStateType>({
     [FOR_TODAY]: true,
-    [FOR_TOMORROW]: true,
+    [FOR_TOMORROW]: false,
     [FOR_WEEK]: false,
     [FOR_MONTH]: false,
   });
@@ -85,6 +85,7 @@ const TabNavigator: FC = () => {
       <ModalLayout visible={calendarModalVisible} close={closeCalendar}>
         <CalendarPopup 
           visible={calendarModalVisible}
+          closePopup={closeCalendar}
           handleKeyboard={true}
           title="Срок"
         />

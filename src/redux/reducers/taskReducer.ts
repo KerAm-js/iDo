@@ -1,7 +1,7 @@
-import { GesturePositionsType } from './../../types/global/GesturePositions';
-import { CHANGE_GESTURE_POSITIONS, CHOOSE_TASK_TO_EDIT, DELETE_TASK, EDIT_TASK, UPDATE_TASKS } from "./../constants/task";
+import { CHANGE_GESTURE_POSITIONS, CHOOSE_TASK_TO_EDIT, DELETE_TASK, EDIT_TASK, UPDATE_NEW_TASK_DATA, UPDATE_TASKS } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
+import { addTaskWithSorting } from '../../utils/utils';
 
 const initialState: TaskState = {
   tasks: [
@@ -32,6 +32,9 @@ const initialState: TaskState = {
   ],
   gesturePositions: {},
   taskToEdit: undefined,
+  newTaskData: {
+    time: undefined
+  }
 };
 
 export const taskReducer = (
@@ -40,15 +43,10 @@ export const taskReducer = (
 ): TaskState => {
   switch (action.type) {
     case ADD_TASK: {
-      const newGesturePositions: GesturePositionsType = {};
-      for (let key in state.gesturePositions) {
-        newGesturePositions[key] = state.gesturePositions[key] + 1;
-      }
-      newGesturePositions[action.task.id] = 0;
+      const updatedTasks = addTaskWithSorting(action.task, state.tasks);
       return {
         ...state,
-        tasks: [action.task, ...state.tasks],
-        gesturePositions: newGesturePositions
+        tasks: updatedTasks,
       };
     };
     case DELETE_TASK: {
@@ -63,6 +61,12 @@ export const taskReducer = (
       return {
         ...state,
         tasks
+      }
+    };
+    case UPDATE_NEW_TASK_DATA: {
+      return {
+        ...state,
+        newTaskData: action.newTaskData
       }
     };
     case CHOOSE_TASK_TO_EDIT: {

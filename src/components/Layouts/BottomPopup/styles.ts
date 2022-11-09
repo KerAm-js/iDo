@@ -4,7 +4,6 @@ import { cardColors, lineColors } from "../../../styles/global/colors";
 
 export const bottomPopupStyles = StyleSheet.create({
   container: {
-    paddingBottom: 80,
     paddingTop: 30,
     borderTopRightRadius: bigBorderRadius,
     borderTopLeftRadius: bigBorderRadius,

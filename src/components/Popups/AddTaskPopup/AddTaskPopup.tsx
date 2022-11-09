@@ -11,6 +11,7 @@ import {
   addTaskAction,
   chooseTaskToEdit,
   editTaskAction,
+  updateNewTaskData,
 } from "../../../redux/actions/taskActions";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -27,7 +28,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   handleKeyboard,
   openCalendar,
 }) => {
-  const { taskToEdit } = useSelector(taskSelector);
+  const { taskToEdit, newTaskData } = useSelector(taskSelector);
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
   const [circleButtonDisabled, setCircleButtonDisabled] = useState<boolean>(false);
@@ -37,6 +38,10 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   const setDefaults = () => {
     setTask("");
     setDescription("");
+    dispatch(updateNewTaskData({
+      time: undefined,
+      timeType: undefined,
+    }));
   };
 
   const onSubmit = () => {
@@ -54,6 +59,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               isCompleted: false,
               task,
               description,
+              ...newTaskData
             })
       );
       setDefaults();

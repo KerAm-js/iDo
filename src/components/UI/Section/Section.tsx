@@ -15,6 +15,7 @@ import Animated, {
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
 import {
+  sortTasksByTime,
   taskListToObject,
   taskListToPositionsObject,
   updateListObjectAfterTaskAdding,
@@ -29,17 +30,19 @@ import { languageTexts } from "../../../utils/languageTexts";
 import ClearList from "../ClearList/ClearList";
 import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   completeTaskAction,
   deleteTaskAction,
 } from "../../../redux/actions/taskActions";
+import { taskSelector } from "../../../redux/selectors/taskSelector";
 
 const TaskMargin = 10;
 const TaskHeight = 60 + TaskMargin;
 const emptyListHeight = 220;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
+  // const sortedTasks = sortTasksByTime(list);
   const completedTasks = list.filter((task) => task.isCompleted);
   const baseHeight = 30;
   const listHeight =
@@ -50,6 +53,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       : emptyListHeight;
 
   const dispatch: AppDispatch = useDispatch();
+  const { tasks } = useSelector(taskSelector);
   const [isListHidden, setIsListHidden] = useState<boolean>(false);
   const [isCompletedListHidden, setIsCompletedListHidden] =
     useState<boolean>(false);
@@ -134,7 +138,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   };
 
   const completeTask = (id: string) => {
-    dispatch(completeTaskAction(list, id));
+    dispatch(completeTaskAction(tasks, id));
   };
 
   const deleteTask = (id: string) => {
@@ -159,15 +163,17 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   };
 
   useEffect(() => {
-    if (list.length > 0 && !isDeleting && !positions.value[list[0].id]) {
-      positions.value = updateListObjectAfterTaskAdding(
-        positions.value,
-        list[0]
-      );
+    if (list.length > 0 && !isDeleting) {
+      // positions.value = updateListObjectAfterTaskAdding(
+      //   positions.value,
+      //   list[0]
+      // );
+      positions.value = taskListToObject(list);
       setUpperBound(upperBound + 1);
-      setPositionsState(
-        updatePositionsObjectAfterTaskAdding(positionsState, list[0])
-      );
+      // setPositionsState(
+      //   updatePositionsObjectAfterTaskAdding(positionsState, list[0])
+      // );
+      setPositionsState(taskListToPositionsObject(list));
       height.value = withTiming(
         list.length === 1 ? listHeight : height.value + TaskHeight,
         { duration: 300 }
@@ -217,6 +223,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
             return (
               <MovableItem
                 key={item.id + index}
+                index={index}
                 positions={positions}
                 positionsState={positionsState}
                 markerOpacity={completedMarkerOpacity}
@@ -228,7 +235,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
                   ...item,
                   completeTask,
                   deleteTask,
-                  timeType: title,
+                  sectionType: title,
                 }}
                 updatePositionsState={updatePositionState}
                 upperBound={upperBound}

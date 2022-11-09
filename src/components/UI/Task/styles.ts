@@ -15,11 +15,10 @@ export const taskStyles = StyleSheet.create({
     paddingRight: 5,
   },
   subTitle: {
-    marginTop: 7,
+    marginTop: 5,
     paddingLeft: 5,
   },
   textContainer: {
-    paddingVertical: 13,
     alignItems: 'flex-start',
     width: '100%',
     paddingLeft: 10,

@@ -14,8 +14,9 @@ import { AppDispatch } from "../../../redux/types/appDispatch";
 import { borderSmoothing, regularBorderRadius } from "../../../styles/global/borderRadiuses";
 import { cardColors } from "../../../styles/global/colors";
 import { text12, text16, textGrey } from "../../../styles/global/texts";
-import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
+import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK, TODAY, TOMORROW } from "../../../utils/constants";
 import { getDate } from "../../../utils/date";
+import { languageTexts } from "../../../utils/languageTexts";
 import CheckButton from "../buttons/CheckButton/CheckButton";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
@@ -24,6 +25,7 @@ const Task: FC<TaskPropTypes> = ({
   task,
   time,
   timeType,
+  sectionType,
   id,
   description,
   isCompleted,
@@ -66,13 +68,19 @@ const Task: FC<TaskPropTypes> = ({
     };
   });
 
-  let timeString = time?.toTimeString().slice(0, 5);
+  let timeString = time ? new Date(time)?.toTimeString().slice(0, 5) : '';
 
-  if (time && timeType === FOR_WEEK) {
-    timeString = getDate("ru", { date: time }).weekDay;
-  } else if (time && timeType === FOR_MONTH) {
-    timeString = getDate("ru", { date: time }).date;
+  if (time && sectionType === FOR_WEEK) {
+    timeString = getDate("ru", { date: new Date(time) }).weekDay;
+  } else if (time && sectionType === FOR_MONTH) {
+    timeString = getDate("ru", { date: new Date(time) }).date;
+  } else if (time && sectionType === FOR_TODAY && timeType === 'day') {
+    timeString = languageTexts['ru'].periods[TODAY];
+  } else if (time && sectionType === FOR_TOMORROW && timeType === 'day') {
+    timeString = languageTexts['ru'].periods[TOMORROW];
   }
+
+  console.log(timeType)
 
   return (
     <SquircleView
