@@ -11,18 +11,10 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
-  withDelay
+  withDelay,
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
-import {
-  sortTasksByTime,
-  taskListToObject,
-  taskListToPositionsObject,
-  updateListObjectAfterTaskAdding,
-  updateListObjectAfterTaskDeleting,
-  updatePositionsObjectAfterTaskAdding,
-  updatePositionsObjectAfterTaskDeleting,
-} from "../../../utils/taskUI";
+import { taskListToObject } from "../../../utils/section/positionsObject";
 import CompletedMarker from "../Task/CompletedMarker";
 import { ListObject } from "../../../types/global/ListObject";
 import { GesturePositionsType } from "../../../types/global/GesturePositions";
@@ -36,48 +28,45 @@ import {
   deleteTaskAction,
 } from "../../../redux/actions/taskActions";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
+import { sortTasks } from "../../../utils/section/others";
+import { taskListToPositionsObject } from "../../../utils/section/positionsState";
 
 const TaskMargin = 10;
 const TaskHeight = 60 + TaskMargin;
+
 const emptyListHeight = 220;
+const baseHeight = 30;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
-  // const sortedTasks = sortTasksByTime(list);
-  const completedTasks = list.filter((task) => task.isCompleted);
-  const baseHeight = 30;
-  const listHeight =
-    list.length > 0
-      ? list.length * TaskHeight +
+  const dispatch: AppDispatch = useDispatch();
+  const { taskToEdit } = useSelector(taskSelector);
+  const [sortedTasks, completedTasks] = sortTasks(list);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
+  const [positionsState, setPositionsState] = useState<GesturePositionsType>(
+    taskListToPositionsObject(sortedTasks)
+  );
+
+  const updatePositionState = (list: GesturePositionsType) =>
+    setPositionsState(list);
+
+  const upperBound = sortedTasks.length - 1 - completedTasks.length;
+  const initialHeight =
+    sortedTasks.length > 0
+      ? sortedTasks.length * TaskHeight +
         (completedTasks.length > 0 ? 36 : 0) +
         baseHeight
       : emptyListHeight;
 
-  const dispatch: AppDispatch = useDispatch();
-  const { tasks } = useSelector(taskSelector);
-  const [isListHidden, setIsListHidden] = useState<boolean>(false);
-  const [isCompletedListHidden, setIsCompletedListHidden] =
-    useState<boolean>(false);
-
-  const positions = useSharedValue<ListObject>(taskListToObject(list));
-  const [upperBound, setUpperBound] = useState<number>(
-    list.length - 1 - completedTasks.length
-  );
-  const [positionsState, setPositionsState] = useState<GesturePositionsType>(
-    taskListToPositionsObject(list)
-  );
-  const [isDeleting, setIsDeleting] = useState(false);
-
-  const updatePositionState = (list: GesturePositionsType) =>
-    setPositionsState(list);
-  const updateUpperBound = (newUpperBound: number) =>
-    setUpperBound(newUpperBound);
-
   const opacity = useSharedValue(1);
-  const height = useSharedValue(listHeight);
-  const emptyListImageOpacity = useSharedValue(list.length === 0 ? 1 : 0);
+  const height = useSharedValue(initialHeight);
+  const emptyListImageOpacity = useSharedValue(
+    sortedTasks.length === 0 ? 1 : 0
+  );
   const completedListOpacity = useSharedValue(1);
   const completedMarkerTop = useSharedValue(
-    upperBound === list.length - 1
+    upperBound === sortedTasks.length - 1
       ? upperBound * TaskHeight
       : (upperBound + 1) * TaskHeight
   );
@@ -90,13 +79,13 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       height: height.value,
       overflow: opacity.value === 1 ? "visible" : "hidden",
     };
-  }, [opacity.value, list.length, completedListOpacity.value]);
+  }, [opacity.value, height.value]);
 
   const listContainerStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
     };
-  }, [opacity.value, completedListOpacity.value]);
+  }, [opacity.value]);
 
   const arrowStyle = useAnimatedStyle(() => {
     const iconRotation = interpolate(opacity.value, [0, 1], [-90, 0]);
@@ -111,83 +100,79 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 
   const emptyListImageContainerStyle = useAnimatedStyle(() => {
     return {
-      opacity: emptyListImageOpacity.value
-    }
-  })
+      opacity: emptyListImageOpacity.value,
+    };
+  });
 
   const toggleListVisible = () => {
-    setIsListHidden((value) => !value);
-    height.value = withTiming(isListHidden ? listHeight : 30, {
-      duration: 300,
-    });
-    opacity.value = withTiming(isListHidden ? 1 : 0, { duration: 300 });
+    height.value = withTiming(
+      opacity.value === 0 ? initialHeight : baseHeight,
+      {
+        duration: 300,
+      }
+    );
+    opacity.value = withTiming(opacity.value === 0 ? 1 : 0, { duration: 300 });
   };
 
   const toggleCompletedListVisible = () => {
-    setIsCompletedListHidden((value) => !value);
     Animated.block([]);
     height.value = withTiming(
-      isCompletedListHidden
-        ? listHeight
-        : listHeight - completedTasks.length * TaskHeight,
+      completedListOpacity.value === 0
+        ? initialHeight
+        : initialHeight - completedTasks.length * TaskHeight,
       { duration: 300 }
     );
-    completedListOpacity.value = withTiming(isCompletedListHidden ? 1 : 0, {
+    completedListOpacity.value = withTiming(completedListOpacity.value === 0 ? 1 : 0, {
       duration: 200,
     });
   };
 
+  const updateCompletedMarkerTop = () => {
+    if (completedTasks.length === 0) {
+      return upperBound * TaskHeight;
+    } else {
+      return (upperBound + 1) * TaskHeight;
+    }
+  }
+
   const completeTask = (id: string) => {
-    dispatch(completeTaskAction(tasks, id));
+    dispatch(completeTaskAction(id));
   };
 
   const deleteTask = (id: string) => {
     setIsDeleting(true);
     dispatch(deleteTaskAction(id));
-    positions.value = updateListObjectAfterTaskDeleting(positions.value, id);
-    setUpperBound(upperBound - 1);
-    setPositionsState(
-      updatePositionsObjectAfterTaskDeleting(positionsState, id)
-    );
-    height.value = withTiming(
-      list.length === 1 ? emptyListHeight : height.value - TaskHeight,
-      { duration: 300 }
-    );
-    if (list.length === 1) {
-      emptyListImageOpacity.value = withDelay(200, withTiming(1, {duration: 300}));
-    }
-    completedMarkerTop.value = withTiming(
-      completedMarkerTop.value - TaskHeight,
-      { duration: 300 }
-    );
   };
 
   useEffect(() => {
-    if (list.length > 0 && !isDeleting) {
-      // positions.value = updateListObjectAfterTaskAdding(
-      //   positions.value,
-      //   list[0]
-      // );
-      positions.value = taskListToObject(list);
-      setUpperBound(upperBound + 1);
-      // setPositionsState(
-      //   updatePositionsObjectAfterTaskAdding(positionsState, list[0])
-      // );
-      setPositionsState(taskListToPositionsObject(list));
-      height.value = withTiming(
-        list.length === 1 ? listHeight : height.value + TaskHeight,
-        { duration: 300 }
-      );
+    positions.value = taskListToObject(sortedTasks);
+    emptyListImageOpacity.value =
+      sortedTasks.length === 0
+        ? withDelay(200, withTiming(1, { duration: 300 }))
+        : 0;
+    height.value = withTiming(initialHeight, { duration: 300 });
+    completedMarkerOpacity.value = withTiming(
+      completedTasks.length > 0 ? 1 : 0,
+      { duration: 200 }
+    );
+    completedMarkerTop.value = withTiming(updateCompletedMarkerTop(), {duration: 300});
+  }, [list]);
+
+  useEffect(() => {
+    if (sortedTasks.length > 0 && !isDeleting) {
+      setPositionsState(taskListToPositionsObject(sortedTasks));
       emptyListImageOpacity.value = 0;
-      completedMarkerTop.value = withTiming(
-        completedMarkerTop.value + TaskHeight,
-        { duration: 300 }
-      );
     }
     if (isDeleting) {
       setIsDeleting(false);
     }
   }, [list.length]);
+
+  useEffect(() => {
+    if (taskToEdit === undefined) {
+      positions.value = taskListToObject(sortedTasks);
+    }
+  }, [taskToEdit]);
 
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
@@ -206,11 +191,11 @@ const Section: FC<SectionProps> = ({ title, list }) => {
         style={[
           listContainerStyle,
           {
-            minHeight: (list?.length * TaskHeight) | 0,
+            minHeight: (sortedTasks?.length * TaskHeight) | 0,
           },
         ]}
       >
-        {list.length > 0 && (
+        {sortedTasks.length > 0 && (
           <CompletedMarker
             top={completedMarkerTop}
             onPress={toggleCompletedListVisible}
@@ -218,17 +203,15 @@ const Section: FC<SectionProps> = ({ title, list }) => {
             opacity={completedMarkerOpacity}
           />
         )}
-        {list?.length > 0 ? (
-          list.map((item, index) => {
+        {sortedTasks?.length > 0 ? (
+          sortedTasks.map((item, index) => {
             return (
               <MovableItem
                 key={item.id + index}
                 index={index}
                 positions={positions}
                 positionsState={positionsState}
-                markerOpacity={completedMarkerOpacity}
                 id={item.id}
-                sectionHeight={height}
                 itemHeight={TaskHeight}
                 component={Task}
                 componentProps={{
@@ -239,9 +222,6 @@ const Section: FC<SectionProps> = ({ title, list }) => {
                 }}
                 updatePositionsState={updatePositionState}
                 upperBound={upperBound}
-                upperBoundMax={list.length - 1}
-                completedMarkerTop={completedMarkerTop}
-                updateUpperBound={updateUpperBound}
                 opacity={item.isCompleted ? completedListOpacity : opacity}
               />
             );
@@ -267,3 +247,4 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 };
 
 export default Section;
+ 

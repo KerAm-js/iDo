@@ -3,7 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
 import { SquircleView } from "react-native-figma-squircle";
-import { borderSmoothing, littleBorderRadius } from "../../../styles/global/borderRadiuses";
+import { borderSmoothing, smallBorderRadius } from "../../../styles/global/borderRadiuses";
 import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
 import {
   calendar,
@@ -52,7 +52,7 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
         style={[popupItemStyles.listItem]}
         squircleParams={{
           cornerSmoothing: borderSmoothing,
-          cornerRadius: littleBorderRadius,
+          cornerRadius: smallBorderRadius,
           fillColor: backgroundColors.white,
         }}
       >

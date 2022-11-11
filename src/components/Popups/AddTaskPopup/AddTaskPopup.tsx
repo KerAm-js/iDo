@@ -9,9 +9,9 @@ import { plus } from "../../../../assets/icons/plus";
 import { repeat } from "../../../../assets/icons/repeat";
 import {
   addTaskAction,
-  chooseTaskToEdit,
+  chooseTaskToEditAction,
   editTaskAction,
-  updateNewTaskData,
+  setDefaultTaskDataAction,
 } from "../../../redux/actions/taskActions";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -38,10 +38,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   const setDefaults = () => {
     setTask("");
     setDescription("");
-    dispatch(updateNewTaskData({
-      time: undefined,
-      timeType: undefined,
-    }));
+    dispatch(setDefaultTaskDataAction());
   };
 
   const onSubmit = () => {
@@ -53,6 +50,8 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               isCompleted: taskToEdit.isCompleted,
               task,
               description,
+              completingTime: taskToEdit.completingTime,
+              ...newTaskData
             })
           : addTaskAction({
               id: `${new Date().toString()}`,
@@ -64,7 +63,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       );
       setDefaults();
       if (!!taskToEdit) {
-        dispatch(chooseTaskToEdit(undefined));
+        dispatch(chooseTaskToEditAction(undefined));
       }
     }
   };
@@ -86,7 +85,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
 
   useEffect(() => {
     if (!!taskToEdit) {
-      if ((task === taskToEdit.task && description === taskToEdit.description) || task.length === 0) {
+      const isTaskNotEdited = task === taskToEdit.task && description === taskToEdit.description;
+      const isTimeNotEdited = newTaskData.time === taskToEdit.time;
+      if ((isTaskNotEdited && isTimeNotEdited) || (task.length === 0)) {
         setCircleButtonDisabled(true);
       } else {
         setCircleButtonDisabled(false);
@@ -98,7 +99,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         setCircleButtonDisabled(true);
       }
     }
-  }, [task, description])
+  }, [task, description, newTaskData])
 
   return (
     <BottomPopup

@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Switch, Text } from "react-native";
 import { SquircleView } from "react-native-figma-squircle";
-import { borderSmoothing, littleBorderRadius } from "../../../styles/global/borderRadiuses";
+import { borderSmoothing, smallBorderRadius } from "../../../styles/global/borderRadiuses";
 import { backgroundColors } from "../../../styles/global/colors";
 import { text17 } from "../../../styles/global/texts";
 import { popupItemStyles } from "./styles";
@@ -13,7 +13,7 @@ const SwitchItem: FC<SwithItemPropType> = ({ title, value, onChange }) => {
       style={[popupItemStyles.listItem]}
       squircleParams={{
         cornerSmoothing: borderSmoothing,
-        cornerRadius: littleBorderRadius,
+        cornerRadius: smallBorderRadius,
         fillColor: backgroundColors.white,
       }}
     >

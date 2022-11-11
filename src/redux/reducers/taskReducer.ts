@@ -1,40 +1,32 @@
-import { CHANGE_GESTURE_POSITIONS, CHOOSE_TASK_TO_EDIT, DELETE_TASK, EDIT_TASK, UPDATE_NEW_TASK_DATA, UPDATE_TASKS } from "./../constants/task";
+import {
+  CHANGE_GESTURE_POSITIONS,
+  CHOOSE_TASK_TO_EDIT,
+  DELETE_TASK,
+  EDIT_TASK,
+  UPDATE_TASK_DATA,
+  UPDATE_TASKS,
+  SET_DEFAULT_TASK_DATA,
+  COMPLETE_TASK,
+} from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
-import { addTaskWithSorting } from '../../utils/utils';
 
 const initialState: TaskState = {
-  tasks: [
-    // {
-    //   id: new Date('2022-11-02T03:24:01').toString(),
-    //   task: '1',
-    //   description: '',
-    //   isCompleted: true,
-    // },
-    // {
-    //   id: new Date('2022-11-02T03:25:01').toString(),
-    //   task: '2',
-    //   description: '',
-    //   isCompleted: false,
-    // },
-    // {
-    //   id: new Date('2022-11-02T03:26:01').toString(),
-    //   task: '3',
-    //   description: '',
-    //   isCompleted: true,
-    // },
-    // {
-    //   id: new Date('2022-11-02T03:27:01').toString(),
-    //   task: '4',
-    //   description: '',
-    //   isCompleted: false,
-    // },
-  ],
+  tasks: [],
   gesturePositions: {},
   taskToEdit: undefined,
   newTaskData: {
-    time: undefined
-  }
+    time: new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+      23,
+      59,
+      59,
+      999
+    ).valueOf(),
+    timeType: "day",
+  },
 };
 
 export const taskReducer = (
@@ -43,50 +35,86 @@ export const taskReducer = (
 ): TaskState => {
   switch (action.type) {
     case ADD_TASK: {
-      const updatedTasks = addTaskWithSorting(action.task, state.tasks);
+      const tasks = [action.task, ...state.tasks];
       return {
         ...state,
-        tasks: updatedTasks,
+        tasks,
       };
-    };
+    }
     case DELETE_TASK: {
-      const tasks = state.tasks.filter(task => task.id !== action.id);
+      const tasks = state.tasks.filter((task) => task.id !== action.id);
+      return {
+        ...state,
+        tasks,
+      };
+    }
+    case EDIT_TASK: {
+      const tasks = state.tasks.map((task) =>
+        task.id === action.task.id ? action.task : task
+      );
+      return {
+        ...state,
+        tasks,
+      };
+    }
+    case COMPLETE_TASK: {
+      const tasks= state.tasks.map((el) => {
+        if (el.id === action.id) {
+          return {
+            ...el,
+            isCompleted: !el.isCompleted,
+            completingTime: new Date().valueOf(),
+          };
+        } else {
+          return el;
+        }
+      });
       return {
         ...state,
         tasks,
       }
-    };
-    case EDIT_TASK: {
-      const tasks = state.tasks.map(task => task.id === action.task.id ? action.task : task); 
+    }
+    case UPDATE_TASK_DATA: {
       return {
         ...state,
-        tasks
-      }
-    };
-    case UPDATE_NEW_TASK_DATA: {
+        newTaskData: action.newTaskData,
+      };
+    }
+    case SET_DEFAULT_TASK_DATA: {
       return {
         ...state,
-        newTaskData: action.newTaskData
-      }
-    };
+        newTaskData: {
+          time: new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate(),
+            23,
+            59,
+            59,
+            999
+          ).valueOf(),
+          timeType: "day",
+        },
+      };
+    }
     case CHOOSE_TASK_TO_EDIT: {
       return {
         ...state,
-        taskToEdit: action.task 
-      }
-    };
+        taskToEdit: action.task,
+      };
+    }
     case UPDATE_TASKS: {
       return {
         ...state,
-        tasks: [...action.tasks]
-      }
-    };
+        tasks: [...action.tasks],
+      };
+    }
     case CHANGE_GESTURE_POSITIONS: {
       return {
         ...state,
         gesturePositions: { ...action.positions },
       };
-    };
+    }
     default:
       return state;
   }

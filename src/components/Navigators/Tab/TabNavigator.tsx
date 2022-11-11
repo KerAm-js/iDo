@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import {
   headerStyle,
   headerTitleStyle,
@@ -21,7 +21,7 @@ import AddTaskPopup from "../../Popups/AddTaskPopup/AddTaskPopup";
 import { useDispatch, useSelector } from "react-redux";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { chooseTaskToEdit } from "../../../redux/actions/taskActions";
+import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import CalendarPopup from "../../Popups/CalendarPopup/CalendarPopup";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
@@ -45,7 +45,7 @@ const TabNavigator: FC = () => {
   const openAddTaskModal = () => setAddTaskModalVisible(true);
   const closeAddTaskModal = () => {
     if (taskToEdit) {
-      dispatch(chooseTaskToEdit(undefined));
+      dispatch(chooseTaskToEditAction(undefined));
     } else {
       setAddTaskModalVisible(false);
     }
@@ -63,6 +63,10 @@ const TabNavigator: FC = () => {
 
   const { date } = getDate("ru");
 
+  useEffect(() => {
+    setAddTaskModalVisible(taskToEdit ? true : false);
+  }, [taskToEdit])
+
   return (
     <>
       <ModalLayout visible={modalVisible} close={closeModal}>
@@ -75,9 +79,9 @@ const TabNavigator: FC = () => {
           updateState={setPeriodsState}
         />
       </ModalLayout>
-      <ModalLayout visible={addTaskModalVisible || !!taskToEdit} close={closeAddTaskModal}>
+      <ModalLayout visible={addTaskModalVisible} close={closeAddTaskModal}>
         <AddTaskPopup 
-          visible={addTaskModalVisible || !!taskToEdit}
+          visible={addTaskModalVisible}
           handleKeyboard={true}
           openCalendar={openCalendar}
         />

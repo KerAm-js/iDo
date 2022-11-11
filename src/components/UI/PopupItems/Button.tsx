@@ -4,7 +4,7 @@ import { SquircleView } from "react-native-figma-squircle";
 import { SvgXml } from "react-native-svg";
 import {
   borderSmoothing,
-  littleBorderRadius,
+  smallBorderRadius,
 } from "../../../styles/global/borderRadiuses";
 import { backgroundColors, textColors } from "../../../styles/global/colors";
 import { text17Input, text17LineHeight } from "../../../styles/global/texts";
@@ -23,7 +23,7 @@ const FormButton: FC<ButtonPropType> = ({ title, iconXml, iconActiveXml, isInput
         style={[popupItemStyles.listItem, popupItemStyles.button]}
         squircleParams={{
           cornerSmoothing: borderSmoothing,
-          cornerRadius: littleBorderRadius,
+          cornerRadius: smallBorderRadius,
           fillColor: backgroundColors.white,
         }}
       >

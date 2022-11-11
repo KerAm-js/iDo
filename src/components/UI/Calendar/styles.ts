@@ -1,4 +1,3 @@
-import { backgroundColors } from './../../../styles/global/colors';
 import { StyleSheet } from "react-native";
 
 export const calendarStyles = StyleSheet.create({

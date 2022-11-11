@@ -5,8 +5,8 @@ import { TaskType } from "../../components/UI/Task/types";
 export type TimeType = 'day' | 'time';
 
 export type TaskData = {
-  time?: string,
-  timeType?: TimeType,
+  time: number,
+  timeType: TimeType,
 }
 
 export type TaskState = {

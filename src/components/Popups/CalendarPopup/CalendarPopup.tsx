@@ -8,7 +8,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { clock, clockActive } from "../../../../assets/icons/clock";
-import { updateNewTaskData } from "../../../redux/actions/taskActions";
+import { setDefaultTaskDataAction, updateNewTaskDataAction } from "../../../redux/actions/taskActions";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants";
@@ -29,7 +29,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 }) => {
   const texts = languageTexts["ru"];
   const dispatch: AppDispatch = useDispatch();
-  const { newTaskData } = useSelector(taskSelector);
+  const { tasks, taskToEdit } = useSelector(taskSelector);
   const [time, setTime] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
   const [state, setState] = useState<string>("");
@@ -58,9 +58,9 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   const saveTime = () => {
     const hours = Number(time.slice(0, 2));
     const minutes = Number(time.slice(3, 5));
-    const isTimeCorrect = isNaN(hours) && isNaN(minutes);
+    const isTimeCorrect = !(isNaN(hours) && isNaN(minutes));
     dispatch(
-      updateNewTaskData(
+      updateNewTaskDataAction(
         time && isTimeCorrect
           ? {
             timeType: 'time',
@@ -70,7 +70,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
               date.getDate(),
               hours,
               minutes,
-            ).toString(),
+            ).valueOf(),
           }
           : {
             timeType: 'day',
@@ -82,7 +82,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
               59,
               59,
               999,
-            ).toString(),
+            ).valueOf(),
           }
       )
     );
@@ -159,10 +159,12 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   }, [calendarShown]);
 
   useEffect(() => {
-    if (!newTaskData.time) {
-      setDefaults();
-    }
-  }, [visible]);
+    setDefaults();
+  }, [tasks]);
+
+  useEffect(() => {
+    if (!taskToEdit) setDefaults();
+  }, [taskToEdit])
 
   return (
     <BottomPopup

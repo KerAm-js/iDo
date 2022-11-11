@@ -1,6 +1,6 @@
-import { current } from "@reduxjs/toolkit";
 import React, { FC, useRef, useState } from "react";
 import { Dimensions, Pressable } from "react-native";
+import * as Haptics from "expo-haptics";
 import {
   PanGestureHandler,
   PanGestureHandlerGestureEvent,
@@ -22,10 +22,8 @@ import {
   getInsideLayoutTranslationY,
   getNewTaskPosition,
   listObjectToPositionsObject,
-  moveCompletedTask,
   moveTask,
-  moveUncompletedTask,
-} from "../../../utils/taskUI";
+} from "../../../utils/section/positionsObject";
 import { movableItemStyles } from "./style";
 import { MovableItemProps } from "./types";
 
@@ -33,25 +31,20 @@ const MovableItem: FC<MovableItemProps> = ({
   id,
   index,
   positions,
-  positionsState,
   opacity,
-  sectionHeight,
   itemHeight,
   component: Component,
   componentProps,
-  completedMarkerTop,
   updatePositionsState,
   upperBound,
-  upperBoundMax,
-  updateUpperBound,
-  markerOpacity,
 }) => {
   const [isDragged, setIsDragged] = useState(false);
   const { width: SCREEN_WIDTH } = Dimensions.get("screen");
   const translateThreshold = SCREEN_WIDTH * -0.3;
-  const top = positions.value[id] ?
-    (itemHeight * positions?.value[id]?.position +
-      (positions?.value[id]?.isCompleted ? 31 : 0)) : index * itemHeight
+  const top = positions.value[id]
+    ? itemHeight * positions?.value[id]?.position +
+      (positions?.value[id]?.isCompleted ? 31 : 0)
+    : index * itemHeight;
   const translateY = useSharedValue(top);
   const translateX = useSharedValue(0);
   const trashIconOpacity = useSharedValue(0);
@@ -98,7 +91,7 @@ const MovableItem: FC<MovableItemProps> = ({
 
       if (
         newPosition !== positions?.value[id]?.position &&
-        !componentProps?.time
+        componentProps?.timeType !== "time"
       ) {
         positions.value = moveTask(
           positions?.value,
@@ -109,9 +102,7 @@ const MovableItem: FC<MovableItemProps> = ({
     } else {
       translateX.value = translationX;
       trashIconOpacity.value = withTiming(
-        translationX < translateThreshold
-          ? 1
-          : 0,
+        translationX < translateThreshold ? 1 : 0,
         { duration: 150 }
       );
     }
@@ -120,7 +111,7 @@ const MovableItem: FC<MovableItemProps> = ({
   const onFinishGestureEvent = () => {
     "worklet";
     if (isDragged) {
-      if (componentProps.time) {
+      if (componentProps.timeType === "time") {
         translateY.value = withTiming(top, { duration: 300 });
       } else {
         const newPosition = positions?.value[id]?.position;
@@ -149,7 +140,7 @@ const MovableItem: FC<MovableItemProps> = ({
           }
         );
       } else {
-        trashIconOpacity.value = withTiming(0 , {duration: 150});
+        trashIconOpacity.value = withTiming(0, { duration: 150 });
         translateX.value = withSpring(0, { damping: 13 });
       }
     }
@@ -188,67 +179,37 @@ const MovableItem: FC<MovableItemProps> = ({
   }, [translateX]);
 
   const onLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsDragged(true);
     shadowOpacity.value = withTiming(0.1, { duration: 300 });
   };
 
-  const completeTask = (taskId: string) => {
-    if (componentProps.isCompleted) {
-      const newUpperBound = upperBound + 1;
-      if (timeOut.current) {
-        clearTimeout(timeOut.current);
-        timeOut.current = null;
-      }
+  const clearCompletingTimeout = () => {
+    if (timeOut.current) {
+      clearTimeout(timeOut.current);
+      timeOut.current = null;
+    }
+  }
 
-      updateUpperBound(newUpperBound);
-      positions.value = moveUncompletedTask(
-        positions.value,
-        positionsState,
-        id
-      );
-      if (newUpperBound < upperBoundMax) {
-        completedMarkerTop.value = withTiming(
-          completedMarkerTop.value + itemHeight,
-          {
-            duration: 300,
-          }
-        );
-      } else if (newUpperBound === upperBoundMax) {
-        sectionHeight.value = withTiming(sectionHeight.value - 36, {duration: 300});
-        markerOpacity.value = withTiming(0, { duration: 300 });
+  const completeTask = (taskId: string) => {
+    if (componentProps.isCompleted || timeOut.current) {
+      if (timeOut.current) {
+        clearCompletingTimeout();
+        return;
       }
+      componentProps.completeTask(taskId)
     } else {
-      updateUpperBound(upperBound - 1);
       timeOut.current = setTimeout(() => {
-        positions.value = moveCompletedTask(
-          positions.value,
-          id,
-          positions?.value[id]?.position,
-          upperBound <= upperBoundMax ? upperBound : upperBoundMax
-        );
-        if (upperBound < upperBoundMax) {
-          completedMarkerTop.value = withTiming(
-            completedMarkerTop.value - itemHeight,
-            {
-              duration: 300,
-            }
-          );
-        }
-        if (markerOpacity.value < 1) {
-          sectionHeight.value = withTiming(sectionHeight.value + 36, {duration: 300});
-          markerOpacity.value = withTiming(1, { duration: 300 });
-        }
+        clearCompletingTimeout();
+        componentProps.completeTask(taskId);
       }, 500);
     }
-    componentProps.completeTask(taskId);
   };
 
   return (
     <Animated.View
       entering={
-        !positions?.value[id]
-          ? SlideInRight.springify().damping(14)
-          : undefined
+        !positions?.value[id] ? SlideInRight.springify().damping(14) : undefined
       }
       style={[movableItemStyles.container, shadowStyle, containerStyle]}
     >

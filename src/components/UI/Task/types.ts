@@ -5,10 +5,11 @@ export type TaskPropTypes = {
   id: string;
   task: string;
   description: string;
-  time?: string;
-  timeType?: TimeType,
+  time: number;
+  timeType: TimeType,
   sectionType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK | FOR_MONTH;
   isCompleted: boolean;
+  completingTime?: number,
   completeTask: (id: string) => void;
   deleteTask: (id: string) => void;
 };
@@ -17,8 +18,9 @@ export interface TaskType {
   id: string;
   task: string;
   isCompleted: boolean;
-  time?: string;
-  timeType?: TimeType,
+  completingTime?: number,
+  time: number;
+  timeType: TimeType,
   description: string;
 };
 

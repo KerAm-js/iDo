@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Pressable, Text } from "react-native";
 import { SquircleView } from "react-native-figma-squircle";
-import { borderSmoothing, littleBorderRadius } from "../../../styles/global/borderRadiuses";
+import { borderSmoothing, smallBorderRadius } from "../../../styles/global/borderRadiuses";
 import { SvgXml } from "react-native-svg";
 import { checkAccent } from "../../../../assets/icons/check";
 import { backgroundColors } from "../../../styles/global/colors";
@@ -16,7 +16,7 @@ const CheckItem: FC<CheckItemPropType> = ({ title, isChecked, onPress }) => {
         style={[popupItemStyles.listItem]}
         squircleParams={{
           cornerSmoothing: borderSmoothing,
-          cornerRadius: littleBorderRadius,
+          cornerRadius: smallBorderRadius,
           fillColor: backgroundColors.white,
         }}
       >
