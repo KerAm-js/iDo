@@ -3,24 +3,17 @@ import { cardColors } from "../../../styles/global/colors";
 
 export const taskStyles = StyleSheet.create({
   container: {
-    paddingRight: 15,
-    paddingLeft: 15,
+    height: 60,
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 60,
   },
   title: {
-    paddingLeft: 5,
-    paddingRight: 5,
+    marginRight: 15,
   },
   subTitle: {
-    marginTop: 3,
-    paddingLeft: 5,
+    marginTop: 5,
   },
   textContainer: {
-    alignItems: 'flex-start',
-    width: '100%',
-    paddingLeft: 5,
     flex: 1,
   },
 })

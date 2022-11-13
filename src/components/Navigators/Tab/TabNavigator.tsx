@@ -14,7 +14,7 @@ import { getDate } from "../../../utils/date";
 import ModalLayout from "../../Layouts/Modal/ModalLayout";
 import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { circles } from "../../../../assets/icons/circles";
-import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../utils/constants";
+import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../utils/constants/periods";
 import SwitchPopup from "../../Popups/SwitchPopup/SwitchPopup";
 import { SwitchPopupStateType } from "../../Popups/SwitchPopup/types";
 import AddTaskPopup from "../../Popups/AddTaskPopup/AddTaskPopup";
@@ -36,7 +36,6 @@ const TabNavigator: FC = () => {
     [FOR_TODAY]: true,
     [FOR_TOMORROW]: false,
     [FOR_WEEK]: false,
-    [FOR_MONTH]: false,
   });
 
   const openModal = () => setModalVisible(true);

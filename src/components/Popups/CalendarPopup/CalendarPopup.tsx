@@ -11,7 +11,7 @@ import { clock, clockActive } from "../../../../assets/icons/clock";
 import { setDefaultTaskDataAction, updateNewTaskDataAction } from "../../../redux/actions/taskActions";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants";
+import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
 import { getDate } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";

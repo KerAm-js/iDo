@@ -54,7 +54,7 @@ export const moveTask = (
   listObject: ListObject,
   from: number,
   to: number
-): ListObject => {
+): [ListObject, boolean] => {
   "worklet";
   const newObject: ListObject = {};
   const fromItem: ListObject = {};
@@ -73,15 +73,15 @@ export const moveTask = (
     }
   }
 
-  if (
-    fromItem[fromKey].timeType !== "time" &&
-    toItem[toKey].timeType !== "time"
-  ) {
-    const fromPosition = fromItem[fromKey].position;
-    const toPosition = toItem[toKey].position;
-    fromItem[fromKey].position = toPosition;
-    toItem[toKey].position = fromPosition;
-  }
+  const fromPosition = fromItem[fromKey].position;
+  const toPosition = toItem[toKey].position;
+  fromItem[fromKey].position = toPosition;
+  toItem[toKey].position = fromPosition;
 
-  return newObject;
+  const isMovingDisabled =
+    fromItem[fromKey].timeType === "time" ||
+    toItem[toKey].timeType === "time" ||
+    fromItem[fromKey].time !== toItem[toKey].time;
+
+  return [newObject, isMovingDisabled];
 };

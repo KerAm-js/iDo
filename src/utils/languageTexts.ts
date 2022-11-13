@@ -74,6 +74,7 @@ export const languageTexts: LanguageTextsType = {
       days: 'Дни',
       week: 'Неделя',
       forWeek: 'На неделю',
+      nextWeek: 'На след. неделю',
       weeks: 'Недели',
       month: 'Месяц',
       forMonth: 'На месяц',
@@ -116,7 +117,20 @@ export const languageTexts: LanguageTextsType = {
       ]
     },
     months: {
-      names: [],
+      names: [
+        'January',
+        'February',
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ],
       fulls: [
         "Января",
         "Февраля",

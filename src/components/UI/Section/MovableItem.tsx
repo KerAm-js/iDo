@@ -1,4 +1,4 @@
-import React, { FC, useRef, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { Dimensions, Pressable } from "react-native";
 import * as Haptics from "expo-haptics";
 import {
@@ -25,17 +25,18 @@ import {
   moveTask,
 } from "../../../utils/section/positionsObject";
 import { movableItemStyles } from "./style";
-import { MovableItemProps } from "./types";
+import { ContextType, MovableItemProps } from "./types";
+import { moveGesturePosition } from "../../../utils/section/positionsState";
 
 const MovableItem: FC<MovableItemProps> = ({
   id,
   index,
   positions,
+  positionsState,
   opacity,
   itemHeight,
   component: Component,
   componentProps,
-  updatePositionsState,
   upperBound,
 }) => {
   const [isDragged, setIsDragged] = useState(false);
@@ -58,7 +59,6 @@ const MovableItem: FC<MovableItemProps> = ({
       const isCompletedChanged = current?.isCompleted !== previous?.isCompleted;
       const isPositionChanged = current?.position !== previous?.position;
       const isCompleted = positions?.value[id]?.isCompleted;
-
       if (isPositionChanged || isCompletedChanged) {
         if (!isDragged) {
           const newTop = isCompleted
@@ -72,7 +72,11 @@ const MovableItem: FC<MovableItemProps> = ({
     }
   );
 
-  const onActiveGestureEvent = (translationX: number, translationY: number) => {
+  const onActiveGestureEvent = (
+    translationX: number,
+    translationY: number,
+    context: ContextType
+  ) => {
     "worklet";
     if (isDragged) {
       const newPosition = getNewTaskPosition(
@@ -89,18 +93,30 @@ const MovableItem: FC<MovableItemProps> = ({
         itemHeight
       );
 
-      if (
-        newPosition !== positions?.value[id]?.position &&
-        componentProps?.timeType !== "time"
-      ) {
-        positions.value = moveTask(
+      if (newPosition !== positions?.value[id]?.position) {
+        const newGesturePositions = moveGesturePosition(
+          positionsState.value,
+          id,
+          newPosition - positions?.value[id]?.position
+        );
+        positionsState.value = newGesturePositions;
+        const [newPositionsObject, isTaskMovingDisabled] = moveTask(
           positions?.value,
           positions?.value[id]?.position,
           newPosition
         );
+        positions.value = newPositionsObject;
+        context.isMovingDisabled = isTaskMovingDisabled;
       }
     } else {
       translateX.value = translationX;
+      if (
+        translationX < translateThreshold &&
+        trashIconOpacity.value === 0 &&
+        !componentProps.isCompleted
+      ) {
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
+      }
       trashIconOpacity.value = withTiming(
         translationX < translateThreshold ? 1 : 0,
         { duration: 150 }
@@ -108,31 +124,31 @@ const MovableItem: FC<MovableItemProps> = ({
     }
   };
 
-  const onFinishGestureEvent = () => {
+  const onFinishGestureEvent = (context: ContextType) => {
     "worklet";
     if (isDragged) {
-      if (componentProps.timeType === "time") {
-        translateY.value = withTiming(top, { duration: 300 });
+      const newPosition = positions?.value[id]?.position;
+      if (context.isMovingDisabled) {
+        positions.value = context.startPositionsObject;
+        translateY.value = withTiming(context.startPosition * itemHeight, {
+          duration: 300,
+        });
       } else {
-        const newPosition = positions?.value[id]?.position;
         translateY.value = withTiming(newPosition * itemHeight, {
           duration: 300,
         });
       }
       runOnJS(setIsDragged)(false);
-      runOnJS(updatePositionsState)(
-        listObjectToPositionsObject(positions.value)
-      );
       shadowOpacity.value = withTiming(0, { duration: 300 });
     } else {
       if (
         translateX.value < translateThreshold &&
         !componentProps.isCompleted
       ) {
-        translateX.value = withSpring(-SCREEN_WIDTH, { damping: 13 });
+        translateX.value = withSpring(-SCREEN_WIDTH);
         trashIconOpacity.value = withTiming(
           0,
-          { duration: 300 },
+          { duration: 250 },
           (isFinished) => {
             if (isFinished && componentProps.deleteTask) {
               runOnJS(componentProps.deleteTask)(id);
@@ -141,21 +157,26 @@ const MovableItem: FC<MovableItemProps> = ({
         );
       } else {
         trashIconOpacity.value = withTiming(0, { duration: 150 });
-        translateX.value = withSpring(0, { damping: 13 });
+        translateX.value = withSpring(0);
       }
     }
   };
 
-  const gestureEventHanlder =
-    useAnimatedGestureHandler<PanGestureHandlerGestureEvent>({
-      onStart: () => {},
-      onActive: (event) => {
-        onActiveGestureEvent(event?.translationX, event?.translationY);
-      },
-      onFinish: () => {
-        onFinishGestureEvent();
-      },
-    });
+  const gestureEventHanlder = useAnimatedGestureHandler<
+    PanGestureHandlerGestureEvent,
+    ContextType
+  >({
+    onStart: (_, context) => {
+      context.startPositionsObject = positions.value;
+      context.startPosition = positions.value[id].position;
+    },
+    onActive: (event, context) => {
+      onActiveGestureEvent(event?.translationX, event?.translationY, context);
+    },
+    onFinish: (_, context) => {
+      onFinishGestureEvent(context);
+    },
+  });
 
   const containerStyle = useAnimatedStyle(() => {
     return {
@@ -189,7 +210,7 @@ const MovableItem: FC<MovableItemProps> = ({
       clearTimeout(timeOut.current);
       timeOut.current = null;
     }
-  }
+  };
 
   const completeTask = (taskId: string) => {
     if (componentProps.isCompleted || timeOut.current) {
@@ -197,7 +218,7 @@ const MovableItem: FC<MovableItemProps> = ({
         clearCompletingTimeout();
         return;
       }
-      componentProps.completeTask(taskId)
+      componentProps.completeTask(taskId);
     } else {
       timeOut.current = setTimeout(() => {
         clearCompletingTimeout();
@@ -209,7 +230,9 @@ const MovableItem: FC<MovableItemProps> = ({
   return (
     <Animated.View
       entering={
-        !positions?.value[id] ? SlideInRight.springify().damping(14) : undefined
+        !positions?.value[id]
+          ? SlideInRight.springify().damping(12).delay(100)
+          : undefined
       }
       style={[movableItemStyles.container, shadowStyle, containerStyle]}
     >

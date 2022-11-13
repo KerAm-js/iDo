@@ -11,7 +11,7 @@ import { GesturePositionsType } from "./../../types/global/GesturePositions";
 import { Dispatch } from "@reduxjs/toolkit";
 import {
   ADD_TASK,
-  CHANGE_GESTURE_POSITIONS,
+  UPDATE_GESTURE_POSITIONS,
 } from "../constants/task";
 import { TaskType } from "./../../components/UI/Task/types";
 
@@ -43,6 +43,6 @@ export const completeTaskAction = (id: string) => (dispatch: Dispatch) => {
     dispatch({ type: COMPLETE_TASK, id, });
   };
 
-export const changeGesturePositionsAction = (positions: GesturePositionsType) => (dispatch: Dispatch) => {
-    dispatch({ type: CHANGE_GESTURE_POSITIONS, positions });
+export const updateGesturePositionsAction = (positions: GesturePositionsType) => (dispatch: Dispatch) => {
+    dispatch({ type: UPDATE_GESTURE_POSITIONS, positions });
   };

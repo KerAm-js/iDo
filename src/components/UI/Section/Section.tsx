@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
 import { title22 } from "../../../styles/global/texts";
@@ -20,7 +20,12 @@ import { ListObject } from "../../../types/global/ListObject";
 import { GesturePositionsType } from "../../../types/global/GesturePositions";
 import { languageTexts } from "../../../utils/languageTexts";
 import ClearList from "../ClearList/ClearList";
-import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
+import {
+  FOR_TODAY,
+  FOR_TOMORROW,
+  FOR_WEEK,
+  TODAY,
+} from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -28,7 +33,7 @@ import {
   deleteTaskAction,
 } from "../../../redux/actions/taskActions";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
-import { sortTasks } from "../../../utils/section/others";
+import { sortTasks } from "../../../utils/section/sections";
 import { taskListToPositionsObject } from "../../../utils/section/positionsState";
 
 const TaskMargin = 10;
@@ -40,16 +45,17 @@ const baseHeight = 30;
 const Section: FC<SectionProps> = ({ title, list }) => {
   const dispatch: AppDispatch = useDispatch();
   const { taskToEdit } = useSelector(taskSelector);
-  const [sortedTasks, completedTasks] = sortTasks(list);
+  const positionsState = useSharedValue(taskListToPositionsObject(list));
+  const [sortedTasks, completedTasks] = sortTasks(list, positionsState.value);
   const [isDeleting, setIsDeleting] = useState(false);
+  // const [sectionOpened, setSectionOpened] = useState(true);
+  const [completedListOpened, setCompletedListOpened] = useState(true);
 
   const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
-  const [positionsState, setPositionsState] = useState<GesturePositionsType>(
-    taskListToPositionsObject(sortedTasks)
-  );
 
-  const updatePositionState = (list: GesturePositionsType) =>
-    setPositionsState(list);
+  // const updatePositionState = (list: GesturePositionsType) => {
+  //   dispatch(updateGesturePositionsAction(list))
+  // }
 
   const upperBound = sortedTasks.length - 1 - completedTasks.length;
   const initialHeight =
@@ -60,7 +66,9 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       : emptyListHeight;
 
   const opacity = useSharedValue(1);
-  const height = useSharedValue(initialHeight);
+  const height = useSharedValue(
+    opacity.value === 1 ? initialHeight : baseHeight
+  );
   const emptyListImageOpacity = useSharedValue(
     sortedTasks.length === 0 ? 1 : 0
   );
@@ -106,25 +114,31 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 
   const toggleListVisible = () => {
     height.value = withTiming(
-      opacity.value === 0 ? initialHeight : baseHeight,
+      opacity.value === 0
+        ? completedListOpacity.value === 1
+          ? initialHeight
+          : initialHeight - completedTasks.length * TaskHeight
+        : baseHeight,
       {
         duration: 300,
       }
     );
-    opacity.value = withTiming(opacity.value === 0 ? 1 : 0, { duration: 300 });
+    opacity.value = withTiming(opacity.value === 0 ? 1 : 0, { duration: 250 });
   };
 
   const toggleCompletedListVisible = () => {
-    Animated.block([]);
     height.value = withTiming(
       completedListOpacity.value === 0
         ? initialHeight
         : initialHeight - completedTasks.length * TaskHeight,
-      { duration: 300 }
+      { duration: 200 },
     );
-    completedListOpacity.value = withTiming(completedListOpacity.value === 0 ? 1 : 0, {
-      duration: 200,
-    });
+    completedListOpacity.value = withTiming(
+      completedListOpacity.value === 0 ? 1 : 0,
+      {
+        duration: 200,
+      }
+    );
   };
 
   const updateCompletedMarkerTop = () => {
@@ -133,7 +147,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     } else {
       return (upperBound + 1) * TaskHeight;
     }
-  }
+  };
 
   const completeTask = (id: string) => {
     dispatch(completeTaskAction(id));
@@ -144,28 +158,48 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     dispatch(deleteTaskAction(id));
   };
 
-  useEffect(() => {
-    positions.value = taskListToObject(sortedTasks);
+  const runEffectAnimations = () => {
     emptyListImageOpacity.value =
       sortedTasks.length === 0
         ? withDelay(200, withTiming(1, { duration: 300 }))
         : 0;
-    height.value = withTiming(initialHeight, { duration: 300 });
     completedMarkerOpacity.value = withTiming(
       completedTasks.length > 0 ? 1 : 0,
       { duration: 200 }
     );
-    completedMarkerTop.value = withTiming(updateCompletedMarkerTop(), {duration: 300});
+    completedMarkerTop.value = withDelay(
+      1,
+      withTiming(updateCompletedMarkerTop(), { duration: 300 })
+    );
+    if (opacity.value === 1) {
+      height.value = withDelay(
+        1,
+        withTiming(
+          completedListOpacity.value === 1
+            ? initialHeight
+            : initialHeight - completedTasks.length * TaskHeight,
+          { duration: 300 }
+        )
+      );
+    }
+  };
+
+  useEffect(() => {
+    positions.value = taskListToObject(sortedTasks);
+    runEffectAnimations();
   }, [list]);
 
   useEffect(() => {
     if (sortedTasks.length > 0 && !isDeleting) {
-      setPositionsState(taskListToPositionsObject(sortedTasks));
       emptyListImageOpacity.value = 0;
     }
     if (isDeleting) {
       setIsDeleting(false);
     }
+    positionsState.value = taskListToPositionsObject(
+      list,
+      positionsState.value
+    );
   }, [list.length]);
 
   useEffect(() => {
@@ -174,10 +208,32 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     }
   }, [taskToEdit]);
 
+  let clearListMessage = `Что планируете ${languageTexts["ru"].periods[
+    title
+  ].toLowerCase()}?`;
+  let titleString: string = title;
+
+  if (title === FOR_TODAY) {
+    clearListMessage = `Что делаем ${languageTexts["ru"].periods[
+      TODAY
+    ].toLowerCase()}?`;
+  } else if (title === FOR_TOMORROW) {
+    clearListMessage = `Какие планы ${languageTexts["ru"].periods[
+      title
+    ].toLowerCase()}?`;
+  } else if (title === FOR_WEEK) {
+    const currDay = new Date().getDay();
+    titleString = currDay === 0 || currDay === 6 ? "nextWeek" : title;
+  }
+
+  // console.log(sortedTasks.map(task => [task.task, task.time]));
+
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
       <View style={sectionStyles.headerContainer}>
-        <Text style={[title22]}>{languageTexts["ru"].periods[title]}</Text>
+        <Text style={[title22]}>
+          {languageTexts["ru"].periods[titleString]}
+        </Text>
         <Animated.View style={[arrowStyle]}>
           <IconButton
             xml={arrowBottomGrey}
@@ -220,7 +276,6 @@ const Section: FC<SectionProps> = ({ title, list }) => {
                   deleteTask,
                   sectionType: title,
                 }}
-                updatePositionsState={updatePositionState}
                 upperBound={upperBound}
                 opacity={item.isCompleted ? completedListOpacity : opacity}
               />
@@ -228,17 +283,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
           })
         ) : (
           <Animated.View style={[emptyListImageContainerStyle]}>
-            {title === FOR_WEEK || title === FOR_MONTH ? (
-              <ClearList
-                title={`${languageTexts["ru"].periods[title]} больше задач нет`}
-              />
-            ) : (
-              <ClearList
-                title={`Добавьте задачи ${languageTexts["ru"].periods[
-                  title
-                ].toLowerCase()}`}
-              />
-            )}
+            <ClearList title={clearListMessage} />
           </Animated.View>
         )}
       </Animated.View>
@@ -247,4 +292,3 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 };
 
 export default Section;
- 

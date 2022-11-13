@@ -1,5 +1,5 @@
 import {
-  CHANGE_GESTURE_POSITIONS,
+  UPDATE_GESTURE_POSITIONS,
   CHOOSE_TASK_TO_EDIT,
   DELETE_TASK,
   EDIT_TASK,
@@ -12,7 +12,8 @@ import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
 
 const initialState: TaskState = {
-  tasks: [],
+  tasks: [
+  ],
   gesturePositions: {},
   taskToEdit: undefined,
   newTaskData: {
@@ -58,7 +59,7 @@ export const taskReducer = (
       };
     }
     case COMPLETE_TASK: {
-      const tasks= state.tasks.map((el) => {
+      const tasks = state.tasks.map((el) => {
         if (el.id === action.id) {
           return {
             ...el,
@@ -72,7 +73,7 @@ export const taskReducer = (
       return {
         ...state,
         tasks,
-      }
+      };
     }
     case UPDATE_TASK_DATA: {
       return {
@@ -109,7 +110,7 @@ export const taskReducer = (
         tasks: [...action.tasks],
       };
     }
-    case CHANGE_GESTURE_POSITIONS: {
+    case UPDATE_GESTURE_POSITIONS: {
       return {
         ...state,
         gesturePositions: { ...action.positions },

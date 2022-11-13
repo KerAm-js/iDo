@@ -14,10 +14,15 @@ export type MovableItemProps = {
   index: number,
   positions: {value: ListObject},
   opacity: {value: number},
-  positionsState: GesturePositionsType,
+  positionsState: { value: GesturePositionsType},
   itemHeight: number,
   component: FC<TaskPropTypes>,
   componentProps: TaskPropTypes,
   upperBound: number,
-  updatePositionsState: (list: GesturePositionsType) => void,
+}
+
+export type ContextType = {
+  startPositionsObject: ListObject,
+  startPosition: number,
+  isMovingDisabled: boolean,
 }

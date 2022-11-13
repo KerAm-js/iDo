@@ -1,0 +1,1 @@
+export const GESTURE_POSITIONS = 'gesture-positions';

@@ -4,10 +4,13 @@ import { SquircleView } from "react-native-figma-squircle";
 import { useDispatch } from "react-redux";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { borderSmoothing, regularBorderRadius } from "../../../styles/global/borderRadiuses";
+import {
+  borderSmoothing,
+  regularBorderRadius,
+} from "../../../styles/global/borderRadiuses";
 import { cardColors } from "../../../styles/global/colors";
-import { text12, text16, text16LineHeight, textGrey } from "../../../styles/global/texts";
-import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants";
+import { text12, text16, textGrey } from "../../../styles/global/texts";
+import { FOR_MONTH, FOR_WEEK } from "../../../utils/constants/periods";
 import { getDate } from "../../../utils/date";
 import CheckButton from "../buttons/CheckButton/CheckButton";
 import { taskStyles } from "./styles";
@@ -44,12 +47,16 @@ const Task: FC<TaskPropTypes> = ({
     setIsChecked((value) => !value);
   };
 
-  let timeString = timeType === 'time' ? new Date(time)?.toTimeString().slice(0, 5) : '';
+  let timeString = "";
 
   if (time && sectionType === FOR_WEEK) {
     timeString = getDate("ru", { date: new Date(time) }).weekDay;
   } else if (time && sectionType === FOR_MONTH) {
     timeString = getDate("ru", { date: new Date(time) }).date;
+  }
+
+  if (timeType === "time") {
+    timeString += (timeString.length > 0 ? ", " : "") + new Date(time)?.toTimeString().slice(0, 5);
   }
 
   return (
@@ -58,19 +65,22 @@ const Task: FC<TaskPropTypes> = ({
       squircleParams={{
         cornerSmoothing: borderSmoothing,
         cornerRadius: regularBorderRadius,
-        fillColor: cardColors.white
+        fillColor: cardColors.white,
       }}
     >
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
-      <Pressable style={[taskStyles.textContainer]} onPress={openEditTaskPopup}>
-          <Text style={[text16, text16LineHeight, taskStyles.title]} numberOfLines={1}>
-            {task}
+      <Pressable
+        style={[taskStyles.textContainer, { marginTop: timeString ? 6 : 0 }]}
+        onPress={openEditTaskPopup}
+      >
+        <Text style={[text16, taskStyles.title]} numberOfLines={1}>
+          {task}
+        </Text>
+        {timeString && (
+          <Text style={[taskStyles.subTitle, text12, textGrey]}>
+            {timeString}
           </Text>
-          {timeString && (
-            <Text style={[taskStyles.subTitle, text12, textGrey]}>
-              {timeString}
-            </Text>
-          )}
+        )}
       </Pressable>
     </SquircleView>
   );

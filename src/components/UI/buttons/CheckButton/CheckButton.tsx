@@ -1,72 +1,104 @@
-import React, { FC, useRef } from "react";
-import { Animated, Pressable } from "react-native";
+import React, { FC, useEffect, useRef } from "react";
+import { Pressable } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { check } from "../../../../../assets/icons/check";
 import { checkButtonStyles } from "./styles";
 import { propType } from "./types";
-import * as Haptics from 'expo-haptics';
+import * as Haptics from "expo-haptics";
 import { SquircleView } from "react-native-figma-squircle";
-import { borderSmoothing, smallBorderRadius } from "../../../../styles/global/borderRadiuses";
-import { backgroundColors, cardColors, lineColors } from "../../../../styles/global/colors";
+import {
+  borderSmoothing,
+  ultraSmallBorderRadius,
+} from "../../../../styles/global/borderRadiuses";
+import { backgroundColors, cardColors } from "../../../../styles/global/colors";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming,
+} from "react-native-reanimated";
+
 
 const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
-  const effectScale = useRef(new Animated.Value(isCompleted ? 0 : 2.1)).current;
-  const opacity = effectScale.interpolate({
-    inputRange: [0, 2.1],
-    outputRange: [1, 0],
-  })
+
+  const upperScale = 1.25;
+  const effectOpacity = useSharedValue(0);
+  const effectScale = useSharedValue(1);
+
+  const effectViewStyle = useAnimatedStyle(() => {
+    return {
+      opacity: effectOpacity.value,
+      transform: [{ scale: upperScale }],
+      position: "absolute",
+      zIndex: -1,
+    };
+  });
+
+  const effectViewStyle2 = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: effectScale.value,  }],
+      position: "absolute",
+      zIndex: -1,
+    };
+  });
 
   const handleClick = () => {
     onClick();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!isCompleted) {
-      Animated.sequence([
-        Animated.timing(effectScale, {
-          toValue: 0,
-          useNativeDriver: true,
-          duration: 1,
+      effectScale.value = withSequence(
+        withTiming(upperScale, { duration: 150 }, (isFinished) => { 
+          if (isFinished) {
+            effectOpacity.value = withSequence(
+              withTiming(0.5, { duration: 1 }),
+              withTiming(0, { duration: 300 }),
+            );
+          }
         }),
-        Animated.timing(effectScale, {
-          toValue: 2.1,
-          useNativeDriver: true,
-          duration: 250,
-        }),
-      ]).start();
+        withTiming(1, { duration: 200 })
+      );
+    } else {
     }
   };
 
   return (
     <Pressable onPress={handleClick} style={[checkButtonStyles.container]}>
-      <Animated.View>
-        <SquircleView
-          style={[checkButtonStyles.sqiurcleView]}
-          squircleParams={{
-            cornerSmoothing: borderSmoothing,
-            cornerRadius: 6,
-            fillColor: isCompleted ? backgroundColors.blue : cardColors.white,
-            strokeColor: backgroundColors.blue,
-            strokeWidth: 1,
-          }}
-        >
-          {isCompleted && <SvgXml xml={check} width={10} height={8} />}
-        </SquircleView>
-      </Animated.View>
-      {
-        isCompleted && <Animated.View
-          style={[
-            { position: "absolute", zIndex: -1, opacity, transform: [{ scale: effectScale }] },
-          ]}
-        >
-          <SquircleView
-            style={[checkButtonStyles.sqiurcleView]}
-            squircleParams={{
-              cornerSmoothing: borderSmoothing,
-              cornerRadius: smallBorderRadius / 2,
-              fillColor: backgroundColors.blue,
-            }}
-          />
-        </Animated.View>
-      }
+      <SquircleView
+        style={[checkButtonStyles.sqiurcleView]}
+        squircleParams={{
+          cornerSmoothing: borderSmoothing,
+          cornerRadius: ultraSmallBorderRadius,
+          fillColor: isCompleted ? backgroundColors.blue : cardColors.white,
+          strokeColor: backgroundColors.blue,
+          strokeWidth: 1,
+        }}
+      >
+        {isCompleted && <SvgXml xml={check} width={10} height={8} />}
+      </SquircleView>
+      {isCompleted && (
+        <>
+          <Animated.View style={[effectViewStyle]}>
+            <SquircleView
+              style={[checkButtonStyles.sqiurcleView]}
+              squircleParams={{
+                cornerSmoothing: borderSmoothing,
+                cornerRadius: ultraSmallBorderRadius,
+                fillColor: backgroundColors.blue,
+              }}
+            />
+          </Animated.View>
+          <Animated.View style={[effectViewStyle2]}>
+            <SquircleView
+              style={[checkButtonStyles.sqiurcleView]}
+              squircleParams={{
+                cornerSmoothing: borderSmoothing,
+                cornerRadius: ultraSmallBorderRadius,
+                fillColor: backgroundColors.blue,
+              }}
+            />
+          </Animated.View>
+        </>
+      )}
     </Pressable>
   );
 };
