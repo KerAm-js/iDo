@@ -36,6 +36,7 @@ export const taskReducer = (
 ): TaskState => {
   switch (action.type) {
     case ADD_TASK: {
+      // add to task to end of the array to avoid rerendering
       const tasks = [action.task, ...state.tasks];
       return {
         ...state,

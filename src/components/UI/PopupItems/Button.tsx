@@ -47,7 +47,7 @@ const FormButton: FC<ButtonPropType> = ({ title, iconXml, iconActiveXml, isInput
             style={[text17Input, inputValue?.length === 5 && {color: textColors.blue}]}
           />
         ) : (
-          <Text style={[text17LineHeight]}>{title}</Text>
+          <Text style={[text17LineHeight, popupItemStyles.buttonTitle]}>{title}</Text>
         )}
       </SquircleView>
     </Pressable>

@@ -54,8 +54,8 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               ...newTaskData
             })
           : addTaskAction({
-              // id: `${new Date().toString()}`,
-              id: `${task}`,
+              id: `${new Date().toString()}`,
+              // id: `${task}`,
               isCompleted: false,
               task,
               description,

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { Text, View } from "react-native";
 import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
-import { title22 } from "../../../styles/global/texts";
+import { text14, text14LineHeight, textGrey, textSemiBold, title22 } from "../../../styles/global/texts";
 import { sectionStyles } from "./style";
 import { SectionProps } from "./types";
 import IconButton from "../buttons/IconButton/IconButton";
@@ -40,7 +40,7 @@ const TaskMargin = 10;
 const TaskHeight = 60 + TaskMargin;
 
 const emptyListHeight = 220;
-const baseHeight = 30;
+const baseHeight = 25;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
   const dispatch: AppDispatch = useDispatch();
@@ -62,7 +62,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     sortedTasks.length > 0
       ? sortedTasks.length * TaskHeight +
         (completedTasks.length > 0 ? 36 : 0) +
-        baseHeight
+        baseHeight + 30
       : emptyListHeight;
 
   const opacity = useSharedValue(1);
@@ -89,11 +89,18 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     };
   }, [opacity.value, height.value]);
 
-  const listContainerStyle = useAnimatedStyle(() => {
+  const listContainerOpacityStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
     };
   }, [opacity.value]);
+
+  const counterStyle = useAnimatedStyle(() => {
+    const counterOpacity = interpolate(opacity.value, [0, 1], [1, 0]);
+    return {
+      opacity: counterOpacity
+    }
+  })
 
   const arrowStyle = useAnimatedStyle(() => {
     const iconRotation = interpolate(opacity.value, [0, 1], [-90, 0]);
@@ -226,14 +233,19 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     titleString = currDay === 0 || currDay === 6 ? "nextWeek" : title;
   }
 
-  // console.log(sortedTasks.map(task => [task.task, task.time]));
-
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
       <View style={sectionStyles.headerContainer}>
-        <Text style={[title22]}>
-          {languageTexts["ru"].periods[titleString]}
-        </Text>
+        <View style={sectionStyles.headerTextContainer}>
+          <Text style={[title22]}>
+            {languageTexts["ru"].periods[titleString]}
+          </Text>
+          <Animated.View style={[counterStyle]}>
+            <Text style={[text14, textGrey, text14LineHeight, textSemiBold, sectionStyles.counter]}>
+              {`${completedTasks.length}/${sortedTasks.length}`}
+            </Text>
+          </Animated.View>
+        </View>
         <Animated.View style={[arrowStyle]}>
           <IconButton
             xml={arrowBottomGrey}
@@ -245,7 +257,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       </View>
       <Animated.View
         style={[
-          listContainerStyle,
+          listContainerOpacityStyle,
           {
             minHeight: (sortedTasks?.length * TaskHeight) | 0,
           },
@@ -260,11 +272,11 @@ const Section: FC<SectionProps> = ({ title, list }) => {
           />
         )}
         {sortedTasks?.length > 0 ? (
-          sortedTasks.map((item, index) => {
+          sortedTasks.map((item) => {
             return (
               <MovableItem
-                key={item.id + index}
-                index={index}
+                key={item.id}
+                index={sortedTasks.findIndex(task => task.id === item.id)}
                 positions={positions}
                 positionsState={positionsState}
                 id={item.id}

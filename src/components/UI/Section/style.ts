@@ -4,11 +4,21 @@ export const sectionStyles = StyleSheet.create({
   container: {
     marginBottom: 30,
   },
+  counter: {
+    marginLeft: 10,
+  },
   headerContainer: {
     flexDirection: "row",
     justifyContent: 'space-between',
-    marginBottom: 10,
+    alignItems: 'center',
+    marginBottom: 20,
   },  
+  headerTextContainer: {
+    flexDirection: "row",
+    justifyContent: 'space-between',
+    flex: 1,
+    alignItems: 'center',
+  }
 })
 
 export const movableItemStyles = StyleSheet.create({

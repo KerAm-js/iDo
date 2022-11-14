@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Dimensions, Pressable } from "react-native";
 import * as Haptics from "expo-haptics";
 import {
@@ -21,7 +21,6 @@ import { shadowStyle } from "../../../styles/global/shadow";
 import {
   getInsideLayoutTranslationY,
   getNewTaskPosition,
-  listObjectToPositionsObject,
   moveTask,
 } from "../../../utils/section/positionsObject";
 import { movableItemStyles } from "./style";

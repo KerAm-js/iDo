@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { clearListLight } from "../../../../assets/images/clearList";
+import { clearListLight } from "../../../../assets/images/emptyList";
 import { text17, textGrey } from "../../../styles/global/texts";
 import { clearListStyles } from "./styles";
 import { ClearListPropType } from "./types";

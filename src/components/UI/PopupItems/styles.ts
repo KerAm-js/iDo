@@ -22,6 +22,9 @@ export const popupItemStyles = StyleSheet.create({
   buttonIcon: {
     marginRight: 5
   },
+  buttonTitle: {
+    color: textColors.blue,
+  },
   calendarIconContainer: {
     justifyContent: 'center',
     alignItems: 'center',
