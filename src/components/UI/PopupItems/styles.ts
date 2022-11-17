@@ -13,7 +13,7 @@ export const popupItemStyles = StyleSheet.create({
     minHeight: 40,
   },
   buttonContainer: {
-    width: '48.5%',
+    width: '48.5%'
   },
   button: {
     justifyContent: 'center',

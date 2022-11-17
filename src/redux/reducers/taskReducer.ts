@@ -16,18 +16,7 @@ const initialState: TaskState = {
   ],
   gesturePositions: {},
   taskToEdit: undefined,
-  newTaskData: {
-    time: new Date(
-      new Date().getFullYear(),
-      new Date().getMonth(),
-      new Date().getDate(),
-      23,
-      59,
-      59,
-      999
-    ).valueOf(),
-    timeType: "day",
-  },
+  newTaskData: undefined
 };
 
 export const taskReducer = (
@@ -36,7 +25,6 @@ export const taskReducer = (
 ): TaskState => {
   switch (action.type) {
     case ADD_TASK: {
-      // add to task to end of the array to avoid rerendering
       const tasks = [action.task, ...state.tasks];
       return {
         ...state,
@@ -85,18 +73,7 @@ export const taskReducer = (
     case SET_DEFAULT_TASK_DATA: {
       return {
         ...state,
-        newTaskData: {
-          time: new Date(
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            new Date().getDate(),
-            23,
-            59,
-            59,
-            999
-          ).valueOf(),
-          timeType: "day",
-        },
+        newTaskData: undefined
       };
     }
     case CHOOSE_TASK_TO_EDIT: {

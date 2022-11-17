@@ -25,13 +25,13 @@ import {
 } from "../../../utils/section/positionsObject";
 import { movableItemStyles } from "./style";
 import { ContextType, MovableItemProps } from "./types";
-import { moveGesturePosition } from "../../../utils/section/positionsState";
+import { moveGesturePosition } from "../../../utils/section/gesturePostions";
 
 const MovableItem: FC<MovableItemProps> = ({
   id,
   index,
   positions,
-  positionsState,
+  gesturePositions,
   opacity,
   itemHeight,
   component: Component,
@@ -93,17 +93,20 @@ const MovableItem: FC<MovableItemProps> = ({
       );
 
       if (newPosition !== positions?.value[id]?.position) {
-        const newGesturePositions = moveGesturePosition(
-          positionsState.value,
-          id,
-          newPosition - positions?.value[id]?.position
-        );
-        positionsState.value = newGesturePositions;
-        const [newPositionsObject, isTaskMovingDisabled] = moveTask(
+        const [newPositionsObject, isTaskMovingDisabled, toId] = moveTask(
           positions?.value,
           positions?.value[id]?.position,
           newPosition
         );
+        if (positions.value[id].timeType === 'day' && positions.value[toId].timeType === 'day') {
+          const newGesturePositions = moveGesturePosition(
+            gesturePositions.value,
+            id,
+            toId
+          );
+          console.log('item',newGesturePositions);
+          gesturePositions.value = newGesturePositions;
+        }
         positions.value = newPositionsObject;
         context.isMovingDisabled = isTaskMovingDisabled;
       }

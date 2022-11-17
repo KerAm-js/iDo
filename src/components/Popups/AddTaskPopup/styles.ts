@@ -9,6 +9,11 @@ export const addTaskPopupStyles = StyleSheet.create({
   addButton: {
     backgroundColor: backgroundColors.blue
   },
+  foldersContainer: {
+    width: '100%',
+    paddingTop: 15,
+    paddingBottom: 20,
+  },
   buttonsContainer: {
     marginTop: 15,
     flexDirection: 'row',

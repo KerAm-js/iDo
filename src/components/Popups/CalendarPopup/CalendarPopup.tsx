@@ -1,25 +1,28 @@
 import React, { FC, useEffect, useState } from "react";
-import { Keyboard, ScrollView, View } from "react-native";
+import { Dimensions, Keyboard, ScrollView, View } from "react-native";
 import Animated, {
-  interpolate,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { clock, clockActive } from "../../../../assets/icons/clock";
-import { setDefaultTaskDataAction, updateNewTaskDataAction } from "../../../redux/actions/taskActions";
+import { updateNewTaskDataAction } from "../../../redux/actions/taskActions";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
+import { TimeType } from "../../../redux/types/task";
 import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
-import { getDate } from "../../../utils/date";
+import { extractCalendarState, getDate } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import Calendar from "../../UI/Calendar/Calendar";
-import FormButton from "../../UI/PopupItems/Button";
+import FormButton from "../../UI/PopupItems/FormButton";
 import DateCheckItem from "../../UI/PopupItems/DateCheckItem";
 import { calendarPopupStyles } from "./styles";
 import { CalendarPopupPropType } from "./types";
+import { useKeyboard } from "../../../hooks/useKeyboard";
+import { calendarEventGrey } from "../../../../assets/icons/calendar";
+
 
 const CalendarPopup: FC<CalendarPopupPropType> = ({
   visible,
@@ -32,11 +35,30 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   const { tasks, taskToEdit } = useSelector(taskSelector);
   const [time, setTime] = useState<string>("");
   const [date, setDate] = useState<Date>(new Date());
-  const [state, setState] = useState<string>("");
+  const [state, setState] = useState<string>(TODAY);
   const [calendarShown, setCalendarShown] = useState<boolean>(false);
   const [chooseItemTitle, setChooseItemTitle] = useState<string>(
     texts.words[CHOOSE]
   );
+
+  const { width: SCREEN_WIDTH } = Dimensions.get("screen");
+  const keyboardHeight = useKeyboard();
+
+  const translateX = useSharedValue(0);
+  const translateFormButtonY = useSharedValue(0);
+
+  const containerStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: translateX.value }],
+      opacity: withTiming(keyboardHeight > 0 ? 0 : 1, { duration: 150 }),
+    };
+  }, [translateX.value, keyboardHeight]);
+
+  const formButtonWrapperStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateY: -translateFormButtonY.value }],
+    };
+  }, [translateFormButtonY.value]);
 
   const currDate = new Date();
   const tomorrowDate = new Date(
@@ -45,14 +67,22 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     currDate.getDate() + 1
   );
 
-  const calendarHeight = useSharedValue(0);
-
-  const setDefaults = () => {
-    setTime("");
-    setState("");
-    setDate(new Date());
+  const setDefaults = (defaultDate?: Date, defaultTimeType?: TimeType) => {
+    const state = defaultDate ? extractCalendarState(defaultDate) : TODAY;
+    const time = defaultDate
+      ? defaultTimeType === "time"
+        ? defaultDate.toTimeString().slice(0, 5)
+        : ""
+      : "";
+    setTime(time);
+    setState(state);
+    setDate(defaultDate ? defaultDate : new Date());
     setCalendarShown(false);
-    setChooseItemTitle(texts.words[CHOOSE]);
+    setChooseItemTitle(
+      state === CHOOSE
+        ? getDate("ru", { date: currDate }).date
+        : texts.words[CHOOSE]
+    );
   };
 
   const saveTime = () => {
@@ -63,27 +93,27 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       updateNewTaskDataAction(
         time && isTimeCorrect
           ? {
-            timeType: 'time',
-            time: new Date(
-              date.getFullYear(),
-              date.getMonth(),
-              date.getDate(),
-              hours,
-              minutes,
-            ).valueOf(),
-          }
+              timeType: "time",
+              time: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                hours,
+                minutes
+              ).valueOf(),
+            }
           : {
-            timeType: 'day',
-            time: new Date(
-              date.getFullYear(),
-              date.getMonth(),
-              date.getDate(),
-              23,
-              59,
-              59,
-              999,
-            ).valueOf(),
-          }
+              timeType: "day",
+              time: new Date(
+                date.getFullYear(),
+                date.getMonth(),
+                date.getDate(),
+                23,
+                59,
+                59,
+                999
+              ).valueOf(),
+            }
       )
     );
     Keyboard.dismiss();
@@ -143,28 +173,34 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     setState(state);
   };
 
-  const calendarContainerStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(calendarHeight.value, [0, 300], [0, 1]);
-    return {
-      overflow: "hidden",
-      opacity,
-      height: calendarHeight.value,
-    };
-  }, [calendarHeight.value]);
+  useEffect(() => {
+    translateFormButtonY.value = withTiming(
+      keyboardHeight > 0 ? keyboardHeight - 30 : 0,
+      { duration: keyboardHeight > 0 ? 300 : 200 }
+    );
+  }, [keyboardHeight]);
 
   useEffect(() => {
-    calendarHeight.value = withTiming(calendarShown ? 300 : 0, {
-      duration: 300,
-    });
-  }, [calendarShown]);
+    translateFormButtonY.value = 0
+  }, [visible])
 
   useEffect(() => {
     setDefaults();
   }, [tasks]);
 
   useEffect(() => {
-    if (!taskToEdit) setDefaults();
-  }, [taskToEdit])
+    if (!taskToEdit) {
+      setDefaults();
+    } else {
+      setDefaults(new Date(taskToEdit.time), taskToEdit.timeType);
+    }
+  }, [taskToEdit]);
+
+  useEffect(() => {
+    translateX.value = withTiming(calendarShown ? -SCREEN_WIDTH : 0, {
+      duration: 300,
+    });
+  }, [calendarShown]);
 
   return (
     <BottomPopup
@@ -172,27 +208,28 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       title={title}
       handleKeyboard={handleKeyboard}
     >
-      <ScrollView style={[calendarPopupStyles.conatiner]}>
-        <DateCheckItem
-          title={texts.periods[TODAY]}
-          date={currDate}
-          isChecked={state === TODAY}
-          onPress={() => onItemClick(TODAY, currDate)}
-        />
-        <DateCheckItem
-          title={texts.periods[TOMORROW]}
-          date={tomorrowDate}
-          isChecked={state === TOMORROW}
-          onPress={() => onItemClick(TOMORROW, tomorrowDate)}
-        />
-        <DateCheckItem
-          title={chooseItemTitle}
-          isChecked={state === CHOOSE}
-          isToggleCalendarShownComponent
-          calendarShown={calendarShown}
-          onPress={() => onItemClick(CHOOSE, date)}
-        />
-        <Animated.View style={[calendarContainerStyle]}>
+      <Animated.View style={[calendarPopupStyles.conatiner, containerStyle]}>
+        <ScrollView style={[calendarPopupStyles.scrollView]}>
+          <DateCheckItem
+            title={texts.periods[TODAY]}
+            date={currDate}
+            isChecked={state === TODAY}
+            onPress={() => onItemClick(TODAY, currDate)}
+          />
+          <DateCheckItem
+            title={texts.periods[TOMORROW]}
+            date={tomorrowDate}
+            isChecked={state === TOMORROW}
+            onPress={() => onItemClick(TOMORROW, tomorrowDate)}
+          />
+          <DateCheckItem
+            title={chooseItemTitle}
+            isChecked={state === CHOOSE}
+            isToggleCalendarShownComponent
+            onPress={() => onItemClick(CHOOSE, date)}
+          />
+        </ScrollView>
+        <ScrollView style={[calendarPopupStyles.scrollView]}>
           <Calendar
             date={date}
             setDate={(date) => {
@@ -200,19 +237,30 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
               setChooseItemTitle(getDate("ru", { date }).date);
             }}
           />
-        </Animated.View>
-      </ScrollView>
-      <View style={[calendarPopupStyles.buttonsContainer]}>
+        </ScrollView>
+      </Animated.View>
+      <Animated.View
+        style={[formButtonWrapperStyle, calendarPopupStyles.buttonsContainer]}
+      >
         <FormButton
-          title="Время"
+          title={"Время"}
           iconXml={clock}
           iconActiveXml={clockActive}
           isInput
           inputValue={time}
           onInputChange={onTimeChange}
         />
-        <FormButton title="Сохранить" onPress={saveTime} />
-      </View>
+        <FormButton
+          title={calendarShown || keyboardHeight > 0 ? "Готово" : "Сохранить"}
+          onPress={
+            keyboardHeight > 0
+              ? () => Keyboard.dismiss()
+              : calendarShown
+              ? () => setCalendarShown(false)
+              : saveTime
+          }
+        />
+      </Animated.View>
     </BottomPopup>
   );
 };

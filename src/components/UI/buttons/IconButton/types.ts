@@ -2,7 +2,7 @@ import { ViewStyle } from "react-native";
 
 export type iconButtonProps = {
   xml: string,
-  style?: ViewStyle,
+  style?: ViewStyle | Array<ViewStyle>,
   align?: 'start' | 'center' | 'end',
   justify?: 'start' | 'center' | 'end',
   iconWidth?: number,

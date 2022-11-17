@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef } from "react";
-import { Keyboard, LayoutChangeEvent, Text, View } from "react-native";
+import { Dimensions, Keyboard, LayoutChangeEvent, Text, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -17,6 +17,8 @@ const BottomPopup: FC<BottomPopupPropType> = ({
   children,
   handleKeyboard,
 }) => {
+  const { height: SCREEN_HEIGHT } = Dimensions.get('screen');
+  const { top } = useSafeAreaInsets();
   const HEIGHT = useRef(0);
   const keyboardHeight = useKeyboard();
   const { bottom: paddingBottom } = useSafeAreaInsets()
@@ -26,7 +28,8 @@ const BottomPopup: FC<BottomPopupPropType> = ({
   const containerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
-      paddingBottom: paddingBottom + 20,
+      paddingBottom: paddingBottom + 10,
+      maxHeight: SCREEN_HEIGHT - top
     };
   }, [translateY]);
 

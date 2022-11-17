@@ -13,7 +13,7 @@ export type TaskState = {
   tasks: Array<TaskType>;
   gesturePositions: GesturePositionsType;
   taskToEdit: TaskType | undefined;
-  newTaskData: TaskData;
+  newTaskData: TaskData | undefined;
 };
 
 export interface TaskAction extends Action {

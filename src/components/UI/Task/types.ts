@@ -1,5 +1,5 @@
 import { TimeType } from './../../../redux/types/task';
-import { FOR_MONTH, FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../types/constants";
+import { FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../types/constants";
 
 export type TaskPropTypes = {
   id: string;
@@ -7,9 +7,10 @@ export type TaskPropTypes = {
   description: string;
   time: number;
   timeType: TimeType,
-  sectionType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK | FOR_MONTH;
+  sectionType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK;
   isCompleted: boolean;
   completingTime?: number,
+  folder?: string,
   completeTask: (id: string) => void;
   deleteTask: (id: string) => void;
 };
@@ -22,6 +23,7 @@ export interface TaskType {
   time: number;
   timeType: TimeType,
   description: string;
+  folder?: string,
 };
 
 export type CompletedMarkerPropTypes = {

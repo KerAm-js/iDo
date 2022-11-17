@@ -1,6 +1,5 @@
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 import { Pressable, Text, View } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
 import { SquircleView } from "react-native-figma-squircle";
 import { borderSmoothing, smallBorderRadius } from "../../../styles/global/borderRadiuses";
@@ -25,26 +24,10 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
   title,
   onPress,
   date,
-  calendarShown,
   isToggleCalendarShownComponent,
   isChecked,
 }) => {
   const { weekDay } = getDate("ru", { date: date, isShort: true });
-  const iconRotation = useSharedValue(-90);
-
-  const iconStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ rotate: `${iconRotation.value}deg` }],
-    };
-  }, [iconRotation.value]);
-
-  useEffect(() => {
-    if (calendarShown) {
-      iconRotation.value = withTiming(0, { duration: 200 })
-    } else {
-      iconRotation.value = withTiming(-90, { duration: 200 })
-    }
-  }, [calendarShown])
 
   return (
     <Pressable onPress={onPress}>
@@ -90,13 +73,12 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
           </Text>
         </View>
         {isToggleCalendarShownComponent ? (
-          <Animated.View style={[iconStyle]}>
-            <SvgXml
-              xml={arrowBottomGrey}
-              width={16}
-              height={16}
-            />
-          </Animated.View>
+          <SvgXml
+            xml={arrowBottomGrey}
+            style={{ transform: [{ rotate: '-90deg' }] }}
+            width={16}
+            height={16}
+          />
         ) : (
           <Text style={[text17LineHeight, textGrey]}>{weekDay}</Text>
         )}

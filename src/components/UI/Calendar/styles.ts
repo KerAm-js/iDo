@@ -12,7 +12,7 @@ export const calendarStyles = StyleSheet.create({
   },
   title: {
     marginLeft: 20,
-    marginVertical: 20,
+    marginBottom: 20,
   },
   item: {
     marginTop: 3,

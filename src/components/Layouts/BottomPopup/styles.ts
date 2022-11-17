@@ -14,7 +14,7 @@ export const bottomPopupStyles = StyleSheet.create({
     zIndex: 100,
   },
   title: {
-    marginBottom: 15,
+    marginBottom: 20,
     marginLeft: 20,
   },
 })

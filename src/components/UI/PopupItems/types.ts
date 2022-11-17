@@ -1,3 +1,5 @@
+import { AnimatedStyle } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
+
 export type SwithItemPropType = {
   title: string;
   value: boolean;
@@ -13,7 +15,6 @@ export type CheckItemPropType = {
 export type DateCheckItemPropType = {
   title: string;
   isChecked: boolean,
-  calendarShown?: boolean,
   date?: Date,
   isToggleCalendarShownComponent?: boolean,
   onPress: () => void;
@@ -26,5 +27,6 @@ export type ButtonPropType = {
   iconActiveXml?: string,
   isInput?: boolean,
   inputValue?: string,
+  onFocus?: () => void,
   onInputChange?: (value: string) => void,
 }

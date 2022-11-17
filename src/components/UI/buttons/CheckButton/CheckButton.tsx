@@ -44,7 +44,7 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
 
   const handleClick = () => {
     onClick();
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     if (!isCompleted) {
       effectScale.value = withSequence(
         withTiming(upperScale, { duration: 150 }, (isFinished) => { 

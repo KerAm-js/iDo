@@ -2,7 +2,11 @@ import { StyleSheet } from "react-native";
 
 export const calendarPopupStyles = StyleSheet.create({
   conatiner: {
-    paddingTop: 10,
+    flexDirection: 'row',
+    width: '200%'
+  },
+  scrollView: {
+    width: '100%'
   },
   buttonsContainer: {
     flexDirection: 'row',

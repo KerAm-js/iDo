@@ -1,4 +1,5 @@
 import { CalendarMonthItemType } from "../components/UI/Calendar/types";
+import { CHOOSE, TODAY, TOMORROW } from "./constants/periods";
 import { languageTexts } from "./languageTexts";
 
 export const getDate = (
@@ -19,6 +20,39 @@ export const getDate = (
     weekDay: weekDays[date.getDay()],
   };
 };
+
+export const isToday = (date: Date) => {
+  const currDate = new Date();
+  return (
+    date.getFullYear() === currDate.getFullYear() &&
+    date.getMonth() === currDate.getMonth() &&
+    date.getDate() === currDate.getDate()
+  );
+};
+
+export const isTomorrow = (date: Date) => {
+  const currDate = new Date();
+  const tomorrowDate = new Date(
+    currDate.getFullYear(),
+    currDate.getMonth(),
+    currDate.getDate() + 1
+  )
+  return (
+    date.getFullYear() === currDate.getFullYear() &&
+    date.getMonth() === currDate.getMonth() &&
+    date.getDate() === tomorrowDate.getDate()
+  );
+};
+
+export const extractCalendarState = (date: Date) => {
+  if (isToday(date)) {
+    return TODAY;
+  } else if (isTomorrow(date)) {
+    return TOMORROW;
+  } else {
+    return CHOOSE
+  }
+}
 
 export const getMonthName = (lang: string, month: number) => {
   const language = languageTexts[lang];

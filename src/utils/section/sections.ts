@@ -1,37 +1,44 @@
 import { GesturePositionsType } from "../../types/global/GesturePositions";
 import { TaskType } from "../../components/UI/Task/types";
-import { getLastDateOfCurrentMonth } from "../date";
-import {
-  FOR_MONTH,
-  FOR_TODAY,
-  FOR_TOMORROW,
-  FOR_WEEK,
-} from "../constants/periods";
+import { FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../constants/periods";
 import { SwitchPopupStateType } from "../../components/Popups/SwitchPopup/types";
 import { SectionsType } from "../../components/screens/Home/types";
 import { HomePeriodsKeys } from "../../types/constants";
+import { taskListToPositionsObject } from "./gesturePostions";
 
 export const sortTasks = (
   list: Array<TaskType>,
-  gesturePositions?: GesturePositionsType
-): [Array<TaskType>, Array<TaskType>] => {
+  gesturePositions: {value: GesturePositionsType},
+  isMultipleDates?: boolean,
+): [Array<TaskType>, number, Array<TaskType>] => {
   const uncompletedList: Array<TaskType> = [];
   const completedList: Array<TaskType> = [];
+  const forDayList: Array<TaskType> = [];
 
-  list.forEach((task) =>
-    task.isCompleted ? completedList.push(task) : uncompletedList.push(task)
-  );
+  list.forEach((task) => {
+    if (task.timeType === "day") {
+      forDayList.push(task);
+    }
+    if (task.isCompleted) {
+      completedList.push(task);
+    } else {
+      uncompletedList.push(task);
+    }
+  });
+
+  const gesturesList = Object.keys(gesturePositions.value);
+  const newGesturePositions = taskListToPositionsObject(gesturePositions?.value, forDayList, isMultipleDates);
 
   uncompletedList.sort((prev, curr) => {
     const prevTime = new Date(prev.time).valueOf();
     const currTime = new Date(curr.time).valueOf();
     if (
-      gesturePositions &&
+      gesturesList.length > 0 &&
       prev.timeType === "day" &&
       curr.timeType === "day" &&
       prevTime === currTime
     ) {
-      return gesturePositions[prev.id] - gesturePositions[curr.id];
+      return newGesturePositions[prev.id] - newGesturePositions[curr.id];
     }
     return prevTime - currTime;
   });
@@ -42,7 +49,13 @@ export const sortTasks = (
     return currCompletedTime - prevCompletedTime;
   });
 
-  return [uncompletedList.concat(completedList), completedList];
+  gesturePositions.value = newGesturePositions;
+
+  return [
+    uncompletedList.concat(completedList),
+    completedList.length,
+    forDayList,
+  ];
 };
 
 export const getSections = (
@@ -77,8 +90,9 @@ export const getSections = (
 
       if (monthDiff === 0) {
         const dayDiff = time.getDate() - currDay;
-        const lastDayOfTheMonth = getLastDateOfCurrentMonth();
-        const isThisWeek = dayDiff <= 6 - new Date().getDay();
+        const isThisWeek =
+          (dayDiff <= 6 - currDate.getDay()) ||
+          (time.getDay() === 0 && dayDiff <= 6);
 
         if (dayDiff < 0) {
           return;

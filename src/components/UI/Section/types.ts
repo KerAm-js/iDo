@@ -14,7 +14,7 @@ export type MovableItemProps = {
   index: number,
   positions: {value: ListObject},
   opacity: {value: number},
-  positionsState: { value: GesturePositionsType},
+  gesturePositions: { value: GesturePositionsType},
   itemHeight: number,
   component: FC<TaskPropTypes>,
   componentProps: TaskPropTypes,

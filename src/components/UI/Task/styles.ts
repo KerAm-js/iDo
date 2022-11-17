@@ -6,12 +6,13 @@ export const taskStyles = StyleSheet.create({
     height: 60,
     flexDirection: "row",
     alignItems: "center",
+    paddingRight: 15,
+    paddingLeft: 5,
   },
-  title: {
-    marginRight: 15,
-  },
-  subTitle: {
-    marginTop: 5,
+  infoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 1,
   },
   textContainer: {
     flex: 1,

@@ -1,5 +1,5 @@
 export type GesturePositionsType = {
-  [x: string] : number
+  [x: string] : number,
 }
 
 export type DatedGesturePositionsType = {

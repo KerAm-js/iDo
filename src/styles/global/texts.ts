@@ -62,9 +62,15 @@ export const text16: TextStyle = {
   lineHeight: 16,
   fontWeight: '400',
 };
+
 export const text16LineHeight: TextStyle = {
   ...text16,
   lineHeight: 24
+}
+
+export const text16Input: TextStyle = {
+  ...text16,
+  lineHeight: 20,
 }
 
 export const text14: TextStyle = {
@@ -95,6 +101,14 @@ export const text12LineHeight: TextStyle = {
 
 export const textGrey: TextStyle = {
   color: textColors.grey,
+}
+
+export const textBlue: TextStyle = {
+  color: textColors.blue
+}
+
+export const textRed: TextStyle = {
+  color: textColors.red
 }
 
 export const textBold: TextStyle = {

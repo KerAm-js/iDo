@@ -2,16 +2,19 @@ import { StyleSheet } from "react-native";
 
 export const sectionStyles = StyleSheet.create({
   container: {
-    marginBottom: 30,
   },
   counter: {
-    marginLeft: 10,
+    marginRight: 10,
+  },
+  arrowButton: {
+    height: 22,
+    justifyContent: 'center',
   },
   headerContainer: {
     flexDirection: "row",
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
+    alignItems: 'flex-start',
+    minHeight: 44,
   },  
   headerTextContainer: {
     flexDirection: "row",

@@ -83,6 +83,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = ({
   return (
     <Animated.ScrollView
       scrollEventThrottle={16}
+      showsVerticalScrollIndicator={false}
       onScroll={Animated.event(
         [
           {

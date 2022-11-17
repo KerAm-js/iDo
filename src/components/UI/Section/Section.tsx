@@ -1,10 +1,9 @@
-import React, { FC, useEffect, useRef, useState } from "react";
-import { Text, View } from "react-native";
+import React, { FC, useEffect, useState } from "react";
+import { Pressable, Text, View } from "react-native";
 import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
-import { text14, text14LineHeight, textGrey, textSemiBold, title22 } from "../../../styles/global/texts";
+import { textGrey, textSemiBold, title22 } from "../../../styles/global/texts";
 import { sectionStyles } from "./style";
 import { SectionProps } from "./types";
-import IconButton from "../buttons/IconButton/IconButton";
 import Task from "../Task/Task";
 import Animated, {
   interpolate,
@@ -27,42 +26,39 @@ import {
   TODAY,
 } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import {
   completeTaskAction,
   deleteTaskAction,
 } from "../../../redux/actions/taskActions";
-import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { sortTasks } from "../../../utils/section/sections";
-import { taskListToPositionsObject } from "../../../utils/section/positionsState";
+import { SvgXml } from "react-native-svg";
 
 const TaskMargin = 10;
 const TaskHeight = 60 + TaskMargin;
 
 const emptyListHeight = 220;
-const baseHeight = 25;
+const baseHeight = 44;
 
 const Section: FC<SectionProps> = ({ title, list }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { taskToEdit } = useSelector(taskSelector);
-  const positionsState = useSharedValue(taskListToPositionsObject(list));
-  const [sortedTasks, completedTasks] = sortTasks(list, positionsState.value);
+  const gesturePositions = useSharedValue<GesturePositionsType>({});
+  const [sortedTasks, completedTasksLength] = sortTasks(
+    list,
+    gesturePositions,
+    title !== FOR_TODAY && title !== FOR_TOMORROW,
+  );
   const [isDeleting, setIsDeleting] = useState(false);
-  // const [sectionOpened, setSectionOpened] = useState(true);
-  const [completedListOpened, setCompletedListOpened] = useState(true);
 
   const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
 
-  // const updatePositionState = (list: GesturePositionsType) => {
-  //   dispatch(updateGesturePositionsAction(list))
-  // }
-
-  const upperBound = sortedTasks.length - 1 - completedTasks.length;
+  const upperBound = sortedTasks.length - 1 - completedTasksLength;
   const initialHeight =
     sortedTasks.length > 0
       ? sortedTasks.length * TaskHeight +
-        (completedTasks.length > 0 ? 36 : 0) +
-        baseHeight + 30
+        (completedTasksLength > 0 ? 36 : 0) +
+        baseHeight +
+        30
       : emptyListHeight;
 
   const opacity = useSharedValue(1);
@@ -79,7 +75,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       : (upperBound + 1) * TaskHeight
   );
   const completedMarkerOpacity = useSharedValue(
-    completedTasks.length > 0 ? 1 : 0
+    completedTasksLength > 0 ? 1 : 0
   );
 
   const containerStyle = useAnimatedStyle(() => {
@@ -94,13 +90,6 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       opacity: opacity.value,
     };
   }, [opacity.value]);
-
-  const counterStyle = useAnimatedStyle(() => {
-    const counterOpacity = interpolate(opacity.value, [0, 1], [1, 0]);
-    return {
-      opacity: counterOpacity
-    }
-  })
 
   const arrowStyle = useAnimatedStyle(() => {
     const iconRotation = interpolate(opacity.value, [0, 1], [-90, 0]);
@@ -124,7 +113,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       opacity.value === 0
         ? completedListOpacity.value === 1
           ? initialHeight
-          : initialHeight - completedTasks.length * TaskHeight
+          : initialHeight - completedTasksLength * TaskHeight
         : baseHeight,
       {
         duration: 300,
@@ -137,8 +126,8 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     height.value = withTiming(
       completedListOpacity.value === 0
         ? initialHeight
-        : initialHeight - completedTasks.length * TaskHeight,
-      { duration: 200 },
+        : initialHeight - completedTasksLength * TaskHeight,
+      { duration: 200 }
     );
     completedListOpacity.value = withTiming(
       completedListOpacity.value === 0 ? 1 : 0,
@@ -149,7 +138,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
   };
 
   const updateCompletedMarkerTop = () => {
-    if (completedTasks.length === 0) {
+    if (completedTasksLength === 0) {
       return upperBound * TaskHeight;
     } else {
       return (upperBound + 1) * TaskHeight;
@@ -171,7 +160,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
         ? withDelay(200, withTiming(1, { duration: 300 }))
         : 0;
     completedMarkerOpacity.value = withTiming(
-      completedTasks.length > 0 ? 1 : 0,
+      completedTasksLength > 0 ? 1 : 0,
       { duration: 200 }
     );
     completedMarkerTop.value = withDelay(
@@ -184,7 +173,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
         withTiming(
           completedListOpacity.value === 1
             ? initialHeight
-            : initialHeight - completedTasks.length * TaskHeight,
+            : initialHeight - completedTasksLength * TaskHeight,
           { duration: 300 }
         )
       );
@@ -203,17 +192,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     if (isDeleting) {
       setIsDeleting(false);
     }
-    positionsState.value = taskListToPositionsObject(
-      list,
-      positionsState.value
-    );
   }, [list.length]);
-
-  useEffect(() => {
-    if (taskToEdit === undefined) {
-      positions.value = taskListToObject(sortedTasks);
-    }
-  }, [taskToEdit]);
 
   let clearListMessage = `Что планируете ${languageTexts["ru"].periods[
     title
@@ -235,26 +214,24 @@ const Section: FC<SectionProps> = ({ title, list }) => {
 
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
-      <View style={sectionStyles.headerContainer}>
+      <Pressable
+        onPress={toggleListVisible}
+        style={sectionStyles.headerContainer}
+      >
         <View style={sectionStyles.headerTextContainer}>
           <Text style={[title22]}>
             {languageTexts["ru"].periods[titleString]}
           </Text>
-          <Animated.View style={[counterStyle]}>
-            <Text style={[text14, textGrey, text14LineHeight, textSemiBold, sectionStyles.counter]}>
-              {`${completedTasks.length}/${sortedTasks.length}`}
+          {list.length > 0 && (
+            <Text style={[textGrey, textSemiBold, sectionStyles.counter]}>
+              {`${completedTasksLength}/${sortedTasks.length}`}
             </Text>
-          </Animated.View>
+          )}
         </View>
-        <Animated.View style={[arrowStyle]}>
-          <IconButton
-            xml={arrowBottomGrey}
-            onClick={toggleListVisible}
-            iconWidth={16}
-            iconHeight={16}
-          />
+        <Animated.View style={[arrowStyle, sectionStyles.arrowButton]}>
+          <SvgXml xml={arrowBottomGrey} width={16} height={16} />
         </Animated.View>
-      </View>
+      </Pressable>
       <Animated.View
         style={[
           listContainerOpacityStyle,
@@ -276,9 +253,9 @@ const Section: FC<SectionProps> = ({ title, list }) => {
             return (
               <MovableItem
                 key={item.id}
-                index={sortedTasks.findIndex(task => task.id === item.id)}
+                index={sortedTasks.findIndex((task) => task.id === item.id)}
                 positions={positions}
-                positionsState={positionsState}
+                gesturePositions={gesturePositions}
                 id={item.id}
                 itemHeight={TaskHeight}
                 component={Task}

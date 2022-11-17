@@ -54,7 +54,7 @@ export const moveTask = (
   listObject: ListObject,
   from: number,
   to: number
-): [ListObject, boolean] => {
+): [ListObject, boolean, string] => {
   "worklet";
   const newObject: ListObject = {};
   const fromItem: ListObject = {};
@@ -83,5 +83,5 @@ export const moveTask = (
     toItem[toKey].timeType === "time" ||
     fromItem[fromKey].time !== toItem[toKey].time;
 
-  return [newObject, isMovingDisabled];
+  return [newObject, isMovingDisabled, toKey];
 };

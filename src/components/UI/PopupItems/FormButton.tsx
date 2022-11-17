@@ -8,17 +8,30 @@ import {
 } from "../../../styles/global/borderRadiuses";
 import { backgroundColors, textColors } from "../../../styles/global/colors";
 import { text17Input, text17LineHeight } from "../../../styles/global/texts";
+import AnimatedButton from "../../Layouts/AnimatedButton/AnimatedButton";
 import { popupItemStyles } from "./styles";
 import { ButtonPropType } from "./types";
 
-const FormButton: FC<ButtonPropType> = ({ title, iconXml, iconActiveXml, isInput, onPress, inputValue, onInputChange }) => {
-  const input = useRef<TextInput>(null)
+const FormButton: FC<ButtonPropType> = ({
+  title,
+  iconXml,
+  iconActiveXml,
+  isInput,
+  onPress,
+  inputValue,
+  onInputChange,
+  onFocus,
+}) => {
+  const input = useRef<TextInput>(null);
   const onPressHandler = () => {
     if (isInput) input?.current?.focus();
     if (onPress) onPress();
-  }
+  };
   return (
-    <Pressable style={[popupItemStyles.buttonContainer]} onPress={onPressHandler}>
+    <AnimatedButton
+      style={[popupItemStyles.buttonContainer]}
+      onPress={onPressHandler}
+    >
       <SquircleView
         style={[popupItemStyles.listItem, popupItemStyles.button]}
         squircleParams={{
@@ -30,7 +43,13 @@ const FormButton: FC<ButtonPropType> = ({ title, iconXml, iconActiveXml, isInput
         {iconXml && (
           <SvgXml
             style={[popupItemStyles.buttonIcon]}
-            xml={iconActiveXml ? (inputValue?.length === 5 ? iconActiveXml : iconXml) : iconXml }
+            xml={
+              iconActiveXml
+                ? inputValue?.length === 5
+                  ? iconActiveXml
+                  : iconXml
+                : iconXml
+            }
             width={20}
             height={20}
           />
@@ -43,14 +62,20 @@ const FormButton: FC<ButtonPropType> = ({ title, iconXml, iconActiveXml, isInput
             value={inputValue}
             onChangeText={onInputChange}
             placeholder={title}
+            onFocus={onFocus}
             placeholderTextColor={textColors.grey}
-            style={[text17Input, inputValue?.length === 5 && {color: textColors.blue}]}
+            style={[
+              text17Input,
+              inputValue?.length === 5 && { color: textColors.blue },
+            ]}
           />
         ) : (
-          <Text style={[text17LineHeight, popupItemStyles.buttonTitle]}>{title}</Text>
+          <Text style={[text17LineHeight, popupItemStyles.buttonTitle]}>
+            {title}
+          </Text>
         )}
       </SquircleView>
-    </Pressable>
+    </AnimatedButton>
   );
 };
 
