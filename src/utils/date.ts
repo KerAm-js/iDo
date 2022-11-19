@@ -36,7 +36,7 @@ export const isTomorrow = (date: Date) => {
     currDate.getFullYear(),
     currDate.getMonth(),
     currDate.getDate() + 1
-  )
+  );
   return (
     date.getFullYear() === currDate.getFullYear() &&
     date.getMonth() === currDate.getMonth() &&
@@ -50,9 +50,9 @@ export const extractCalendarState = (date: Date) => {
   } else if (isTomorrow(date)) {
     return TOMORROW;
   } else {
-    return CHOOSE
+    return CHOOSE;
   }
-}
+};
 
 export const getMonthName = (lang: string, month: number) => {
   const language = languageTexts[lang];
@@ -72,7 +72,7 @@ export const geDaysToWeekEnd = () => {
   return 6 - new Date().getDay();
 };
 
-export const getCalendarArray = (
+export const getMothCalendarArray = (
   month: number,
   year: number
 ): CalendarMonthItemType => {
@@ -91,6 +91,24 @@ export const getCalendarArray = (
       date,
       isCurrentMonth,
     };
+  }
+
+  return result;
+};
+
+export const getCalendarArray = (
+  fromDate: Date,
+  monthsCount: number
+): Array<CalendarMonthItemType> => {
+
+  const result: Array<CalendarMonthItemType> = [];
+
+  if (monthsCount < 0) {
+    return [];
+  }
+  
+  for (let i = fromDate.getMonth(); i <= fromDate.getMonth() + monthsCount; i++) {
+    result.push(getMothCalendarArray(i, fromDate.getFullYear()));
   }
 
   return result;

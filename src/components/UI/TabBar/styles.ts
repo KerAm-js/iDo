@@ -1,10 +1,13 @@
 import { StyleSheet } from "react-native"
-import { backgroundColors, textColors } from "../../../styles/global/colors"
+import { backgroundColors, lineColors, textColors } from "../../../styles/global/colors"
 
 export const tabBarStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
     paddingHorizontal: 0,
+    backgroundColor: backgroundColors.white,
+    borderTopColor: lineColors.grey,
+    borderTopWidth: 1,
   },
   buttonContainer: {
     alignItems: "center",

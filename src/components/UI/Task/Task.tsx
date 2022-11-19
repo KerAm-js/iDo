@@ -8,14 +8,13 @@ import { clock } from "../../../../assets/icons/clock";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import { folderSelector } from "../../../redux/selectors/folderSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { Folder } from "../../../redux/types/folder";
 import {
   borderSmoothing,
   regularBorderRadius,
 } from "../../../styles/global/borderRadiuses";
 import { cardColors } from "../../../styles/global/colors";
-import { text12, text12LineHeight, text16, textGrey } from "../../../styles/global/texts";
-import { FOR_MONTH, FOR_WEEK, TODAY, TOMORROW } from "../../../utils/constants/periods";
+import { text12LineHeight, text16LineHeight, textGrey } from "../../../styles/global/texts";
+import { FOR_WEEK, TODAY, TOMORROW } from "../../../utils/constants/periods";
 import { getDate, isToday, isTomorrow } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import CheckButton from "../buttons/CheckButton/CheckButton";
@@ -30,9 +29,9 @@ const Task: FC<TaskPropTypes> = ({
   id,
   description,
   isCompleted,
-  completingTime,
   completeTask,
   folder,
+  remindTime
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const { folders } = useSelector(folderSelector);
@@ -44,9 +43,10 @@ const Task: FC<TaskPropTypes> = ({
         time,
         id,
         isCompleted,
-        completingTime,
         description,
         timeType,
+        folder,
+        remindTime
       })
     );
   const [isChecked, setIsChecked] = useState(isCompleted);
@@ -57,7 +57,6 @@ const Task: FC<TaskPropTypes> = ({
 
   const folderIconXml: string  = folder ? folders.find(item => item.id === folder)?.title || '' : '';
   let timeString = "";
-  let calendarString = "";
   let xml = "";
 
   if (sectionType === FOR_WEEK) {
@@ -78,10 +77,6 @@ const Task: FC<TaskPropTypes> = ({
     timeString += (timeString.length > 0 ? ', ' : '') + new Date(time)?.toTimeString().slice(0, 5);
   } 
 
-  if (folder) {
-    
-  }
-
   return (
     <SquircleView
       style={[taskStyles.container]}
@@ -96,12 +91,12 @@ const Task: FC<TaskPropTypes> = ({
         style={[taskStyles.textContainer, { marginTop: timeString ? 6 : 0 }]}
         onPress={openEditTaskPopup}
       >
-        <Text style={[text16]} numberOfLines={1}>
+        <Text style={[text16LineHeight]} numberOfLines={1}>
           {task}
         </Text>
         <View style={[ taskStyles.infoContainer ]}>
           {timeString && (
-            <View style={[ taskStyles.infoContainer ]}>
+            <View style={[ taskStyles.infoBlock ]}>
               <SvgXml 
                 width={12}
                 height={12}
@@ -115,14 +110,8 @@ const Task: FC<TaskPropTypes> = ({
           )}
           {
             folderIconXml && (
-              <View style={[ taskStyles.infoContainer ]}>
+              <View style={[ taskStyles.infoBlock ]}>
                 {timeString && <Text style={[ textGrey ]}>・</Text>}
-                {/* <SvgXml 
-                  width={12}
-                  height={12}
-                  xml={folderIconXml}
-                  style={{ marginRight: 5 }}
-                /> */}
                 <Text style={[text12LineHeight, textGrey]}>
                   {folderIconXml}
                 </Text>

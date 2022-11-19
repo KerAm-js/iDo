@@ -9,21 +9,10 @@ export type TaskPropTypes = {
   timeType: TimeType,
   sectionType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK;
   isCompleted: boolean;
-  completingTime?: number,
   folder?: string,
+  remindTime?: number,
   completeTask: (id: string) => void;
   deleteTask: (id: string) => void;
-};
-
-export interface TaskType {
-  id: string;
-  task: string;
-  isCompleted: boolean;
-  completingTime?: number,
-  time: number;
-  timeType: TimeType,
-  description: string;
-  folder?: string,
 };
 
 export type CompletedMarkerPropTypes = {

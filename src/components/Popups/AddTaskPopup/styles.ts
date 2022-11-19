@@ -25,7 +25,6 @@ export const addTaskPopupStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   iconButton: {
-    width: 20,
-    marginRight: 15,
+    marginRight: 5,
   },
 })

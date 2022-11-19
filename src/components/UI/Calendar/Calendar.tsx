@@ -1,127 +1,89 @@
-import React, { FC, useEffect, useState } from "react";
-import { Dimensions, FlatList, Text, View } from "react-native";
+import React, { FC, useMemo, useState } from "react";
+import {
+  Dimensions,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Text,
+  View,
+} from "react-native";
 import { text17, textSemiBold, title18 } from "../../../styles/global/texts";
 import { getCalendarArray, getMonthName } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
-import DateItem from "./DateItem";
+import List from "./List";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, CalendarPropType } from "./types";
 
 const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
   const { width: WIDTH } = Dimensions.get("screen");
+  const currDate = new Date();
   const weekDaysArr = languageTexts["ru"].weekDays.shorts;
   const weekDays = [weekDaysArr[1], ...weekDaysArr.slice(2), weekDaysArr[0]];
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [month, setMonth] = useState<number>(new Date().getMonth());
-  const [year, setYear] = useState<number>(new Date().getFullYear());
-  const [state, setState] = useState<Array<CalendarMonthItemType>>([
-    getCalendarArray(month, year),
-    getCalendarArray(
-      month === 11 ? 0 : month + 1,
-      month === 11 ? year + 1 : year
-    ),
-    getCalendarArray(
-      month === 10 ? 0 : month + 2,
-      month === 10 ? year + 1 : year
-    ),
-    getCalendarArray(
-      month === 9 ? 0 : month + 3,
-      month === 9 ? year + 1 : year
-    ),
-  ]);
+  const currentIndex = 0;
+  const [title, setTitle] = useState<string>(
+    getMonthName("ru", currDate.getMonth()) + " " + currDate.getFullYear()
+  );
+  const [state, setState] = useState<Array<CalendarMonthItemType>>(
+    getCalendarArray(currDate, 36)
+  );
 
-  const onScroll = (event: any) => {
+  const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newCurrentIndex = Math.round(
       event.nativeEvent.contentOffset.x / WIDTH
     );
+
+    if (newCurrentIndex === 0) {
+      setTitle(
+        getMonthName("ru", currDate.getMonth()) + " " + currDate.getFullYear()
+      );
+    }
+
     if (newCurrentIndex !== currentIndex) {
-      if (newCurrentIndex < currentIndex) {
-        setMonth(month === 0 ? 11 : month - 1);
-        setYear(month === 0 ? year - 1 : year);
-      } else {
-        setMonth(month === 11 ? 0 : month + 1);
-        setYear(month === 11 ? year + 1 : year);
-      }
-      setCurrentIndex(newCurrentIndex);
+      const nextSlideDate = new Date(
+        currDate.getFullYear(),
+        currDate.getMonth() + newCurrentIndex
+      );
+      const [nextMonth, nextYear] = [
+        nextSlideDate.getMonth(),
+        nextSlideDate.getFullYear(),
+      ];
+      setTitle(getMonthName("ru", nextMonth) + " " + nextYear);
+    }
+
+    if (newCurrentIndex === state.length - 1) {
+      const nextSlideDate = new Date(
+        currDate.getFullYear(),
+        currDate.getMonth() + newCurrentIndex + 1
+      );
+      setState([
+        ...state,
+        ...getCalendarArray(nextSlideDate, state.length + 24),
+      ]);
     }
   };
 
-  useEffect(() => {
-    if (currentIndex === state.length - 3) {
-      const newCalendarArray = [
-        getCalendarArray(
-          month === 8 ? 0 : month + 3,
-          month === 8 ? year + 1 : year
-        ),
-        getCalendarArray(
-          month === 7 ? 0 : month + 4,
-          month === 7 ? year + 1 : year
-        ),
-        getCalendarArray(
-          month === 6 ? 0 : month + 5,
-          month === 6 ? year + 1 : year
-        ),
-      ];
-      setState((value) => [...value, ...newCalendarArray]);
-    }
-  }, [month]);
+  const renderList = useMemo(
+    () => (
+      <List state={state} date={date} setDate={setDate} onScroll={onScroll} />
+    ),
+    [state, date]
+  );
 
   return (
     <View style={[calendarStyles.container]}>
-      <Text style={[calendarStyles.title, title18]}>
-        {getMonthName("ru", month) + " " + year}
-      </Text>
+      <Text style={[calendarStyles.title, title18]}>{title}</Text>
       <View style={[calendarStyles.weekDaysContainer]}>
         {weekDays.map((weekDay) => {
           return (
-            <Text style={[calendarStyles.item, text17, textSemiBold]} key={weekDay}>
+            <Text
+              style={[calendarStyles.item, text17, textSemiBold]}
+              key={weekDay}
+            >
               {weekDay}
             </Text>
           );
         })}
       </View>
-      <FlatList
-        data={state}
-        keyExtractor={(_, index) => index.toString()}
-        style={[calendarStyles.srollView]}
-        horizontal
-        pagingEnabled
-        scrollEventThrottle={16}
-        initialNumToRender={3}
-        showsHorizontalScrollIndicator={false}
-        onScroll={onScroll}
-        renderItem={({
-          item,
-        }: {
-          item: CalendarMonthItemType;
-          index: number;
-        }) => {
-          return (
-            <View>
-              {item.map((line, index) => {
-                return (
-                  <View
-                    key={index}
-                    style={[calendarStyles.daysContainer, { width: WIDTH }]}
-                  >
-                    {line.map((object) => (
-                      <DateItem
-                        isSelected={
-                          object.date.toLocaleDateString() ===
-                          date.toLocaleDateString()
-                        }
-                        onClick={(date) => setDate(date)}
-                        key={object.date.valueOf()}
-                        data={object}
-                      />
-                    ))}
-                  </View>
-                );
-              })}
-            </View>
-          );
-        }}
-      />
+      {renderList}
     </View>
   );
 };

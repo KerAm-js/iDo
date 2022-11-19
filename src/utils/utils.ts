@@ -1,4 +1,5 @@
-import { TaskType } from "./../components/UI/Task/types";
+import { TaskType } from "../redux/types/task";
+
 
 export const addTaskWithSorting = (
   task: TaskType,

@@ -1,7 +1,7 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { ScrollView, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { bell } from "../../../../assets/icons/bell";
+import { bell, bellActive } from "../../../../assets/icons/bell";
 import { clock, clockActive } from "../../../../assets/icons/clock";
 import { penFill } from "../../../../assets/icons/penFill";
 import { plus } from "../../../../assets/icons/plus";
@@ -33,12 +33,13 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   title,
   handleKeyboard,
   openCalendar,
+  openReminderModal,
 }) => {
   const { taskToEdit, newTaskData } = useSelector(taskSelector);
   const { folders } = useSelector(folderSelector);
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
-  const [choosedFolder, setChoosedFolder] = useState<string>(taskToEdit?.folder || "");
+  const [choosedFolder, setChoosedFolder] = useState<string>("");
   const [circleButtonDisabled, setCircleButtonDisabled] =
     useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
@@ -47,12 +48,14 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   const setDefaults = () => {
     setTask("");
     setDescription("");
+    setChoosedFolder("");
     dispatch(setDefaultTaskDataAction());
   };
 
   const onSubmit = () => {
-    const timeData = newTaskData || {
-      time: new Date(
+    const time =
+      newTaskData.time ||
+      new Date(
         new Date().getFullYear(),
         new Date().getMonth(),
         new Date().getDate(),
@@ -60,9 +63,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         59,
         59,
         999
-      ).valueOf(),
-      timeType: "day",
-    };
+      ).valueOf();
+    const timeType = newTaskData.timeType || "day";
+    const remindTime = newTaskData.remindTime;
     if (task.length > 0) {
       dispatch(
         !!taskToEdit
@@ -73,7 +76,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               description,
               completingTime: taskToEdit.completingTime,
               folder: choosedFolder,
-              ...timeData,
+              time,
+              timeType,
+              remindTime,
             })
           : addTaskAction({
               id: `${new Date().toString()}`,
@@ -82,7 +87,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               task,
               description,
               folder: choosedFolder,
-              ...timeData,
+              time,
+              timeType,
+              remindTime,
             })
       );
       setDefaults();
@@ -90,6 +97,10 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         dispatch(chooseTaskToEditAction(undefined));
       }
     }
+  };
+
+  const updateFolder = (id: string) => {
+    setChoosedFolder(choosedFolder === id ? "" : id);
   };
 
   useEffect(() => {
@@ -102,6 +113,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     if (taskToEdit) {
       setTask(taskToEdit?.task || "");
       setDescription(taskToEdit?.description || "");
+      setChoosedFolder(taskToEdit?.folder || "");
     } else {
       setDefaults();
     }
@@ -112,7 +124,11 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       const isTaskNotEdited =
         task === taskToEdit.task && description === taskToEdit.description;
       const isTimeNotEdited = newTaskData?.time === taskToEdit.time;
-      if ((isTaskNotEdited && isTimeNotEdited) || task.length === 0) {
+      const isFolderNotEdited = choosedFolder === taskToEdit.folder;
+      if (
+        (isTaskNotEdited && isTimeNotEdited && isFolderNotEdited) ||
+        task.length === 0
+      ) {
         setCircleButtonDisabled(true);
       } else {
         setCircleButtonDisabled(false);
@@ -124,7 +140,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         setCircleButtonDisabled(true);
       }
     }
-  }, [task, description, newTaskData]);
+  }, [task, description, choosedFolder, newTaskData]);
 
   return (
     <BottomPopup
@@ -153,7 +169,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         style={[addTaskPopupStyles.foldersContainer]}
         horizontal
         showsHorizontalScrollIndicator={false}
-        keyboardShouldPersistTaps='handled'
+        keyboardShouldPersistTaps="handled"
       >
         {folders.map((folder, index) => (
           <ChooseFolderButton
@@ -162,7 +178,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             isFirst={index === 0}
             isLast={index === folders.length - 1}
             isActive={choosedFolder === folder.id}
-            onPress={() => setChoosedFolder(folder.id)}
+            onPress={() => updateFolder(folder.id)}
           />
         ))}
       </ScrollView>
@@ -170,7 +186,8 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         <View style={[addTaskPopupStyles.settingButtonContainer]}>
           <IconButton
             xml={
-              newTaskData || (taskToEdit && taskToEdit.time)
+              (newTaskData.time && newTaskData.timeType) ||
+              (taskToEdit && taskToEdit.time)
                 ? clockActive
                 : clock
             }
@@ -180,17 +197,22 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             onClick={openCalendar}
           />
           <IconButton
-            xml={choosedFolder === '2' ? repeatActive : repeat}
+            xml={choosedFolder === "2" ? repeatActive : repeat}
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
-            onClick={() => setChoosedFolder('2')}
+            onClick={() => updateFolder("2")}
           />
           <IconButton
-            xml={bell}
+            xml={
+              newTaskData.remindTime || (taskToEdit && taskToEdit.remindTime)
+                ? bellActive
+                : bell
+            }
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
+            onClick={openReminderModal}
           />
         </View>
         <CircleButton

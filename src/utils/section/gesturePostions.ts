@@ -1,8 +1,8 @@
 import { GesturePositionsType } from './../../types/global/GesturePositions';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TaskType } from "../../components/UI/Task/types";
 import { ListObject } from "../../types/global/ListObject";
 import { GESTURE_POSITIONS } from "../constants/asyncStorage";
+import { TaskType } from '../../redux/types/task';
 
 export const taskListToPositionsObject = (
   gesturePositions: GesturePositionsType,

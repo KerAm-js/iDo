@@ -3,7 +3,8 @@ import {
   CHOOSE_TASK_TO_EDIT,
   DELETE_TASK,
   EDIT_TASK,
-  UPDATE_TASK_DATA,
+  UPDATE_TASK_TIME,
+  UPDATE_TASK_REMIND_TIME,
   UPDATE_TASKS,
   SET_DEFAULT_TASK_DATA,
   COMPLETE_TASK,
@@ -16,7 +17,11 @@ const initialState: TaskState = {
   ],
   gesturePositions: {},
   taskToEdit: undefined,
-  newTaskData: undefined
+  newTaskData: {
+    time: undefined,
+    timeType: undefined,
+    remindTime: undefined,
+  }
 };
 
 export const taskReducer = (
@@ -64,16 +69,33 @@ export const taskReducer = (
         tasks,
       };
     }
-    case UPDATE_TASK_DATA: {
+    case UPDATE_TASK_TIME: {
       return {
         ...state,
-        newTaskData: action.newTaskData,
+        newTaskData: {
+          ...state.newTaskData,
+          time: action.time,
+          timeType: action.timeType,
+        },
       };
+    }
+    case UPDATE_TASK_REMIND_TIME: {
+      return {
+        ...state,
+        newTaskData: {
+          ...state.newTaskData,
+          remindTime: action.remindTime,
+        }
+      }
     }
     case SET_DEFAULT_TASK_DATA: {
       return {
         ...state,
-        newTaskData: undefined
+        newTaskData: {
+          time: undefined,
+          timeType: undefined,
+          remindTime: undefined,
+        }
       };
     }
     case CHOOSE_TASK_TO_EDIT: {

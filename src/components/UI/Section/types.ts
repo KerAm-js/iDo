@@ -1,8 +1,9 @@
 import { GesturePositionsType } from '../../../types/global/GesturePositions';
 import { ListObject } from './../../../types/global/ListObject';
-import { TaskPropTypes, TaskType } from "../Task/types";
+import { TaskPropTypes } from "../Task/types";
 import { FC } from 'react';
 import { HomePeriodsKeys } from '../../../types/constants';
+import { TaskType } from '../../../redux/types/task';
 
 export type SectionProps = {
   title: HomePeriodsKeys,

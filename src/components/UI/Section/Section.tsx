@@ -35,7 +35,7 @@ import { sortTasks } from "../../../utils/section/sections";
 import { SvgXml } from "react-native-svg";
 
 const TaskMargin = 10;
-const TaskHeight = 60 + TaskMargin;
+const TaskHeight = 62 + TaskMargin;
 
 const emptyListHeight = 220;
 const baseHeight = 44;

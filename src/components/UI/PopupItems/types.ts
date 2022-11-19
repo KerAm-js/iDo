@@ -1,4 +1,4 @@
-import { AnimatedStyle } from "react-native-reanimated/lib/types/lib/reanimated2/commonTypes";
+import { TextInput, TextInputProps, ViewStyle } from "react-native";
 
 export type SwithItemPropType = {
   title: string;
@@ -20,13 +20,20 @@ export type DateCheckItemPropType = {
   onPress: () => void;
 }
 
-export type ButtonPropType = {
+export type ReminderCheckItemPropType = {
+  minutes?: number,
+  hours?: number,
+  days?: number,
+  isChecked: boolean,
+  date: Date,
+  onPress: (date: Date) => void;
+}
+
+export interface ButtonPropType extends TextInputProps {
+  style?: ViewStyle,
   title: string,
   onPress?: () => void,
   iconXml?: string,
   iconActiveXml?: string,
   isInput?: boolean,
-  inputValue?: string,
-  onFocus?: () => void,
-  onInputChange?: (value: string) => void,
 }

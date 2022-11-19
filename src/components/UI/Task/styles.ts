@@ -3,7 +3,7 @@ import { cardColors } from "../../../styles/global/colors";
 
 export const taskStyles = StyleSheet.create({
   container: {
-    height: 60,
+    height: 62,
     flexDirection: "row",
     alignItems: "center",
     paddingRight: 15,
@@ -12,7 +12,10 @@ export const taskStyles = StyleSheet.create({
   infoContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 1,
+  },
+  infoBlock: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   textContainer: {
     flex: 1,

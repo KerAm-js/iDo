@@ -1,5 +1,5 @@
 import React, { FC, useRef } from "react";
-import { Pressable, Text, TextInput } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { SquircleView } from "react-native-figma-squircle";
 import { SvgXml } from "react-native-svg";
 import {
@@ -18,9 +18,8 @@ const FormButton: FC<ButtonPropType> = ({
   iconActiveXml,
   isInput,
   onPress,
-  inputValue,
-  onInputChange,
-  onFocus,
+  style,
+  ...props
 }) => {
   const input = useRef<TextInput>(null);
   const onPressHandler = () => {
@@ -29,7 +28,7 @@ const FormButton: FC<ButtonPropType> = ({
   };
   return (
     <AnimatedButton
-      style={[popupItemStyles.buttonContainer]}
+      style={[popupItemStyles.buttonContainer, style || {}]}
       onPress={onPressHandler}
     >
       <SquircleView
@@ -45,7 +44,7 @@ const FormButton: FC<ButtonPropType> = ({
             style={[popupItemStyles.buttonIcon]}
             xml={
               iconActiveXml
-                ? inputValue?.length === 5
+                ? props.value?.length === props.maxLength
                   ? iconActiveXml
                   : iconXml
                 : iconXml
@@ -58,16 +57,13 @@ const FormButton: FC<ButtonPropType> = ({
           <TextInput
             keyboardType="numeric"
             ref={input}
-            maxLength={5}
-            value={inputValue}
-            onChangeText={onInputChange}
             placeholder={title}
-            onFocus={onFocus}
             placeholderTextColor={textColors.grey}
             style={[
               text17Input,
-              inputValue?.length === 5 && { color: textColors.blue },
+              props.value?.length === props.maxLength && { color: textColors.blue },
             ]}
+            {...props}
           />
         ) : (
           <Text style={[text17LineHeight, popupItemStyles.buttonTitle]}>

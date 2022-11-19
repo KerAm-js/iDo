@@ -1,6 +1,6 @@
 import { ListObject } from "../../types/global/ListObject";
-import { TaskType } from "../../components/UI/Task/types";
 import { GesturePositionsType } from "../../types/global/GesturePositions";
+import { TaskType } from "../../redux/types/task";
 
 export const taskListToObject = (list: Array<TaskType>): ListObject => {
   "worklet";

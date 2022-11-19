@@ -1,10 +1,10 @@
 import { GesturePositionsType } from "../../types/global/GesturePositions";
-import { TaskType } from "../../components/UI/Task/types";
 import { FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../constants/periods";
 import { SwitchPopupStateType } from "../../components/Popups/SwitchPopup/types";
 import { SectionsType } from "../../components/screens/Home/types";
 import { HomePeriodsKeys } from "../../types/constants";
 import { taskListToPositionsObject } from "./gesturePostions";
+import { TaskType } from "../../redux/types/task";
 
 export const sortTasks = (
   list: Array<TaskType>,
@@ -77,7 +77,8 @@ export const getSections = (
   );
 
   const currDate = new Date();
-  const [currDay, currMonth, currYear] = [
+  const [currWeekDay, currDay, currMonth, currYear] = [
+    currDate.getDay(),
     currDate.getDate(),
     currDate.getMonth(),
     currDate.getFullYear(),
@@ -89,18 +90,19 @@ export const getSections = (
       const monthDiff = time.getMonth() - currMonth;
 
       if (monthDiff === 0) {
-        const dayDiff = time.getDate() - currDay;
-        const isThisWeek =
-          (dayDiff <= 6 - currDate.getDay()) ||
-          (time.getDay() === 0 && dayDiff <= 6);
-
+        const dayDiff = (task.time - currDate.valueOf()) / (1000 * 60 * 60 * 24);
+        // const isThisWeek =
+        //   (dayDiff <= 6 - currWeekDay) ||
+        //   (time.getDay() === 0 && dayDiff <= 6);
+        const isThisWeek = dayDiff < 7;
+        const isNextWeek = (currWeekDay === 6 || currWeekDay === 0) && (dayDiff < 9)
         if (dayDiff < 0) {
           return;
-        } else if (dayDiff === 0 && periodTasks[FOR_TODAY]) {
+        } else if (dayDiff < 1 && periodTasks[FOR_TODAY]) {
           periodTasks[FOR_TODAY].list.push(task);
-        } else if (dayDiff === 1 && periodTasks[FOR_TOMORROW]) {
+        } else if (dayDiff < 2 && periodTasks[FOR_TOMORROW]) {
           periodTasks[FOR_TOMORROW].list.push(task);
-        } else if (isThisWeek && periodTasks[FOR_WEEK]) {
+        } else if ((isThisWeek || isNextWeek) && periodTasks[FOR_WEEK]) {
           periodTasks[FOR_WEEK].list.push(task);
         }
       }

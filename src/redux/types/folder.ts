@@ -1,10 +1,8 @@
 import { Action } from "@reduxjs/toolkit"
-import { TaskType } from "../../components/UI/Task/types"
 
 export type Folder = {
   id: string,
   title: string,
-  tasks: Array<string>,
   iconXml: string,
 }
 

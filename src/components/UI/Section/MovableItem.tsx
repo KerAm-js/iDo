@@ -104,7 +104,6 @@ const MovableItem: FC<MovableItemProps> = ({
             id,
             toId
           );
-          console.log('item',newGesturePositions);
           gesturePositions.value = newGesturePositions;
         }
         positions.value = newPositionsObject;

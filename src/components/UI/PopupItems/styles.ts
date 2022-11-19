@@ -13,11 +13,18 @@ export const popupItemStyles = StyleSheet.create({
     minHeight: 40,
   },
   buttonContainer: {
-    width: '48.5%'
+    flex: 1,
   },
   button: {
     justifyContent: 'center',
     marginHorizontal: 0,
+  },
+  buttonInputsWrapper: {
+    flexDirection: 'row'
+  },
+  buttonInputsSeparator: {
+    marginHorizontal: 2,
+    color: textColors.grey,
   },
   buttonIcon: {
     marginRight: 5

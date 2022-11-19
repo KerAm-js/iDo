@@ -14,7 +14,7 @@ const DateItem: FC<DateItemPropType> = ({
     onClick(date);
   };
 
-  const isExpired = new Date().getMonth() === date.getMonth() && (new Date().getDate() > date.getDate())
+  const isExpired = new Date().getMonth() === date.getMonth() && (new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24)
 
   return (
     <Pressable
