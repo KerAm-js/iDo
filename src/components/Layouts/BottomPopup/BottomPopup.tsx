@@ -18,20 +18,20 @@ const BottomPopup: FC<BottomPopupPropType> = ({
   handleKeyboard,
 }) => {
   const { height: SCREEN_HEIGHT } = Dimensions.get('screen');
+  const { bottom } = useSafeAreaInsets();
   const { top } = useSafeAreaInsets();
   const HEIGHT = useRef(0);
   const keyboardHeight = useKeyboard();
-  const { bottom: paddingBottom } = useSafeAreaInsets()
 
   const translateY = useSharedValue(0);
 
   const containerStyle = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
-      paddingBottom: paddingBottom + 10,
+      paddingBottom: (bottom || 5) + 15,
       maxHeight: SCREEN_HEIGHT - top
     };
-  }, [translateY]);
+  }, [translateY, bottom]);
 
   const onLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
@@ -44,7 +44,7 @@ const BottomPopup: FC<BottomPopupPropType> = ({
   useEffect(() => {
     const newTranslateY = visible
       ? handleKeyboard && keyboardHeight
-          ? 0 - keyboardHeight + paddingBottom
+          ? 0 - keyboardHeight + bottom
           : 0
       : HEIGHT.current
     translateY.value = withTiming(newTranslateY, {

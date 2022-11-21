@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC } from "react";
 import { View } from "react-native";
 import { circles } from "../../../../assets/icons/circles";
 import { getDate } from "../../../utils/date";

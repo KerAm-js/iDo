@@ -24,13 +24,14 @@ export type ReminderCheckItemPropType = {
   minutes?: number,
   hours?: number,
   days?: number,
+  weeks?: number,
   isChecked: boolean,
-  date: Date,
   onPress: (date: Date) => void;
 }
 
-export interface ButtonPropType extends TextInputProps {
+export interface FormButtonPropType extends TextInputProps {
   style?: ViewStyle,
+  textColor?: string,
   title: string,
   onPress?: () => void,
   iconXml?: string,

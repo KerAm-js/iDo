@@ -23,6 +23,7 @@ const CircleButton: FC<circleButtonProps> = ({
 
   return (
     <AnimatedButton
+      disabled={disabled}
       onPress={clickHanlder}
       style={size === "big" ? circleButtonStyles.shadows : {}}
     >

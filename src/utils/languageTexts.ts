@@ -66,6 +66,7 @@ export const languageTexts: LanguageTextsType = {
       ]
     },
     periods: {
+      expired: 'Просрочено',
       today: 'Сегодня',
       forToday: 'На сегодня',
       tomorrow: 'Завтра',
@@ -90,6 +91,7 @@ export const languageTexts: LanguageTextsType = {
     },
     words: {
       choose: 'Выбрать',
+
     }
   },
   en: {

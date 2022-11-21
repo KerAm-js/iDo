@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { headerStyle, headerTitleStyle } from "../../../styles/header";
 import { rootTabNavigatorParamList } from "./types";
 import Folders from "../../screens/Folders/Folders";
@@ -12,6 +12,7 @@ import ModalLayout from "../../Layouts/Modal/ModalLayout";
 import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { circles } from "../../../../assets/icons/circles";
 import {
+  EXPIRED,
   FOR_TODAY,
   FOR_TOMORROW,
   FOR_WEEK,
@@ -37,6 +38,7 @@ const TabNavigator: FC = () => {
   const [reminderModalVisible, setReminderModalVisible] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [periodsState, setPeriodsState] = useState<SwitchPopupStateType>({
+    [EXPIRED]: false,
     [FOR_TODAY]: true,
     [FOR_TOMORROW]: true,
     [FOR_WEEK]: true,
@@ -107,7 +109,7 @@ const TabNavigator: FC = () => {
         <CalendarPopup
           visible={calendarModalVisible}
           closePopup={closeCalendar}
-          title={"Срок"}
+          title={"Дата выполнения"}
         />
       </ModalLayout>
       <ModalLayout

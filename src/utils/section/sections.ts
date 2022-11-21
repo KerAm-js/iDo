@@ -1,10 +1,38 @@
 import { GesturePositionsType } from "../../types/global/GesturePositions";
-import { FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../constants/periods";
+import { EXPIRED, FOR_TODAY, FOR_TOMORROW, FOR_WEEK, TODAY } from "../constants/periods";
 import { SwitchPopupStateType } from "../../components/Popups/SwitchPopup/types";
 import { SectionsType } from "../../components/screens/Home/types";
 import { HomePeriodsKeys } from "../../types/constants";
 import { taskListToPositionsObject } from "./gesturePostions";
 import { TaskType } from "../../redux/types/task";
+import { languageTexts } from "../languageTexts";
+
+export const getSectionListEmptyMessage = (title: HomePeriodsKeys) => {
+  let clearListMessage = `Что планируете ${languageTexts["ru"].periods[
+    title
+  ].toLowerCase()}?`;
+
+  if (title === FOR_TODAY) {
+    clearListMessage = `Что делаем ${languageTexts["ru"].periods[
+      TODAY
+    ].toLowerCase()}?`;
+  } else if (title === FOR_TOMORROW) {
+    clearListMessage = `Какие планы ${languageTexts["ru"].periods[
+      title
+    ].toLowerCase()}?`;
+  }
+
+  return clearListMessage;
+}
+
+export const getSectionTitle = (title: HomePeriodsKeys) => {
+  if (title === FOR_WEEK) {
+    const currDay = new Date().getDay();
+    return currDay === 0 || currDay === 6 ? "nextWeek" : title;
+  } else {
+    return title;
+  }
+}
 
 export const sortTasks = (
   list: Array<TaskType>,
@@ -85,15 +113,15 @@ export const getSections = (
   ];
 
   tasks.forEach((task) => {
-    if (task?.time && new Date(task.time).getFullYear() - currYear === 0) {
+    if (new Date(task.time) < new Date() && periodTasks[EXPIRED] ) {
+      periodTasks[EXPIRED].list.push(task);
+    }
+    if (new Date(task.time).getFullYear() - currYear === 0) {
       const time = new Date(task.time);
       const monthDiff = time.getMonth() - currMonth;
 
       if (monthDiff === 0) {
         const dayDiff = (task.time - currDate.valueOf()) / (1000 * 60 * 60 * 24);
-        // const isThisWeek =
-        //   (dayDiff <= 6 - currWeekDay) ||
-        //   (time.getDay() === 0 && dayDiff <= 6);
         const isThisWeek = dayDiff < 7;
         const isNextWeek = (currWeekDay === 6 || currWeekDay === 0) && (dayDiff < 9)
         if (dayDiff < 0) {

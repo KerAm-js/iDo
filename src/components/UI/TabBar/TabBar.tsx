@@ -13,7 +13,7 @@ const TabBar: FC<TabBarPropTypes> = ({ state, descriptors, navigation, onBigButt
     setTimeout(onBigButtonClick, 200);
   }
   return (
-    <View style={[tabBarStyles.container, { paddingBottom: bottom + 10 || 25 }]}>
+    <View style={[tabBarStyles.container, { paddingBottom: bottom > 0 ? bottom + 10 : 25 }]}>
       <TabsRender
         routes={state.routes.slice(0, 2)}
         stateIndex={state.index}

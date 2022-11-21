@@ -1,12 +1,12 @@
 import React, { FC, useEffect, useState } from "react";
-import { Dimensions, Keyboard, ScrollView, View } from "react-native";
+import { Dimensions, Keyboard, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
-import { clock, clockActive } from "../../../../assets/icons/clock";
+import { clock } from "../../../../assets/icons/clock";
 import {
   updateNewTaskRemindTimeAction,
   updateNewTaskTimeAction,
@@ -15,7 +15,7 @@ import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { TimeType } from "../../../redux/types/task";
 import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
-import { extractCalendarState, getDate } from "../../../utils/date";
+import { extractCalendarState, getDate, isToday } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import Calendar from "../../UI/Calendar/Calendar";
@@ -25,10 +25,8 @@ import { calendarPopupStyles } from "./styles";
 import { CalendarPopupPropType } from "./types";
 import { useKeyboard } from "../../../hooks/useKeyboard";
 import ReminderCheckItem from "../../UI/PopupItems/ReminderCheckItem";
-import {
-  calendarEventBlue,
-  calendarEventGrey,
-} from "../../../../assets/icons/calendar";
+import { textColors } from "../../../styles/global/colors";
+import { useTimeValidation } from "../../../hooks/useTimeValidation";
 
 const reminderData = [
   {
@@ -47,6 +45,10 @@ const reminderData = [
     id: "3",
     days: 1,
   },
+  {
+    id: "4",
+    weeks: 1,
+  },
 ];
 
 const CalendarPopup: FC<CalendarPopupPropType> = ({
@@ -58,25 +60,29 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 }) => {
   const texts = languageTexts["ru"];
   const dispatch: AppDispatch = useDispatch();
-  const { tasks, taskToEdit, newTaskData } = useSelector(taskSelector);
-  const [time, setTime] = useState<string>("");
+  const { taskToEdit, newTaskData } = useSelector(taskSelector);
   const [date, setDate] = useState<Date>(new Date());
-  const [dateString, setDateString] = useState<string>("");
-  const [state, setState] = useState<string>(TODAY);
+  const [time, setTime, onTimeChange, isTimeExpired] = useTimeValidation(date);
+  const [state, setState] = useState<string>();
   const [calendarShown, setCalendarShown] = useState<boolean>(false);
   const [timeInputPlaceholder, setTimeInputPlaceholder] =
     useState<string>("Время");
-  const [dateInputPlaceholder, setDateInputPlaceholder] =
-    useState<string>("Дата");
   const [chooseItemTitle, setChooseItemTitle] = useState<string>(
     texts.words[CHOOSE]
+  );
+
+  const currDate = new Date();
+  const tomorrowDate = new Date(
+    currDate.getFullYear(),
+    currDate.getMonth(),
+    currDate.getDate() + 1
   );
 
   const { width: SCREEN_WIDTH } = Dimensions.get("screen");
   const keyboardHeight = useKeyboard();
 
   const translateX = useSharedValue(0);
-  const translateFormButtonY = useSharedValue(0);
+  const translateFormButtonY = useSharedValue(keyboardHeight > 0 ? keyboardHeight - 30 : 0);
 
   const scrollViewsStyle = useAnimatedStyle(() => {
     return {
@@ -96,12 +102,13 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     };
   }, [translateFormButtonY.value]);
 
-  const currDate = new Date();
-  const tomorrowDate = new Date(
-    currDate.getFullYear(),
-    currDate.getMonth(),
-    currDate.getDate() + 1
-  );
+  const updateChoosedTitle = (newDate: Date) => {
+    const isCurrYear = currDate.getFullYear() === newDate.getFullYear();
+    const dateText = getDate("ru", { date: newDate }).date;
+    setChooseItemTitle(
+      isCurrYear ? dateText : dateText + ", " + date.getFullYear()
+    );
+  };
 
   const setDefaults = (
     defaultDate?: Date,
@@ -115,6 +122,8 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         const hoursDiff = defaultDate.getHours() - remindDate.getHours();
         const daysDiff = defaultDate.getDate() - remindDate.getDate();
       }
+      setState("0");
+      setDate(newTaskData.time ? new Date(newTaskData.time) : new Date());
     } else {
       const state = defaultDate ? extractCalendarState(defaultDate) : TODAY;
       const time = defaultDate
@@ -126,11 +135,13 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       setState(state);
       setDate(defaultDate ? defaultDate : new Date());
       setCalendarShown(false);
-      setChooseItemTitle(
-        state === CHOOSE
-          ? getDate("ru", { date: currDate }).date
-          : texts.words[CHOOSE]
-      );
+
+      if (state === CHOOSE) {
+        updateChoosedTitle(date);
+      } else {
+        setChooseItemTitle(texts.words[CHOOSE]);
+      }
+
       if (defaultDate && defaultTimeType) {
         addTime(defaultDate, time);
       }
@@ -138,7 +149,6 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   };
 
   const addTime = (date: Date, time: string) => {
-    console.log('ok')
     const hours = time.slice(0, 2);
     const minutes = time.slice(3, 5);
     const isTimeCorrect =
@@ -164,114 +174,53 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
             59,
             999
           );
-    dispatch(updateNewTaskTimeAction(taskTime.valueOf(), timeType));
-  };
-
-  const addReminder = () => {
-    dispatch(updateNewTaskRemindTimeAction(date.valueOf()));
+    if (isReminderChoosing) {
+      dispatch(updateNewTaskRemindTimeAction(date.valueOf()));
+    } else {
+      dispatch(updateNewTaskTimeAction(taskTime.valueOf(), timeType));
+    }
   };
 
   const saveTime = () => {
-    if (isReminderChoosing) {
-      addReminder();
-    } else {
-      addTime(date, time);
+    if (keyboardHeight > 0) {
+      Keyboard.dismiss();
     }
-    Keyboard.dismiss();
+    addTime(date, time);
     closePopup();
   };
 
-  const setPrintedDate = () => {
-    const [day, month, year] = dateString.split(".");
-    setDate(new Date(Number(year), Number(month) - 1, Number(day)));
-  };
-
-  const onTimeChange = (value: string) => {
-    const hours = value.slice(0, 2);
-    const minutes = value.slice(5, 7);
-    if (
-      (hours.length > 0 && isNaN(Number(hours))) ||
-      (minutes.length > 0 && isNaN(Number(minutes)))
-    ) {
-      return;
-    }
-    if (value.length === 1 && Number.parseInt(value) > 2) {
-      return;
-    } else if (value.length === 2 && Number.parseInt(value) > 23) {
-      return;
-    } else if (
-      (value.length === 3 && Number.parseInt(value.slice(0, 2)) > 23) ||
-      Number.parseInt(value[3]) > 5
-    ) {
-      return;
-    } else if (
-      (value.length === 4 && Number.parseInt(value.slice(0, 2)) > 23) ||
-      Number.parseInt(value.slice(3, 5)) > 59
-    ) {
-      return;
-    }
-
-    if (time.length === 1 && value.length === 2) {
-      setTime(value + ":");
-    } else if (time.length === 4 && value.length === 3) {
-      setTime(time.slice(0, 2));
-    } else if (time.length === 2 && value.length === 3) {
-      setTime(time + ":" + value[value.length - 1]);
-    } else {
-      setTime(value);
-    }
-  };
-
-  const onDateChange = (value: string) => {
-    if (
-      (dateString.length === 1 && value.length === 2) ||
-      (dateString.length === 4 && value.length === 5)
-    ) {
-      setDateString(value + ".");
-    } else if (
-      (dateString.length === 2 && value.length === 3) ||
-      (dateString.length === 5 && value.length === 6)
-    ) {
-      setDateString(dateString + "." + value[value.length - 1]);
-    } else if (dateString.length === 4 && value.length === 3) {
-      setDateString(value.slice(0, 2));
-    } else if (dateString.length === 7 && value.length === 6) {
-      setDateString(value.slice(0, 5));
-    } else {
-      setDateString(value);
-    }
-  };
-
-  useEffect(() => console.log(time), [time]);
-
-  const onItemClick = (state: string, date: Date) => {
+  const onItemClick = (state: string, newDate: Date) => {
     if (state === CHOOSE) {
       if (calendarShown) {
         setCalendarShown(false);
       } else {
         setCalendarShown(true);
-        setDate(currDate);
-        setChooseItemTitle(getDate("ru", { date: currDate }).date);
+        updateChoosedTitle(date);
       }
     } else {
       setChooseItemTitle(texts.words[CHOOSE]);
       setCalendarShown(false);
-      setDate(date);
+      setDate(newDate);
+      if (isReminderChoosing) {
+        setTime("");
+      }
     }
     setState(state);
   };
 
   const onSubmit = () => {
-    if (calendarShown && keyboardHeight > 0) {
-      setPrintedDate();
+    if (keyboardHeight) {
       Keyboard.dismiss();
     } else if (calendarShown) {
       setCalendarShown(false);
-    } else if (keyboardHeight) {
-      Keyboard.dismiss();
     } else {
       saveTime();
     }
+  };
+
+  const onDateItemClick = (newDate: Date) => {
+    setDate(newDate);
+    updateChoosedTitle(newDate);
   };
 
   useEffect(() => {
@@ -283,11 +232,10 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 
   useEffect(() => {
     translateFormButtonY.value = 0;
+    if (isReminderChoosing) {
+      setDefaults();
+    }
   }, [visible]);
-
-  useEffect(() => {
-    setDefaults();
-  }, [tasks]);
 
   useEffect(() => {
     if (!taskToEdit) {
@@ -300,6 +248,12 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       );
     }
   }, [taskToEdit]);
+
+  useEffect(() => {
+    if (!newTaskData.time && !newTaskData.timeType) {
+      setDefaults();
+    }
+  }, [newTaskData]);
 
   useEffect(() => {
     translateX.value = withTiming(calendarShown ? -SCREEN_WIDTH : 0, {
@@ -319,12 +273,9 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
             {reminderData.map((item) => (
               <ReminderCheckItem
                 key={item.id}
-                minutes={item.minutes}
-                hours={item.hours}
-                days={item.days}
-                date={new Date(newTaskData?.time || "")}
-                onPress={(date: Date) => onItemClick(item.id, date)}
+                onPress={(newDate: Date) => onItemClick(item.id, newDate)}
                 isChecked={state === item.id}
+                {...item}
               />
             ))}
             <DateCheckItem
@@ -358,48 +309,26 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         )}
         <View style={[calendarPopupStyles.screen]}>
           <Animated.View style={[scrollViewsStyle]}>
-            <Calendar
-              date={date}
-              setDate={(date) => {
-                setDate(date);
-                setChooseItemTitle(getDate("ru", { date }).date);
-              }}
-            />
+            <Calendar date={date} setDate={onDateItemClick} />
           </Animated.View>
         </View>
       </Animated.View>
       <Animated.View
         style={[formButtonWrapperStyle, calendarPopupStyles.buttonsContainer]}
       >
-        {calendarShown ? (
-          <FormButton
-            title={dateInputPlaceholder}
-            onFocus={() => setDateInputPlaceholder("дд.мм.гггг")}
-            onBlur={() => setDateInputPlaceholder("Дата")}
-            iconXml={
-              dateInputPlaceholder === "Дата" ? calendarEventGrey : undefined
-            }
-            iconActiveXml={calendarEventBlue}
-            style={{ marginRight: 10 }}
-            isInput
-            value={dateString}
-            maxLength={10}
-            onChangeText={onDateChange}
-          />
-        ) : (
-          <FormButton
-            title={timeInputPlaceholder}
-            iconXml={timeInputPlaceholder === "Время" ? clock : undefined}
-            onFocus={() => setTimeInputPlaceholder("чч:мм")}
-            onBlur={() => setTimeInputPlaceholder("Время")}
-            iconActiveXml={clockActive}
-            style={{ marginRight: 10 }}
-            maxLength={5}
-            isInput
-            value={time}
-            onChangeText={onTimeChange}
-          />
-        )}
+        <FormButton
+          title={timeInputPlaceholder}
+          iconXml={timeInputPlaceholder === "Время" ? clock(textColors.grey) : undefined}
+          onFocus={() => setTimeInputPlaceholder("чч:мм")}
+          onBlur={() => setTimeInputPlaceholder("Время")}
+          iconActiveXml={clock(textColors.blue)}
+          style={{ marginRight: 10 }}
+          textColor={isTimeExpired ? textColors.red : time.length === 5 ? textColors.blue : textColors.black}
+          maxLength={5}
+          isInput
+          value={time}
+          onChangeText={onTimeChange}
+        />
         <FormButton
           title={calendarShown || keyboardHeight > 0 ? "Готово" : "Сохранить"}
           onPress={onSubmit}

@@ -12,8 +12,8 @@ import {
   borderSmoothing,
   regularBorderRadius,
 } from "../../../styles/global/borderRadiuses";
-import { cardColors } from "../../../styles/global/colors";
-import { text12LineHeight, text16LineHeight, textGrey } from "../../../styles/global/texts";
+import { cardColors, textColors } from "../../../styles/global/colors";
+import { text12LineHeight, text16LineHeight, textGrey, textRed } from "../../../styles/global/texts";
 import { FOR_WEEK, TODAY, TOMORROW } from "../../../utils/constants/periods";
 import { getDate, isToday, isTomorrow } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -31,6 +31,7 @@ const Task: FC<TaskPropTypes> = ({
   isCompleted,
   completeTask,
   folder,
+  isExpired,
   remindTime
 }) => {
   const dispatch: AppDispatch = useDispatch();
@@ -46,6 +47,7 @@ const Task: FC<TaskPropTypes> = ({
         description,
         timeType,
         folder,
+        isExpired,
         remindTime
       })
     );
@@ -70,7 +72,7 @@ const Task: FC<TaskPropTypes> = ({
     }
     xml = calendarEventGrey;
   } else {
-    xml = clock;
+    xml = clock( isExpired ? textColors.red : textColors.grey );
   }
 
   if (timeType === "time") {
@@ -103,7 +105,7 @@ const Task: FC<TaskPropTypes> = ({
                 xml={xml}
                 style={{ marginRight: 5 }}
               />
-              <Text style={[text12LineHeight, textGrey]}>
+              <Text style={[text12LineHeight, isExpired ? textRed : textGrey]}>
                 {timeString}
               </Text>
             </View>

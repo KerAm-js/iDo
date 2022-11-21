@@ -3,7 +3,7 @@ import { Pressable } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 import { AnimatedButtonPropTypes } from "./types";
 
-const AnimatedButton: FC<AnimatedButtonPropTypes> = ({ children, onPress, style }) => {
+const AnimatedButton: FC<AnimatedButtonPropTypes> = ({ children, onPress, disabled, style }) => {
 
   const scale = useSharedValue(1);
 
@@ -23,7 +23,7 @@ const AnimatedButton: FC<AnimatedButtonPropTypes> = ({ children, onPress, style 
 
   return (
     <Animated.View style={[ styles, style ]}>
-      <Pressable onPress={onPressHandler}>
+      <Pressable disabled={disabled} onPress={onPressHandler}>
       {children}
       </Pressable>
     </Animated.View>

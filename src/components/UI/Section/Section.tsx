@@ -31,7 +31,7 @@ import {
   completeTaskAction,
   deleteTaskAction,
 } from "../../../redux/actions/taskActions";
-import { sortTasks } from "../../../utils/section/sections";
+import { getSectionListEmptyMessage, getSectionTitle, sortTasks } from "../../../utils/section/sections";
 import { SvgXml } from "react-native-svg";
 
 const TaskMargin = 10;
@@ -194,23 +194,8 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     }
   }, [list.length]);
 
-  let clearListMessage = `Что планируете ${languageTexts["ru"].periods[
-    title
-  ].toLowerCase()}?`;
-  let titleString: string = title;
-
-  if (title === FOR_TODAY) {
-    clearListMessage = `Что делаем ${languageTexts["ru"].periods[
-      TODAY
-    ].toLowerCase()}?`;
-  } else if (title === FOR_TOMORROW) {
-    clearListMessage = `Какие планы ${languageTexts["ru"].periods[
-      title
-    ].toLowerCase()}?`;
-  } else if (title === FOR_WEEK) {
-    const currDay = new Date().getDay();
-    titleString = currDay === 0 || currDay === 6 ? "nextWeek" : title;
-  }
+  const titleString = getSectionTitle(title);
+  const clearListMessage = getSectionListEmptyMessage(title);
 
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>

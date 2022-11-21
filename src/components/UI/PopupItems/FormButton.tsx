@@ -1,5 +1,5 @@
 import React, { FC, useRef } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Text, TextInput } from "react-native";
 import { SquircleView } from "react-native-figma-squircle";
 import { SvgXml } from "react-native-svg";
 import {
@@ -10,13 +10,14 @@ import { backgroundColors, textColors } from "../../../styles/global/colors";
 import { text17Input, text17LineHeight } from "../../../styles/global/texts";
 import AnimatedButton from "../../Layouts/AnimatedButton/AnimatedButton";
 import { popupItemStyles } from "./styles";
-import { ButtonPropType } from "./types";
+import { FormButtonPropType } from "./types";
 
-const FormButton: FC<ButtonPropType> = ({
+const FormButton: FC<FormButtonPropType> = ({
   title,
   iconXml,
   iconActiveXml,
   isInput,
+  textColor,
   onPress,
   style,
   ...props
@@ -61,7 +62,7 @@ const FormButton: FC<ButtonPropType> = ({
             placeholderTextColor={textColors.grey}
             style={[
               text17Input,
-              props.value?.length === props.maxLength && { color: textColors.blue },
+              { color: textColor }
             ]}
             {...props}
           />

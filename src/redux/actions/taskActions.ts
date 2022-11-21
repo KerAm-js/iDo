@@ -1,4 +1,4 @@
-import { TaskData, TaskType, TimeType } from "./../types/task";
+import { TaskType, TimeType } from "./../types/task";
 import {
   CHOOSE_TASK_TO_EDIT,
   COMPLETE_TASK,
@@ -14,9 +14,19 @@ import {
   ADD_TASK,
   UPDATE_GESTURE_POSITIONS,
 } from "../constants/task";
+import { setNotification } from "../../native/notifications";
 
 
-export const addTaskAction = (task: TaskType) => (dispath: Dispatch) => {
+export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
+  if (task.remindTime) {
+    const currentDate = new Date().valueOf();
+    const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
+    const notificationId = await setNotification(
+      "Напоминание", 
+      `${task.task}`, 
+      notificationTime
+    );
+  }
   dispath({ type: ADD_TASK, task });
 };
 

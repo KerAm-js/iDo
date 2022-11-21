@@ -1,11 +1,11 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { Pressable, Text } from "react-native";
 import { backgroundColors, textColors } from "../../../styles/global/colors";
 import { text17, textGrey, textRed } from "../../../styles/global/texts";
 import { calendarStyles } from "./styles";
 import { DateItemPropType } from "./types";
 
-const DateItem: FC<DateItemPropType> = ({
+const DateItem: FC<DateItemPropType> = React.memo(({
   data: { date, isCurrentMonth },
   onClick,
   isSelected,
@@ -15,7 +15,6 @@ const DateItem: FC<DateItemPropType> = ({
   };
 
   const isExpired = new Date().getMonth() === date.getMonth() && (new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24)
-
   return (
     <Pressable
       style={[
@@ -36,6 +35,12 @@ const DateItem: FC<DateItemPropType> = ({
       </Text>
     </Pressable>
   );
-};
+}, (prevProps, currProps) => {
+  if (prevProps.isSelected === currProps.isSelected) {
+    return true;
+  } else {
+    return false;
+  }
+});
 
 export default DateItem;

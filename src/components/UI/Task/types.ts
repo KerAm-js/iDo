@@ -1,14 +1,16 @@
+import { HomePeriodsKeys } from './../../../types/constants';
 import { TimeType } from './../../../redux/types/task';
 import { FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../types/constants";
 
 export type TaskPropTypes = {
   id: string;
   task: string;
-  description: string;
+  description?: string;
   time: number;
   timeType: TimeType,
-  sectionType?: FOR_TODAY | FOR_TOMORROW | FOR_WEEK;
+  sectionType?: HomePeriodsKeys;
   isCompleted: boolean;
+  isExpired: boolean,
   folder?: string,
   remindTime?: number,
   completeTask: (id: string) => void;

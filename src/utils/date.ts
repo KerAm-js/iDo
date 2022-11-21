@@ -1,5 +1,5 @@
 import { CalendarMonthItemType } from "../components/UI/Calendar/types";
-import { CHOOSE, TODAY, TOMORROW } from "./constants/periods";
+import { CHOOSE, TODAY, TOMORROW, YESTERDAY } from "./constants/periods";
 import { languageTexts } from "./languageTexts";
 
 export const getDate = (
@@ -21,31 +21,50 @@ export const getDate = (
   };
 };
 
+export const isExpiredDate = (date: Date) => {
+  const currDate = new Date();
+  const dateCopy = new Date(date.valueOf());
+  return dateCopy.setHours(0, 0, 0, 0) < currDate.setHours(0, 0, 0, 0);
+};
+
+export const isYesterday = (date: Date) => {
+  const currDate = new Date();
+  const dateCopy = new Date(date.valueOf());
+  const yesterday = new Date(
+    currDate.getFullYear(),
+    currDate.getMonth(),
+    currDate.getDate() - 1
+  );
+  return (
+    dateCopy.setHours(0, 0, 0, 0) === yesterday.setHours(0, 0, 0, 0)
+  );
+};
+
 export const isToday = (date: Date) => {
   const currDate = new Date();
+  const dateCopy = new Date(date.valueOf());
   return (
-    date.getFullYear() === currDate.getFullYear() &&
-    date.getMonth() === currDate.getMonth() &&
-    date.getDate() === currDate.getDate()
+    currDate.setHours(0, 0, 0, 0) === dateCopy.setHours(0, 0, 0, 0)
   );
 };
 
 export const isTomorrow = (date: Date) => {
   const currDate = new Date();
+  const dateCopy = new Date(date.valueOf());
   const tomorrowDate = new Date(
     currDate.getFullYear(),
     currDate.getMonth(),
     currDate.getDate() + 1
   );
   return (
-    date.getFullYear() === currDate.getFullYear() &&
-    date.getMonth() === currDate.getMonth() &&
-    date.getDate() === tomorrowDate.getDate()
+    dateCopy.setHours(0, 0, 0, 0) === tomorrowDate.setHours(0, 0, 0, 0)
   );
 };
 
 export const extractCalendarState = (date: Date) => {
-  if (isToday(date)) {
+  if (isYesterday(date)) {
+    return YESTERDAY;
+  } else if (isToday(date)) {
     return TODAY;
   } else if (isTomorrow(date)) {
     return TOMORROW;
@@ -100,14 +119,17 @@ export const getCalendarArray = (
   fromDate: Date,
   monthsCount: number
 ): Array<CalendarMonthItemType> => {
-
   const result: Array<CalendarMonthItemType> = [];
 
   if (monthsCount < 0) {
     return [];
   }
-  
-  for (let i = fromDate.getMonth(); i <= fromDate.getMonth() + monthsCount; i++) {
+
+  for (
+    let i = fromDate.getMonth();
+    i <= fromDate.getMonth() + monthsCount;
+    i++
+  ) {
     result.push(getMothCalendarArray(i, fromDate.getFullYear()));
   }
 

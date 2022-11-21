@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useState } from "react";
+import React, { FC, useEffect, useMemo, useRef, useState } from "react";
 import {
   Dimensions,
   NativeScrollEvent,
@@ -13,12 +13,14 @@ import List from "./List";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, CalendarPropType } from "./types";
 
+
 const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
   const { width: WIDTH } = Dimensions.get("screen");
   const currDate = new Date();
   const weekDaysArr = languageTexts["ru"].weekDays.shorts;
   const weekDays = [weekDaysArr[1], ...weekDaysArr.slice(2), weekDaysArr[0]];
   const currentIndex = 0;
+  const scrollViewRef = useRef(null);
   const [title, setTitle] = useState<string>(
     getMonthName("ru", currDate.getMonth()) + " " + currDate.getFullYear()
   );
@@ -63,7 +65,7 @@ const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
 
   const renderList = useMemo(
     () => (
-      <List state={state} date={date} setDate={setDate} onScroll={onScroll} />
+      <List reference={scrollViewRef} state={state} date={date} setDate={setDate} onScroll={onScroll} />
     ),
     [state, date]
   );

@@ -2,7 +2,7 @@ import React, { FC, useEffect, useRef, useState } from "react";
 import { ScrollView, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { bell, bellActive } from "../../../../assets/icons/bell";
-import { clock, clockActive } from "../../../../assets/icons/clock";
+import { clock } from "../../../../assets/icons/clock";
 import { penFill } from "../../../../assets/icons/penFill";
 import { plus } from "../../../../assets/icons/plus";
 import { repeat, repeatActive } from "../../../../assets/icons/repeat";
@@ -15,6 +15,7 @@ import {
 import { folderSelector } from "../../../redux/selectors/folderSelector";
 import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
+import { textColors } from "../../../styles/global/colors";
 import {
   text14,
   text16Input,
@@ -66,6 +67,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       ).valueOf();
     const timeType = newTaskData.timeType || "day";
     const remindTime = newTaskData.remindTime;
+    const isExpired = new Date(time) <= new Date();
     if (task.length > 0) {
       dispatch(
         !!taskToEdit
@@ -78,16 +80,17 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               folder: choosedFolder,
               time,
               timeType,
+              isExpired,
               remindTime,
             })
           : addTaskAction({
               id: `${new Date().toString()}`,
-              // id: `${task}`,
               isCompleted: false,
               task,
               description,
               folder: choosedFolder,
               time,
+              isExpired,
               timeType,
               remindTime,
             })
@@ -185,12 +188,12 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       <View style={[addTaskPopupStyles.buttonsContainer]}>
         <View style={[addTaskPopupStyles.settingButtonContainer]}>
           <IconButton
-            xml={
+            xml={clock(
               (newTaskData.time && newTaskData.timeType) ||
-              (taskToEdit && taskToEdit.time)
-                ? clockActive
-                : clock
-            }
+                (taskToEdit && taskToEdit.time)
+                ? textColors.blue
+                : textColors.grey
+            )}
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
@@ -212,7 +215,11 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
-            onClick={openReminderModal}
+            onClick={
+              newTaskData.time && newTaskData.timeType
+                ? openReminderModal
+                : undefined
+            }
           />
         </View>
         <CircleButton

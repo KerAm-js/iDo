@@ -34,6 +34,7 @@ export interface TaskType {
   completingTime?: number,
   time: number;
   timeType: TimeType,
+  isExpired: boolean,
   remindTime?: number,
   description?: string;
   folder?: string,
