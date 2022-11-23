@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { headerStyle, headerTitleStyle } from "../../../styles/header";
 import { rootTabNavigatorParamList } from "./types";
 import Folders from "../../screens/Folders/Folders";
@@ -82,6 +82,10 @@ const TabNavigator: FC = () => {
     setAddTaskModalVisible(taskToEdit ? true : false);
   }, [taskToEdit]);
 
+  const renderHome = useCallback(() => (
+    <Home periodsState={periodsState} showSettingModal={openModal} />
+  ), [periodsState])
+
   return (
     <>
       <ModalLayout visible={modalVisible} close={closeModal}>
@@ -145,9 +149,7 @@ const TabNavigator: FC = () => {
       >
         <Tab.Screen
           name="Home"
-          children={() => (
-            <Home periodsState={periodsState} showSettingModal={openModal} />
-          )}
+          children={renderHome}
           options={{
             title: date,
             tabBarLabel: "Главная",

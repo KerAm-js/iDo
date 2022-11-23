@@ -15,6 +15,8 @@ const Home: FC<HomePropType> = ({ showSettingModal, periodsState }) => {
   const { tasks } = useSelector(taskSelector);
   const sections: SectionsType[] = getSections(periodsState, tasks);
 
+  console.log('ok');
+
   return (
     <ScreenLayout
       title={date}

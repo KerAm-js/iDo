@@ -17,7 +17,6 @@ import { taskSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { textColors } from "../../../styles/global/colors";
 import {
-  text14,
   text16Input,
   text17Input,
   textSemiBold,
