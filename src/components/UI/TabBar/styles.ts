@@ -5,9 +5,6 @@ export const tabBarStyles = StyleSheet.create({
   container: {
     flexDirection: "row",
     paddingHorizontal: 0,
-    backgroundColor: backgroundColors.white,
-    borderTopColor: lineColors.grey,
-    borderTopWidth: 1,
   },
   buttonContainer: {
     alignItems: "center",

@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
-import TabNavigator from './src/components/Navigators/Tab/TabNavigator';
+import Root from './src/components/Navigators/Root/Root';
 import { store } from './src/redux/store';
 
 export default function App() {
@@ -9,7 +9,7 @@ export default function App() {
     <Provider store={store}>
       <SafeAreaProvider>
         <NavigationContainer>
-          <TabNavigator />
+          <Root />
         </NavigationContainer>
       </SafeAreaProvider>
     </Provider>

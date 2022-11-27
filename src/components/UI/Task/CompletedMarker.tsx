@@ -32,16 +32,16 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
   }, [top.value, opacity.value]);
 
   return (
-    <Animated.View style={[containerStyle]}>
-      <Pressable onPress={onPress} style={[completedMarkerStyles.container]}>
-        <Text style={[text12]}>Выполнено</Text>
-        <Animated.View style={[iconStyle]}>
+    <Animated.View style={[containerStyle, completedMarkerStyles.container]}>
+      <Pressable onPress={onPress} style={completedMarkerStyles.content}>
+        <Text style={text12}>Выполнено</Text>
+        <Animated.View style={iconStyle}>
           <SvgXml
             xml={arrowBottom}
             width={9}
             height={9}
             color={textColors.black}
-            style={[completedMarkerStyles.icon]}
+            style={completedMarkerStyles.icon}
           />
         </Animated.View>
       </Pressable>

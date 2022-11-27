@@ -11,7 +11,7 @@ import {
   updateNewTaskRemindTimeAction,
   updateNewTaskTimeAction,
 } from "../../../redux/actions/taskActions";
-import { taskSelector } from "../../../redux/selectors/taskSelector";
+import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { TimeType } from "../../../redux/types/task";
 import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
@@ -60,9 +60,9 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 }) => {
   const texts = languageTexts["ru"];
   const dispatch: AppDispatch = useDispatch();
-  const { taskToEdit, newTaskData } = useSelector(taskSelector);
+  const { taskToEdit, newTaskData } = useSelector(taskStateSelector);
   const [date, setDate] = useState<Date>(new Date());
-  const [time, setTime, onTimeChange, isTimeExpired] = useTimeValidation(date);
+  const [time, setTime, onTimeChange, isTimeValid, isTimeExpired] = useTimeValidation(date);
   const [state, setState] = useState<string>();
   const [calendarShown, setCalendarShown] = useState<boolean>(false);
   const [timeInputPlaceholder, setTimeInputPlaceholder] =
@@ -82,7 +82,9 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   const keyboardHeight = useKeyboard();
 
   const translateX = useSharedValue(0);
-  const translateFormButtonY = useSharedValue(keyboardHeight > 0 ? keyboardHeight - 30 : 0);
+  const translateFormButtonY = useSharedValue(
+    keyboardHeight > 0 ? keyboardHeight - 30 : 0
+  );
 
   const scrollViewsStyle = useAnimatedStyle(() => {
     return {
@@ -106,7 +108,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     const isCurrYear = currDate.getFullYear() === newDate.getFullYear();
     const dateText = getDate("ru", { date: newDate }).date;
     setChooseItemTitle(
-      isCurrYear ? dateText : dateText + ", " + date.getFullYear()
+      isCurrYear ? dateText : dateText + ", " + newDate.getFullYear()
     );
   };
 
@@ -151,13 +153,9 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   const addTime = (date: Date, time: string) => {
     const hours = time.slice(0, 2);
     const minutes = time.slice(3, 5);
-    const isTimeCorrect =
-      !(isNaN(Number(hours)) && isNaN(Number(minutes))) &&
-      hours.length === 2 &&
-      minutes.length === 2;
-    const timeType: TimeType = time && isTimeCorrect ? "time" : "day";
+    const timeType: TimeType = time && isTimeValid ? "time" : "day";
     const taskTime: Date =
-      time && isTimeCorrect
+      time && isTimeValid
         ? new Date(
             date.getFullYear(),
             date.getMonth(),
@@ -189,7 +187,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     closePopup();
   };
 
-  const onItemClick = (state: string, newDate: Date) => {
+  const onItemClick = (state: string, newDate?: Date) => {
     if (state === CHOOSE) {
       if (calendarShown) {
         setCalendarShown(false);
@@ -197,7 +195,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         setCalendarShown(true);
         updateChoosedTitle(date);
       }
-    } else {
+    } else if (newDate) {
       setChooseItemTitle(texts.words[CHOOSE]);
       setCalendarShown(false);
       setDate(newDate);
@@ -222,6 +220,9 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     setDate(newDate);
     updateChoosedTitle(newDate);
   };
+
+  const onTimeInputFocus = () => setTimeInputPlaceholder("чч:мм");
+  const onTimeInputBlur = () => setTimeInputPlaceholder("Время");
 
   useEffect(() => {
     translateFormButtonY.value = withTiming(
@@ -273,7 +274,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
             {reminderData.map((item) => (
               <ReminderCheckItem
                 key={item.id}
-                onPress={(newDate: Date) => onItemClick(item.id, newDate)}
+                onPress={onItemClick}
                 isChecked={state === item.id}
                 {...item}
               />
@@ -281,8 +282,9 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
             <DateCheckItem
               title={chooseItemTitle}
               isChecked={state === CHOOSE}
+              state={CHOOSE}
               isToggleCalendarShownComponent
-              onPress={() => onItemClick(CHOOSE, date)}
+              onPress={onItemClick}
             />
           </Animated.View>
         ) : (
@@ -291,19 +293,22 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
               title={texts.periods[TODAY]}
               date={currDate}
               isChecked={state === TODAY}
-              onPress={() => onItemClick(TODAY, currDate)}
+              state={TODAY}
+              onPress={onItemClick}
             />
             <DateCheckItem
               title={texts.periods[TOMORROW]}
               date={tomorrowDate}
               isChecked={state === TOMORROW}
-              onPress={() => onItemClick(TOMORROW, tomorrowDate)}
+              state={TOMORROW}
+              onPress={onItemClick}
             />
             <DateCheckItem
               title={chooseItemTitle}
               isChecked={state === CHOOSE}
+              state={CHOOSE}
               isToggleCalendarShownComponent
-              onPress={() => onItemClick(CHOOSE, date)}
+              onPress={onItemClick}
             />
           </Animated.View>
         )}
@@ -318,12 +323,25 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       >
         <FormButton
           title={timeInputPlaceholder}
-          iconXml={timeInputPlaceholder === "Время" ? clock(textColors.grey) : undefined}
-          onFocus={() => setTimeInputPlaceholder("чч:мм")}
-          onBlur={() => setTimeInputPlaceholder("Время")}
-          iconActiveXml={clock(textColors.blue)}
+          iconXml={
+            clock(
+              isTimeExpired && time.length > 0
+                ? textColors.red
+                : isTimeValid 
+                  ? textColors.blue 
+                  : textColors.grey
+            )
+          }
+          onFocus={onTimeInputFocus}
+          onBlur={onTimeInputBlur}
           style={{ marginRight: 10 }}
-          textColor={isTimeExpired ? textColors.red : time.length === 5 ? textColors.blue : textColors.black}
+          textColor={
+            isTimeExpired
+              ? textColors.red
+              : time.length === 5
+              ? textColors.blue
+              : textColors.black
+          }
           maxLength={5}
           isInput
           value={time}

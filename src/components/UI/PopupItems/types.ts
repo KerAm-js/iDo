@@ -14,19 +14,21 @@ export type CheckItemPropType = {
 
 export type DateCheckItemPropType = {
   title: string;
+  state: string,
   isChecked: boolean,
   date?: Date,
   isToggleCalendarShownComponent?: boolean,
-  onPress: () => void;
+  onPress: (state: string, date?: Date) => void;
 }
 
 export type ReminderCheckItemPropType = {
+  id: string,
   minutes?: number,
   hours?: number,
   days?: number,
   weeks?: number,
   isChecked: boolean,
-  onPress: (date: Date) => void;
+  onPress: (id: string, date: Date) => void;
 }
 
 export interface FormButtonPropType extends TextInputProps {
@@ -35,6 +37,5 @@ export interface FormButtonPropType extends TextInputProps {
   title: string,
   onPress?: () => void,
   iconXml?: string,
-  iconActiveXml?: string,
   isInput?: boolean,
 }

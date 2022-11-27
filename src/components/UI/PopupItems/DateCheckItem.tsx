@@ -24,13 +24,16 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
   title,
   onPress,
   date,
+  state,
   isToggleCalendarShownComponent,
   isChecked,
 }) => {
   const { weekDay } = getDate("ru", { date: date, isShort: true });
-
+  const onPressHandler = () => {
+    onPress(state, date);
+  }
   return (
-    <Pressable onPress={onPress}>
+    <Pressable onPress={onPressHandler}>
       <SquircleView
         style={[popupItemStyles.listItem]}
         squircleParams={{

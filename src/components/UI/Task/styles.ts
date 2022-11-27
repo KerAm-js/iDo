@@ -24,6 +24,10 @@ export const taskStyles = StyleSheet.create({
 
 export const completedMarkerStyles = StyleSheet.create({
   container: {
+    position: 'absolute',
+    zIndex: -100,
+  },
+  content: {
     paddingVertical: 4,
     paddingHorizontal: 7,
     flexDirection: "row",
@@ -31,7 +35,6 @@ export const completedMarkerStyles = StyleSheet.create({
     backgroundColor: cardColors.white,
     borderRadius: 4,
     marginBottom: 10,
-    position: 'absolute',
   },
   icon: {
     marginLeft: 2,

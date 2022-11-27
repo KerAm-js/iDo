@@ -2,7 +2,7 @@ import React, { FC, useEffect } from "react";
 import { Pressable, Text } from "react-native";
 import { SquircleView } from "react-native-figma-squircle";
 import { useSelector } from "react-redux";
-import { taskSelector } from "../../../redux/selectors/taskSelector";
+import { getNewTaskData } from "../../../redux/selectors/taskSelector";
 import {
   borderSmoothing,
   smallBorderRadius,
@@ -16,6 +16,7 @@ import { popupItemStyles } from "./styles";
 import { ReminderCheckItemPropType } from "./types";
 
 const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
+  id,
   minutes = 0,
   hours = 0,
   days = 0,
@@ -23,7 +24,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   onPress,
   isChecked,
 }) => {
-  const { newTaskData } = useSelector(taskSelector);
+  const newTaskData = useSelector(getNewTaskData);
   const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
   const isCurrentYear = new Date().getFullYear() === date.getFullYear();
   const calendarState = extractCalendarState(date);
@@ -63,13 +64,13 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   const disabled = new Date() > remindDate;
 
   const onPressHandler = () => {
-    onPress(remindDate);
+    onPress(id, remindDate);
   };
 
   return (
     <Pressable disabled={disabled} onPress={onPressHandler}>
       <SquircleView
-        style={[popupItemStyles.listItem]}
+        style={popupItemStyles.listItem}
         squircleParams={{
           cornerSmoothing: borderSmoothing,
           cornerRadius: smallBorderRadius,

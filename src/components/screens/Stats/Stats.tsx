@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { Text, SafeAreaView, View } from "react-native";
+import { View } from "react-native";
 import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
 
 const Stats: FC = () => {

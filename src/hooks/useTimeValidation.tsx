@@ -4,9 +4,10 @@ import { hoursRegex, miniutesRegex } from "../utils/regex";
 
 export const useTimeValidation = (
   date: Date
-): [string, (value: string) => void, (value: string) => void, boolean] => {
+): [string, (value: string) => void, (value: string) => void, boolean, boolean] => {
   const [time, setTime] = useState<string>("");
   const [isExpired, setIsExpired] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(false);
 
   const onChange = (value: string) => {
     let newString = value;
@@ -45,7 +46,15 @@ export const useTimeValidation = (
         setIsExpired(false);
       }
     }
-  }, [time]);
 
-  return [time, setTime, onChange, isExpired];
+    const isTimeCorrect =
+      !(isNaN(Number(hours)) && isNaN(Number(minutes))) &&
+      hours.length === 2 &&
+      minutes.length === 2;
+    
+    setIsValid(isTimeCorrect && time.length === 5);
+
+  }, [time, date]);
+
+  return [time, setTime, onChange, isValid, isExpired];
 };

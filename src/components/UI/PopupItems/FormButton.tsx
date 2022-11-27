@@ -15,7 +15,6 @@ import { FormButtonPropType } from "./types";
 const FormButton: FC<FormButtonPropType> = ({
   title,
   iconXml,
-  iconActiveXml,
   isInput,
   textColor,
   onPress,
@@ -43,13 +42,7 @@ const FormButton: FC<FormButtonPropType> = ({
         {iconXml && (
           <SvgXml
             style={[popupItemStyles.buttonIcon]}
-            xml={
-              iconActiveXml
-                ? props.value?.length === props.maxLength
-                  ? iconActiveXml
-                  : iconXml
-                : iconXml
-            }
+            xml={iconXml}
             width={20}
             height={20}
           />

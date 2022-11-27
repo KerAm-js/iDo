@@ -21,7 +21,7 @@ const TabBar: FC<TabBarPropTypes> = ({ state, descriptors, navigation, onBigButt
         navigation={navigation}
         number={1}
       />
-      <View style={[tabBarStyles.circleButtonContainer, ]}>
+      <View style={tabBarStyles.circleButtonContainer}>
         <CircleButton xml={plus} onClick={onCircleButtonClick} size="big" />
       </View>
       <TabsRender

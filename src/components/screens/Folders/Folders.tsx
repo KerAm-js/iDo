@@ -10,5 +10,5 @@ const Folders: FC = () => {
     </ScreenLayout>
   );
 };
-
+ 
 export default Folders;

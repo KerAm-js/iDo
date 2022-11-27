@@ -18,7 +18,10 @@ export type MovableItemProps = {
   gesturePositions: { value: GesturePositionsType},
   itemHeight: number,
   component: FC<TaskPropTypes>,
-  componentProps: TaskPropTypes,
+  componentProps: TaskType,
+  completeTask: (id: string) => void,
+  deleteTask: (id: string) => void,
+  sectionType: HomePeriodsKeys,
   upperBound: number,
 }
 

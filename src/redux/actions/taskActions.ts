@@ -46,10 +46,6 @@ export const updateNewTaskRemindTimeAction = (remindTime: number) => (dispatch: 
   dispatch({ type: UPDATE_TASK_REMIND_TIME, remindTime });
 };
 
-export const setDefaultTaskDataAction = () => (dispatch: Dispatch) => {
-  dispatch({ type: SET_DEFAULT_TASK_DATA });
-};
-
 export const chooseTaskToEditAction = (task: TaskType | undefined) => (dispatch: Dispatch) => {
   dispatch({ type: CHOOSE_TASK_TO_EDIT, task });
 };

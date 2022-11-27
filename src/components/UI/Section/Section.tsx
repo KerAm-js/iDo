@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
 import { textGrey, textSemiBold, title22 } from "../../../styles/global/texts";
@@ -19,19 +19,18 @@ import { ListObject } from "../../../types/global/ListObject";
 import { GesturePositionsType } from "../../../types/global/GesturePositions";
 import { languageTexts } from "../../../utils/languageTexts";
 import ClearList from "../ClearList/ClearList";
-import {
-  FOR_TODAY,
-  FOR_TOMORROW,
-  FOR_WEEK,
-  TODAY,
-} from "../../../utils/constants/periods";
+import { FOR_TODAY, FOR_TOMORROW } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { useDispatch } from "react-redux";
 import {
   completeTaskAction,
   deleteTaskAction,
 } from "../../../redux/actions/taskActions";
-import { getSectionListEmptyMessage, getSectionTitle, sortTasks } from "../../../utils/section/sections";
+import {
+  getSectionListEmptyMessage,
+  getSectionTitle,
+  sortTasks,
+} from "../../../utils/section/sections";
 import { SvgXml } from "react-native-svg";
 
 const TaskMargin = 10;
@@ -40,13 +39,13 @@ const TaskHeight = 62 + TaskMargin;
 const emptyListHeight = 220;
 const baseHeight = 44;
 
-const Section: FC<SectionProps> = ({ title, list }) => {
+const Section: FC<SectionProps> = React.memo(({ title, list }) => {
   const dispatch: AppDispatch = useDispatch();
   const gesturePositions = useSharedValue<GesturePositionsType>({});
   const [sortedTasks, completedTasksLength] = sortTasks(
     list,
     gesturePositions,
-    title !== FOR_TODAY && title !== FOR_TOMORROW,
+    title !== FOR_TODAY && title !== FOR_TOMORROW
   );
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -145,14 +144,20 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     }
   };
 
-  const completeTask = (id: string) => {
-    dispatch(completeTaskAction(id));
-  };
+  const completeTask = useCallback(
+    (id: string) => {
+      dispatch(completeTaskAction(id));
+    },
+    [dispatch]
+  );
 
-  const deleteTask = (id: string) => {
-    setIsDeleting(true);
-    dispatch(deleteTaskAction(id));
-  };
+  const deleteTask = useCallback(
+    (id: string) => {
+      setIsDeleting(true);
+      dispatch(deleteTaskAction(id));
+    },
+    [dispatch]
+  );
 
   const runEffectAnimations = () => {
     emptyListImageOpacity.value =
@@ -194,9 +199,9 @@ const Section: FC<SectionProps> = ({ title, list }) => {
     }
   }, [list.length]);
 
-  const titleString = getSectionTitle(title);
+  const titleString = languageTexts["ru"].periods[getSectionTitle(title)];
   const clearListMessage = getSectionListEmptyMessage(title);
-
+  
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
       <Pressable
@@ -204,9 +209,7 @@ const Section: FC<SectionProps> = ({ title, list }) => {
         style={sectionStyles.headerContainer}
       >
         <View style={sectionStyles.headerTextContainer}>
-          <Text style={[title22]}>
-            {languageTexts["ru"].periods[titleString]}
-          </Text>
+          <Text style={[title22]}>{titleString}</Text>
           {list.length > 0 && (
             <Text style={[textGrey, textSemiBold, sectionStyles.counter]}>
               {`${completedTasksLength}/${sortedTasks.length}`}
@@ -244,12 +247,10 @@ const Section: FC<SectionProps> = ({ title, list }) => {
                 id={item.id}
                 itemHeight={TaskHeight}
                 component={Task}
-                componentProps={{
-                  ...item,
-                  completeTask,
-                  deleteTask,
-                  sectionType: title,
-                }}
+                componentProps={item}
+                completeTask={completeTask}
+                deleteTask={deleteTask}
+                sectionType={title}
                 upperBound={upperBound}
                 opacity={item.isCompleted ? completedListOpacity : opacity}
               />
@@ -263,6 +264,6 @@ const Section: FC<SectionProps> = ({ title, list }) => {
       </Animated.View>
     </Animated.View>
   );
-};
+});
 
 export default Section;

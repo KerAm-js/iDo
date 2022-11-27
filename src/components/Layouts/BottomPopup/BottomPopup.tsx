@@ -25,13 +25,14 @@ const BottomPopup: FC<BottomPopupPropType> = ({
 
   const translateY = useSharedValue(0);
 
-  const containerStyle = useAnimatedStyle(() => {
+  const containerStyleR = useAnimatedStyle(() => {
     return {
       transform: [{ translateY: translateY.value }],
       paddingBottom: (bottom || 5) + 15,
       maxHeight: SCREEN_HEIGHT - top
     };
   }, [translateY, bottom]);
+
 
   const onLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
@@ -61,7 +62,7 @@ const BottomPopup: FC<BottomPopupPropType> = ({
   return (
     <Animated.View
       onLayout={onLayout}
-      style={[bottomPopupStyles.container, containerStyle]}
+      style={[containerStyleR, bottomPopupStyles.container]}
     >
       <View>
         {title && (

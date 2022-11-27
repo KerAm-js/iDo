@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 import { bigBorderRadius } from "../../../styles/global/borderRadiuses";
-import { cardColors, lineColors } from "../../../styles/global/colors";
+import { cardColors } from "../../../styles/global/colors";
 
 export const bottomPopupStyles = StyleSheet.create({
   container: {

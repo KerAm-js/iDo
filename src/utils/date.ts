@@ -21,6 +21,14 @@ export const getDate = (
   };
 };
 
+export const getDaysDiff = (first: Date, second: Date): number => {
+  return (
+    (new Date(second).setHours(0, 0, 0, 0) -
+      new Date(first).setHours(0, 0, 0, 0)) /
+    (1000 * 3600 * 24)
+  );
+};
+
 export const isExpiredDate = (date: Date) => {
   const currDate = new Date();
   const dateCopy = new Date(date.valueOf());
@@ -35,17 +43,13 @@ export const isYesterday = (date: Date) => {
     currDate.getMonth(),
     currDate.getDate() - 1
   );
-  return (
-    dateCopy.setHours(0, 0, 0, 0) === yesterday.setHours(0, 0, 0, 0)
-  );
+  return dateCopy.setHours(0, 0, 0, 0) === yesterday.setHours(0, 0, 0, 0);
 };
 
 export const isToday = (date: Date) => {
   const currDate = new Date();
   const dateCopy = new Date(date.valueOf());
-  return (
-    currDate.setHours(0, 0, 0, 0) === dateCopy.setHours(0, 0, 0, 0)
-  );
+  return currDate.setHours(0, 0, 0, 0) === dateCopy.setHours(0, 0, 0, 0);
 };
 
 export const isTomorrow = (date: Date) => {
@@ -56,9 +60,7 @@ export const isTomorrow = (date: Date) => {
     currDate.getMonth(),
     currDate.getDate() + 1
   );
-  return (
-    dateCopy.setHours(0, 0, 0, 0) === tomorrowDate.setHours(0, 0, 0, 0)
-  );
+  return dateCopy.setHours(0, 0, 0, 0) === tomorrowDate.setHours(0, 0, 0, 0);
 };
 
 export const extractCalendarState = (date: Date) => {

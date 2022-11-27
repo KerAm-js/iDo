@@ -1,11 +1,18 @@
 import { GesturePositionsType } from "../../types/global/GesturePositions";
-import { EXPIRED, FOR_TODAY, FOR_TOMORROW, FOR_WEEK, TODAY } from "../constants/periods";
+import {
+  EXPIRED,
+  FOR_TODAY,
+  FOR_TOMORROW,
+  FOR_WEEK,
+  TODAY,
+} from "../constants/periods";
 import { SwitchPopupStateType } from "../../components/Popups/SwitchPopup/types";
 import { SectionsType } from "../../components/screens/Home/types";
 import { HomePeriodsKeys } from "../../types/constants";
 import { taskListToPositionsObject } from "./gesturePostions";
 import { TaskType } from "../../redux/types/task";
 import { languageTexts } from "../languageTexts";
+import { getDaysDiff } from "../date";
 
 export const getSectionListEmptyMessage = (title: HomePeriodsKeys) => {
   let clearListMessage = `Что планируете ${languageTexts["ru"].periods[
@@ -20,10 +27,12 @@ export const getSectionListEmptyMessage = (title: HomePeriodsKeys) => {
     clearListMessage = `Какие планы ${languageTexts["ru"].periods[
       title
     ].toLowerCase()}?`;
+  } else if (title === EXPIRED) {
+    clearListMessage = 'Нет просроченных задач';
   }
 
   return clearListMessage;
-}
+};
 
 export const getSectionTitle = (title: HomePeriodsKeys) => {
   if (title === FOR_WEEK) {
@@ -32,12 +41,12 @@ export const getSectionTitle = (title: HomePeriodsKeys) => {
   } else {
     return title;
   }
-}
+};
 
 export const sortTasks = (
   list: Array<TaskType>,
-  gesturePositions: {value: GesturePositionsType},
-  isMultipleDates?: boolean,
+  gesturePositions: { value: GesturePositionsType },
+  isMultipleDates?: boolean
 ): [Array<TaskType>, number, Array<TaskType>] => {
   const uncompletedList: Array<TaskType> = [];
   const completedList: Array<TaskType> = [];
@@ -55,7 +64,11 @@ export const sortTasks = (
   });
 
   const gesturesList = Object.keys(gesturePositions.value);
-  const newGesturePositions = taskListToPositionsObject(gesturePositions?.value, forDayList, isMultipleDates);
+  const newGesturePositions = taskListToPositionsObject(
+    gesturePositions?.value,
+    forDayList,
+    isMultipleDates
+  );
 
   uncompletedList.sort((prev, curr) => {
     const prevTime = new Date(prev.time).valueOf();
@@ -113,26 +126,33 @@ export const getSections = (
   ];
 
   tasks.forEach((task) => {
-    if (new Date(task.time) < new Date() && periodTasks[EXPIRED] ) {
-      periodTasks[EXPIRED].list.push(task);
-    }
-    if (new Date(task.time).getFullYear() - currYear === 0) {
-      const time = new Date(task.time);
-      const monthDiff = time.getMonth() - currMonth;
+    const time = new Date(task.time);
+    let timeBound = 7
 
-      if (monthDiff === 0) {
-        const dayDiff = (task.time - currDate.valueOf()) / (1000 * 60 * 60 * 24);
-        const isThisWeek = dayDiff < 7;
-        const isNextWeek = (currWeekDay === 6 || currWeekDay === 0) && (dayDiff < 9)
-        if (dayDiff < 0) {
-          return;
-        } else if (dayDiff < 1 && periodTasks[FOR_TODAY]) {
-          periodTasks[FOR_TODAY].list.push(task);
-        } else if (dayDiff < 2 && periodTasks[FOR_TOMORROW]) {
-          periodTasks[FOR_TOMORROW].list.push(task);
-        } else if ((isThisWeek || isNextWeek) && periodTasks[FOR_WEEK]) {
-          periodTasks[FOR_WEEK].list.push(task);
-        }
+    if (currWeekDay === 0) {
+      timeBound = 8
+    } else if (currWeekDay === 6) {
+      timeBound = 9
+    }
+
+    const isWeeklyTime = task.time < new Date(
+      currYear,
+      currMonth,
+      currDay + timeBound
+    ).valueOf();;
+
+    if (time < currDate && periodTasks[EXPIRED]) {
+      periodTasks[EXPIRED].list.push(task);
+    } else if (isWeeklyTime) {
+      const dayDiff = getDaysDiff(currDate, time);
+      if (dayDiff < 0) {
+        return;
+      } else if (dayDiff < 1 && periodTasks[FOR_TODAY]) {
+        periodTasks[FOR_TODAY].list.push(task);
+      } else if (dayDiff >= 1 && dayDiff < 2 && periodTasks[FOR_TOMORROW]) {
+        periodTasks[FOR_TOMORROW].list.push(task);
+      } else if (dayDiff >= 2 && periodTasks[FOR_WEEK]) {
+        periodTasks[FOR_WEEK].list.push(task);
       }
     }
   });

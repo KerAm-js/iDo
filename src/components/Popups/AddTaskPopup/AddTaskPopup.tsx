@@ -8,12 +8,10 @@ import { plus } from "../../../../assets/icons/plus";
 import { repeat, repeatActive } from "../../../../assets/icons/repeat";
 import {
   addTaskAction,
-  chooseTaskToEditAction,
   editTaskAction,
-  setDefaultTaskDataAction,
 } from "../../../redux/actions/taskActions";
 import { folderSelector } from "../../../redux/selectors/folderSelector";
-import { taskSelector } from "../../../redux/selectors/taskSelector";
+import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { textColors } from "../../../styles/global/colors";
 import {
@@ -35,7 +33,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   openCalendar,
   openReminderModal,
 }) => {
-  const { taskToEdit, newTaskData } = useSelector(taskSelector);
+  const { taskToEdit, newTaskData } = useSelector(taskStateSelector);
   const { folders } = useSelector(folderSelector);
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
@@ -49,7 +47,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     setTask("");
     setDescription("");
     setChoosedFolder("");
-    dispatch(setDefaultTaskDataAction());
   };
 
   const onSubmit = () => {
@@ -95,9 +92,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             })
       );
       setDefaults();
-      if (!!taskToEdit) {
-        dispatch(chooseTaskToEditAction(undefined));
-      }
     }
   };
 
