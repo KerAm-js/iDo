@@ -13,6 +13,7 @@ export type DateItemType = {
 
 export type CalendarPropType = {
   date: Date,
+  calendarShown?: boolean,
   setDate: (date: Date) => void
 }
 
@@ -21,7 +22,7 @@ export type ListPropType = {
   date: Date;
   reference: {current: FlatList | null}
   setDate: (date: Date) => void;
-  onScroll: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
+  onScrollEnd: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
 }
 
 export type CalendarMonthItemType = Array<Array<DateItemType>>

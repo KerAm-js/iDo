@@ -4,7 +4,6 @@ import {
   COMPLETE_TASK,
   DELETE_TASK,
   EDIT_TASK,
-  SET_DEFAULT_TASK_DATA,
   UPDATE_TASK_TIME,
   UPDATE_TASK_REMIND_TIME,
 } from "./../constants/task";
@@ -21,11 +20,11 @@ export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
   if (task.remindTime) {
     const currentDate = new Date().valueOf();
     const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
-    const notificationId = await setNotification(
-      "Напоминание", 
-      `${task.task}`, 
-      notificationTime
-    );
+    // const notificationId = await setNotification(
+    //   "Напоминание", 
+    //   `${task.task}`, 
+    //   notificationTime
+    // );
   }
   dispath({ type: ADD_TASK, task });
 };

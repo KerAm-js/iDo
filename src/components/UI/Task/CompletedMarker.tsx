@@ -5,8 +5,10 @@ import Animated, {
   useAnimatedStyle,
 } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
+import { useSelector } from "react-redux";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
-import { textColors } from "../../../styles/global/colors";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { textColors, themeColors } from "../../../styles/global/colors";
 import { text12 } from "../../../styles/global/texts";
 import { completedMarkerStyles } from "./styles";
 import { CompletedMarkerPropTypes } from "./types";
@@ -17,6 +19,8 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
   opacity,
   top,
 }) => {
+  const { theme } = useSelector(prefsSelector);
+
   const iconStyle = useAnimatedStyle(() => {
     const rotation = interpolate(completedListOpacity.value, [0, 1], [-90, 0]);
     return {
@@ -33,14 +37,22 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
 
   return (
     <Animated.View style={[containerStyle, completedMarkerStyles.container]}>
-      <Pressable onPress={onPress} style={completedMarkerStyles.content}>
-        <Text style={text12}>Выполнено</Text>
+      <Pressable
+        onPress={onPress}
+        style={[
+          completedMarkerStyles.content,
+          { backgroundColor: themeColors[theme].colors.card },
+        ]}
+      >
+        <Text style={[text12, { color: themeColors[theme].colors.text }]}>
+          Выполнено
+        </Text>
         <Animated.View style={iconStyle}>
           <SvgXml
-            xml={arrowBottom}
+            xml={arrowBottom(themeColors[theme].colors.text)}
             width={9}
             height={9}
-            color={textColors.black}
+            color={themeColors[theme].colors.text}
             style={completedMarkerStyles.icon}
           />
         </Animated.View>

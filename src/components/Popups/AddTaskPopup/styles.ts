@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { backgroundColors } from "../../../styles/global/colors";
+import { buttonColors } from "../../../styles/global/colors";
 
 export const addTaskPopupStyles = StyleSheet.create({
   input: {
@@ -7,7 +7,7 @@ export const addTaskPopupStyles = StyleSheet.create({
     marginBottom: 15,
   },
   addButton: {
-    backgroundColor: backgroundColors.blue
+    backgroundColor: buttonColors.blue
   },
   foldersContainer: {
     width: '100%',
@@ -21,7 +21,7 @@ export const addTaskPopupStyles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
   },
-  settingButtonContainer: {
+  buttonsGroup: {
     flexDirection: 'row',
   },
   iconButton: {

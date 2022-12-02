@@ -1,31 +1,28 @@
 import React, { FC } from "react";
 import { Switch, Text } from "react-native";
-import { SquircleView } from "react-native-figma-squircle";
-import { borderSmoothing, smallBorderRadius } from "../../../styles/global/borderRadiuses";
-import { backgroundColors, cardColors } from "../../../styles/global/colors";
+import { useSelector } from "react-redux";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { buttonColors, themeColors } from "../../../styles/global/colors";
 import { text17 } from "../../../styles/global/texts";
+import ListItem from "../../Layouts/ListItem/ListItem";
 import { popupItemStyles } from "./styles";
 import { SwithItemPropType } from "./types";
 
 const SwitchItem: FC<SwithItemPropType> = ({ title, value, onChange }) => {
+
+  const {theme} = useSelector(prefsSelector);
+
   return (
-    <SquircleView
-      style={[popupItemStyles.listItem]}
-      squircleParams={{
-        cornerSmoothing: borderSmoothing,
-        cornerRadius: smallBorderRadius,
-        fillColor: backgroundColors.white,
-      }}
-    >
-      <Text style={[text17]}>{title}</Text>
+    <ListItem style={popupItemStyles.listItem}>
+      <Text style={[text17, { color: themeColors[theme].colors.text }]}>{title}</Text>
       <Switch
         trackColor={{
-          true: backgroundColors.blue,
+          true: buttonColors.blue,
         }}
         value={value}
         onValueChange={onChange}
       />
-    </SquircleView>
+    </ListItem>
   );
 };
 

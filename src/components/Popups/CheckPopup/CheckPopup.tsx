@@ -1,7 +1,5 @@
 import React, { FC } from "react";
 import { View } from "react-native";
-import { Languages } from "../../../types/data/languageTexts";
-import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import CheckItem from "../../UI/PopupItems/CheckItem";
 import { CheckPopupPropType } from "./types";
@@ -9,26 +7,23 @@ import { CheckPopupPropType } from "./types";
 const CheckPopup: FC<CheckPopupPropType> = ({
   title,
   visible,
-  listType,
   list,
   state,
   updateState,
 }) => {
-  const onCheck = (value: keyof Languages) => {
-    if (listType === "check") {
-      updateState(value);
-    }
+  const onCheck = (value: any) => {
+    updateState(value);
   };
   return <BottomPopup title={title} visible={visible}>
     <View>
       {
-        list.map((lang, index) => {
+        list.map((lang) => {
           return (
             <CheckItem
-              key={lang + index}
-              title={languageTexts['ru'].languages[lang]}
-              onPress={() => onCheck(lang)}
-              isChecked={state === lang}
+              key={lang.title}
+              title={lang.title}
+              onPress={() => onCheck(lang.value)}
+              isChecked={state === lang.value}
             />
           )
         })

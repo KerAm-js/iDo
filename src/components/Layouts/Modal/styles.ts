@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { backgroundColors } from "../../../styles/global/colors";
 
 export const modalLayoutStyles = StyleSheet.create({
   container: {
@@ -10,7 +9,6 @@ export const modalLayoutStyles = StyleSheet.create({
   backdrop: {
     height: '100%',
     width: '100%',
-    backgroundColor: backgroundColors.backdrop,
     alignItems: "center",
     justifyContent: "center",
   }

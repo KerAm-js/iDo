@@ -3,7 +3,8 @@ import { StyleSheet } from "react-native";
 export const calendarPopupStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    width: '200%'
+    width: '200%',
+    minHeight: 290,
   },
   screen: {
     flex: 1,

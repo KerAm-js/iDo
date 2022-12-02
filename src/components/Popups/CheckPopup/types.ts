@@ -1,10 +1,7 @@
-import { Dispatch, SetStateAction } from "react";
-import { Languages } from "../../../types/data/languageTexts";
 import { BottomPopupPropType } from "../../Layouts/BottomPopup/types";
 
 export interface CheckPopupPropType extends BottomPopupPropType {
-  listType: 'check';
-  list: Array<keyof Languages>;
+  list: Array<{ title: string, value: any }>;
   state: string;
-  updateState: Dispatch<SetStateAction<keyof Languages>>;
+  updateState: ((value: any) => void);
 }

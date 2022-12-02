@@ -1,10 +1,9 @@
-import React, { FC, useRef } from "react";
-import { Animated, Pressable, View } from "react-native";
+import React, { FC } from "react";
 import { SvgXml } from "react-native-svg";
 import { circleButtonStyles } from "./styles";
 import { circleButtonProps } from "./types";
 import { LinearGradient } from "expo-linear-gradient";
-import { backgroundColors, textColors } from "../../../../styles/global/colors";
+import { buttonColors, textColors } from "../../../../styles/global/colors";
 import AnimatedButton from "../../../Layouts/AnimatedButton/AnimatedButton";
 
 const CircleButton: FC<circleButtonProps> = ({
@@ -19,13 +18,13 @@ const CircleButton: FC<circleButtonProps> = ({
     }
   };
 
-  const color = disabled ? textColors.grey : backgroundColors.blue;
+  const color = disabled ? textColors.grey : buttonColors.blue;
 
   return (
     <AnimatedButton
       disabled={disabled}
       onPress={clickHanlder}
-      style={size === "big" ? circleButtonStyles.shadows : {}}
+      style={size === "big" ? circleButtonStyles.shadows : undefined}
     >
       <LinearGradient
         colors={size === "big" ? ["#248DFF", "#0271EA"] : [color, color]}

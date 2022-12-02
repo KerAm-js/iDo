@@ -1,16 +1,9 @@
 import React, { FC } from "react";
 import { Pressable, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { SquircleView } from "react-native-figma-squircle";
-import { borderSmoothing, smallBorderRadius } from "../../../styles/global/borderRadiuses";
-import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
-import {
-  calendar,
-  calendarBlue,
-  calendarEvent,
-  calendarEventBlue,
-} from "../../../../assets/icons/calendar";
-import { backgroundColors, textColors } from "../../../styles/global/colors";
+import { arrowBottom } from "../../../../assets/icons/arrowBottom";
+import { calendar, calendarEvent } from "../../../../assets/icons/calendar";
+import { textColors, themeColors } from "../../../styles/global/colors";
 import {
   text12,
   text17LineHeight,
@@ -19,6 +12,9 @@ import {
 import { getDate } from "../../../utils/date";
 import { popupItemStyles } from "./styles";
 import { DateCheckItemPropType } from "./types";
+import ListItem from "../../Layouts/ListItem/ListItem";
+import { useSelector } from "react-redux";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 
 const DateCheckItem: FC<DateCheckItemPropType> = ({
   title,
@@ -28,25 +24,21 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
   isToggleCalendarShownComponent,
   isChecked,
 }) => {
+  const { theme } = useSelector(prefsSelector);
   const { weekDay } = getDate("ru", { date: date, isShort: true });
   const onPressHandler = () => {
     onPress(state, date);
-  }
+  };
   return (
     <Pressable onPress={onPressHandler}>
-      <SquircleView
-        style={[popupItemStyles.listItem]}
-        squircleParams={{
-          cornerSmoothing: borderSmoothing,
-          cornerRadius: smallBorderRadius,
-          fillColor: backgroundColors.white,
-        }}
-      >
+      <ListItem style={popupItemStyles.listItem}>
         <View style={popupItemStyles.dateItemLeft}>
           {isToggleCalendarShownComponent ? (
             <View style={[popupItemStyles.calendarIconContainer]}>
               <SvgXml
-                xml={isChecked ? calendarEventBlue : calendarEvent}
+                xml={calendarEvent(
+                  isChecked ? textColors.blue : themeColors[theme].colors.text
+                )}
                 width={22}
                 height={22}
               />
@@ -54,13 +46,16 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
           ) : (
             <View style={[popupItemStyles.calendarIconContainer]}>
               <SvgXml
-                xml={isChecked ? calendarBlue : calendar}
+                xml={calendar(
+                  isChecked ? textColors.blue : themeColors[theme].colors.text
+                )}
                 width={22}
                 height={22}
               />
               <Text
                 style={[
                   text12,
+                  { color: themeColors[theme].colors.text },
                   popupItemStyles.calendarIconText,
                   isChecked && { color: textColors.blue },
                 ]}
@@ -70,22 +65,26 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
             </View>
           )}
           <Text
-            style={[text17LineHeight, isChecked && { color: textColors.blue }]}
+            style={[
+              text17LineHeight,
+              { color: themeColors[theme].colors.text },
+              isChecked && { color: textColors.blue },
+            ]}
           >
             {title}
           </Text>
         </View>
         {isToggleCalendarShownComponent ? (
           <SvgXml
-            xml={arrowBottomGrey}
-            style={{ transform: [{ rotate: '-90deg' }] }}
+            xml={arrowBottom(textColors.grey)}
+            style={{ transform: [{ rotate: "-90deg" }] }}
             width={16}
             height={16}
           />
         ) : (
           <Text style={[text17LineHeight, textGrey]}>{weekDay}</Text>
         )}
-      </SquircleView>
+      </ListItem>
     </Pressable>
   );
 };

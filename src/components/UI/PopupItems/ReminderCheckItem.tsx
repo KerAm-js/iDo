@@ -1,17 +1,17 @@
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 import { Pressable, Text } from "react-native";
-import { SquircleView } from "react-native-figma-squircle";
 import { useSelector } from "react-redux";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { getNewTaskData } from "../../../redux/selectors/taskSelector";
+import { buttonColors, themeColors } from "../../../styles/global/colors";
 import {
-  borderSmoothing,
-  smallBorderRadius,
-} from "../../../styles/global/borderRadiuses";
-import { backgroundColors } from "../../../styles/global/colors";
-import { text14LineHeight, text17LineHeight, textGrey } from "../../../styles/global/texts";
+  text17LineHeight,
+  textGrey,
+} from "../../../styles/global/texts";
 import { CHOOSE } from "../../../utils/constants/periods";
 import { extractCalendarState, getDate } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
+import ListItem from "../../Layouts/ListItem/ListItem";
 import { popupItemStyles } from "./styles";
 import { ReminderCheckItemPropType } from "./types";
 
@@ -24,19 +24,26 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   onPress,
   isChecked,
 }) => {
+  const {theme} = useSelector(prefsSelector);
   const newTaskData = useSelector(getNewTaskData);
   const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
   const isCurrentYear = new Date().getFullYear() === date.getFullYear();
   const calendarState = extractCalendarState(date);
-  const timeString = newTaskData.timeType === 'time' ? ', ' + date.toLocaleTimeString().slice(0, 5) : '';
-  let titleString = '';
+  const timeString =
+    newTaskData.timeType === "time"
+      ? ", " + date.toLocaleTimeString().slice(0, 5)
+      : "";
+  let titleString = "";
 
   if (calendarState === CHOOSE) {
-    titleString = getDate('ru', { date }).date + (isCurrentYear ? '' : date.getFullYear()) + timeString;
+    titleString =
+      getDate("ru", { date }).date +
+      (isCurrentYear ? "" : " " + date.getFullYear()) +
+      timeString;
   } else {
-    titleString = languageTexts['ru'].periods[calendarState] + timeString;
-  } 
-  
+    titleString = languageTexts["ru"].periods[calendarState] + timeString;
+  }
+
   if (minutes) {
     titleString = `${minutes} минут`;
   } else if (hours) {
@@ -59,7 +66,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
     date.getMinutes() - minutes,
     date.getSeconds(),
     date.getMilliseconds()
-  )
+  );
 
   const disabled = new Date() > remindDate;
 
@@ -69,34 +76,23 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
 
   return (
     <Pressable disabled={disabled} onPress={onPressHandler}>
-      <SquircleView
-        style={popupItemStyles.listItem}
-        squircleParams={{
-          cornerSmoothing: borderSmoothing,
-          cornerRadius: smallBorderRadius,
-          fillColor: backgroundColors.white,
-        }}
-      >
+      <ListItem style={popupItemStyles.listItem}>
         <Text
           style={[
             text17LineHeight,
-            isChecked && { color: backgroundColors.blue },
+            { color: themeColors[theme].colors.text },
+            isChecked && { color: buttonColors.blue },
             disabled && textGrey,
           ]}
         >
           {titleString}
         </Text>
-        <Text
-          style={[
-            text14LineHeight,
-            textGrey
-          ]}
-        >
-          {
-            minutes || hours || days || weeks ? 'до даты выполнения' : 'дата выполнения'
-          }
-        </Text>
-      </SquircleView>
+        {/* <Text style={[text14LineHeight, textGrey]}>
+          {minutes || hours || days || weeks
+            ? "до даты выполнения"
+            : "дата выполнения"}
+        </Text> */}
+      </ListItem>
     </Pressable>
   );
 };

@@ -1,28 +1,27 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { ScrollView, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import { bell, bellActive } from "../../../../assets/icons/bell";
+import { bell } from "../../../../assets/icons/bell";
 import { clock } from "../../../../assets/icons/clock";
 import { penFill } from "../../../../assets/icons/penFill";
 import { plus } from "../../../../assets/icons/plus";
-import { repeat, repeatActive } from "../../../../assets/icons/repeat";
 import {
   addTaskAction,
   editTaskAction,
 } from "../../../redux/actions/taskActions";
-import { folderSelector } from "../../../redux/selectors/folderSelector";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { textColors } from "../../../styles/global/colors";
+import { textColors, themeColors } from "../../../styles/global/colors";
 import {
   text16Input,
   text17Input,
   textSemiBold,
 } from "../../../styles/global/texts";
+import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import CircleButton from "../../UI/buttons/CircleButton/CircleButton";
 import IconButton from "../../UI/buttons/IconButton/IconButton";
-import ChooseFolderButton from "../../UI/ChooseFolderButton/ChooseFolderButton";
 import { addTaskPopupStyles } from "./styles";
 import { AddTaskPopupPropType } from "./types";
 
@@ -33,8 +32,8 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   openCalendar,
   openReminderModal,
 }) => {
+  const { language, theme } = useSelector(prefsSelector);
   const { taskToEdit, newTaskData } = useSelector(taskStateSelector);
-  const { folders } = useSelector(folderSelector);
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
   const [choosedFolder, setChoosedFolder] = useState<string>("");
@@ -100,7 +99,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   };
 
   useEffect(() => {
-    if (visible && !taskToEdit) {
+    if (visible && !taskToEdit ) {
       taskInput.current?.focus();
     }
   }, [visible]);
@@ -121,8 +120,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         task === taskToEdit.task && description === taskToEdit.description;
       const isTimeNotEdited = newTaskData?.time === taskToEdit.time;
       const isFolderNotEdited = choosedFolder === taskToEdit.folder;
+      const isReminderNotEdited = newTaskData?.remindTime === taskToEdit.remindTime;
       if (
-        (isTaskNotEdited && isTimeNotEdited && isFolderNotEdited) ||
+        (isTaskNotEdited && isTimeNotEdited && isFolderNotEdited && isReminderNotEdited) ||
         task.length === 0
       ) {
         setCircleButtonDisabled(true);
@@ -147,21 +147,25 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       <TextInput
         value={task}
         onChangeText={(text) => setTask(text)}
+        keyboardAppearance={ theme === 'dark' ? 'dark' : 'default' }
         multiline
         maxLength={50}
         ref={taskInput}
-        placeholder="Задача"
-        style={[text17Input, textSemiBold, addTaskPopupStyles.input]}
+        placeholder={languageTexts[language].words.task}
+        placeholderTextColor={textColors.grey}
+        style={[text17Input, textSemiBold, addTaskPopupStyles.input, { color: themeColors[theme].colors.text }]}
       />
       <TextInput
         value={description}
         onChangeText={(text) => setDescription(text)}
+        keyboardAppearance={ theme === 'dark' ? 'dark' : 'default' }
         multiline
         maxLength={100}
-        placeholder="Описание"
-        style={[text16Input, addTaskPopupStyles.input]}
+        placeholder={languageTexts[language].words.description}
+        placeholderTextColor={textColors.grey}
+        style={[text16Input, addTaskPopupStyles.input, { color: themeColors[theme].colors.text }]}
       />
-      <ScrollView
+      {/* <ScrollView
         style={[addTaskPopupStyles.foldersContainer]}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -177,9 +181,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             onPress={() => updateFolder(folder.id)}
           />
         ))}
-      </ScrollView>
+      </ScrollView> */}
       <View style={[addTaskPopupStyles.buttonsContainer]}>
-        <View style={[addTaskPopupStyles.settingButtonContainer]}>
+        <View style={[addTaskPopupStyles.buttonsGroup]}>
           <IconButton
             xml={clock(
               (newTaskData.time && newTaskData.timeType) ||
@@ -192,19 +196,19 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             style={addTaskPopupStyles.iconButton}
             onClick={openCalendar}
           />
-          <IconButton
+          {/* <IconButton
             xml={choosedFolder === "2" ? repeatActive : repeat}
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
             onClick={() => updateFolder("2")}
-          />
+          /> */}
           <IconButton
-            xml={
+            xml={bell(
               newTaskData.remindTime || (taskToEdit && taskToEdit.remindTime)
-                ? bellActive
-                : bell
-            }
+                ? textColors.blue
+                : textColors.grey
+            )}
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
@@ -215,12 +219,18 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             }
           />
         </View>
-        <CircleButton
-          xml={!!taskToEdit ? penFill : plus}
-          size="small"
-          disabled={circleButtonDisabled}
-          onClick={onSubmit}
-        />
+        <View style={[addTaskPopupStyles.buttonsGroup]}>
+          <CircleButton
+            xml={
+              !!taskToEdit
+                ? penFill(themeColors.dark.colors.text)
+                : plus(themeColors.dark.colors.text)
+            }
+            size="small"
+            disabled={circleButtonDisabled}
+            onClick={onSubmit}
+          />
+        </View>
       </View>
     </BottomPopup>
   );

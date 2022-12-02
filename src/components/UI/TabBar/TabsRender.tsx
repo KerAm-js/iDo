@@ -1,7 +1,7 @@
 import { Animated, Pressable, Text, TouchableOpacity } from "react-native";
 import { tabRenderProps } from "./types";
 import { SvgXml } from "react-native-svg";
-import { icons, accentColorIcons } from "../../../../assets/icons/tabBar";
+import { icons } from "../../../../assets/icons/tabBar";
 import { tabBarStyles } from "./styles";
 import { textColors } from "../../../styles/global/colors";
 import { FC, useRef } from "react";
@@ -25,7 +25,7 @@ const TabsRender: FC<tabRenderProps> = ({
             ? options.title
             : route.name;
 
-        const iconNumber = number === 2 ? index + number : index;
+        const iconNumber = number === 2 ? index + 1 : index;
 
         const isFocused = iconNumber === stateIndex;
 
@@ -67,7 +67,7 @@ const TabsRender: FC<tabRenderProps> = ({
           >
             <Animated.View style={[{ transform: [{ scale: tabScale }] }]}>
               <SvgXml
-                xml={isFocused ? accentColorIcons[iconNumber] : icons[iconNumber]}
+                xml={icons[iconNumber](isFocused ? textColors.blue : textColors.grey)}
                 style={[tabBarStyles.icon]}
                 width={tabBarStyles.icon.width}
                 height={tabBarStyles.icon.height}

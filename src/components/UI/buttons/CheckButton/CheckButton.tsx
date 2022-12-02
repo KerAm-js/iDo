@@ -10,17 +10,18 @@ import {
   borderSmoothing,
   ultraSmallBorderRadius,
 } from "../../../../styles/global/borderRadiuses";
-import { backgroundColors, cardColors } from "../../../../styles/global/colors";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
   withTiming,
 } from "react-native-reanimated";
+import { buttonColors, themeColors } from "../../../../styles/global/colors";
+import { useTheme } from "@react-navigation/native";
 
 
 const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
-
+  const theme = useTheme();
   const upperScale = 1.25;
   const effectOpacity = useSharedValue(0);
   const effectScale = useSharedValue(1);
@@ -68,12 +69,12 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
         squircleParams={{
           cornerSmoothing: borderSmoothing,
           cornerRadius: ultraSmallBorderRadius,
-          fillColor: isCompleted ? backgroundColors.blue : cardColors.white,
-          strokeColor: backgroundColors.blue,
+          fillColor: isCompleted ? buttonColors.blue : theme.colors.card,
+          strokeColor: buttonColors.blue,
           strokeWidth: 1,
         }}
       >
-        {isCompleted && <SvgXml xml={check} width={10} height={8} />}
+        {isCompleted && <SvgXml xml={check(themeColors.dark.colors.text)} width={10} height={8} />}
       </SquircleView>
       {isCompleted && (
         <>
@@ -83,7 +84,7 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
               squircleParams={{
                 cornerSmoothing: borderSmoothing,
                 cornerRadius: ultraSmallBorderRadius,
-                fillColor: backgroundColors.blue,
+                fillColor: buttonColors.blue,
               }}
             />
           </Animated.View>
@@ -93,7 +94,7 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
               squircleParams={{
                 cornerSmoothing: borderSmoothing,
                 cornerRadius: ultraSmallBorderRadius,
-                fillColor: backgroundColors.blue,
+                fillColor: buttonColors.blue,
               }}
             />
           </Animated.View>

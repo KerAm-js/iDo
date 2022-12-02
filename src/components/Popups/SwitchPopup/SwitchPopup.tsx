@@ -1,5 +1,7 @@
 import React, { FC } from "react";
 import { View } from "react-native";
+import { useSelector } from "react-redux";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import SwitchItem from "../../UI/PopupItems/SwitchItem";
@@ -8,23 +10,21 @@ import { SwitchPopupPropType } from "./types";
 const SwitchPopup: FC<SwitchPopupPropType> = ({
   title,
   visible,
-  listType,
   state,
   updateState,
 }) => {
+  const { language } = useSelector(prefsSelector);
   const onStateChange = (key: string, value: boolean) => {
-    if (listType === "switch") {
-      updateState({
-        ...state,
-        [key]: value,
-      });
-    }
+    updateState({
+      ...state,
+      [key]: value,
+    });
   };
   return <BottomPopup title={title} visible={visible}>
     <View>
       {
         Object.keys(state).map((key, index) => {
-          const title = languageTexts["ru"].periods[key];
+          const title = languageTexts[language].periods[key];
           return (
             <SwitchItem
               key={key + index}

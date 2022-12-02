@@ -1,58 +1,50 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import React, { FC, useCallback } from "react";
-import { headerStyle, headerTitleStyle } from "../../../styles/header";
-import { rootTabNavigatorParamList } from "./types";
-import Folders from "../../screens/Folders/Folders";
+import React, { FC } from "react";
+import { rootTabNavigatorParamList, TabNavigatorPropTypes } from "./types";
 import Home from "../../screens/Home/Home";
 import Prefs from "../../screens/Prefs/Prefs";
-import Stats from "../../screens/Stats/Stats";
 import TabBar from "../../UI/TabBar/TabBar";
 import { getDate } from "../../../utils/date";
-import IconButton from "../../UI/buttons/IconButton/IconButton";
-import { circles } from "../../../../assets/icons/circles";
-import { SwitchPopupStateType } from "../../Popups/SwitchPopup/types";
+import { useSelector } from "react-redux";
+import { languageSelector } from "../../../redux/selectors/prefsSelectors";
+import { languageTexts } from "../../../utils/languageTexts";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
-const TabNavigator: FC<{
-  openAddTaskModal: () => void;
-  openModal: () => void;
-  periodsState: SwitchPopupStateType;
-}> = React.memo(({ periodsState, openModal, openAddTaskModal }) => {
-  const { date } = getDate("ru");
-  
-  const renderHome = () => <Home periodsState={periodsState} showSettingModal={openModal} />
+const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
+  ({ periodsState, openModal, openAddTaskModal, openLanguageModal }) => {
+    const language = useSelector(languageSelector);
+    const { date } = getDate(language);
 
-  return (
-    <Tab.Navigator
-      tabBar={(props) => (
-        <TabBar onBigButtonClick={openAddTaskModal} {...props} />
-      )}
-      screenOptions={{
-        headerStyle,
-        headerTitleStyle,
-        headerRightContainerStyle: { paddingRight: 20 },
-        headerLeftContainerStyle: { paddingLeft: 20 },
-        headerTransparent: true,
-        headerRight: () => (
-          <IconButton
-            onClick={openModal}
-            xml={circles}
-            iconWidth={23}
-            iconHeight={5}
-          />
-        ),
-      }}
-    >
-      <Tab.Screen
-        name="Home"
-        children={renderHome}
-        options={{
-          title: date,
-          tabBarLabel: "Главная",
+    const RenderHome = () => {
+      return <Home periodsState={periodsState} showSettingModal={openModal} />
+    }
+
+    const RenderPrefs = () => {
+      return <Prefs openLanguageModal={openLanguageModal} />;
+    }
+
+    return (
+      <Tab.Navigator
+        detachInactiveScreens={true}
+        tabBar={(props) => (
+          <TabBar onBigButtonClick={openAddTaskModal} {...props} />
+        )}
+        screenOptions={{
+          headerRightContainerStyle: { paddingRight: 20 },
+          headerLeftContainerStyle: { paddingLeft: 20 },
+          headerTransparent: true,
         }}
-      />
-      <Tab.Screen
+      >
+        <Tab.Screen
+          name="Home"
+          component={RenderHome}
+          options={{
+            title: date,
+            tabBarLabel: languageTexts[language].screenTitles.main,
+          }}
+        />
+        {/* <Tab.Screen
         name="Folders"
         component={Folders}
         options={{ title: "Папки" }}
@@ -61,14 +53,15 @@ const TabNavigator: FC<{
         name="Stats"
         component={Stats}
         options={{ title: "Статистика" }}
-      />
-      <Tab.Screen
-        name="Prefs"
-        component={Prefs}
-        options={{ title: "Настройки" }}
-      />
-    </Tab.Navigator>
-  );
-});
+      /> */}
+        <Tab.Screen
+          name="Prefs"
+          component={RenderPrefs}
+          options={{ title: languageTexts[language].screenTitles.preferences, }}
+        />
+      </Tab.Navigator>
+    );
+  }
+);
 
 export default TabNavigator;

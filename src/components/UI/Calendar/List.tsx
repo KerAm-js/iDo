@@ -8,7 +8,7 @@ import DateItem from "./DateItem";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, ListPropType } from "./types";
 
-const List: FC<ListPropType> = ({ state, onScroll, date, reference, setDate }) => {
+const List: FC<ListPropType> = ({ state, onScrollEnd, date, reference, setDate }) => {
   const { width: WIDTH } = Dimensions.get("screen");
 
   const renderItem = ({
@@ -54,10 +54,10 @@ const List: FC<ListPropType> = ({ state, onScroll, date, reference, setDate }) =
       style={[calendarStyles.srollView]}
       horizontal
       pagingEnabled
-      initialNumToRender={3}
+      initialNumToRender={1}
       showsHorizontalScrollIndicator={false}
       maxToRenderPerBatch={5}
-      onMomentumScrollEnd={onScroll}
+      onMomentumScrollEnd={onScrollEnd}
       renderItem={renderItem}
     />
   );

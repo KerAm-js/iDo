@@ -13,22 +13,23 @@ import { taskListToPositionsObject } from "./gesturePostions";
 import { TaskType } from "../../redux/types/task";
 import { languageTexts } from "../languageTexts";
 import { getDaysDiff } from "../date";
+import { LanguageType } from "../../redux/types/prefs";
 
-export const getSectionListEmptyMessage = (title: HomePeriodsKeys) => {
-  let clearListMessage = `Что планируете ${languageTexts["ru"].periods[
-    title
+export const getSectionListEmptyMessage = (title: HomePeriodsKeys, lang: LanguageType) => {
+  let clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_TODAY]} ${languageTexts[lang].periods[
+    TODAY
   ].toLowerCase()}?`;
 
-  if (title === FOR_TODAY) {
-    clearListMessage = `Что делаем ${languageTexts["ru"].periods[
-      TODAY
+  if (title === FOR_TOMORROW) {
+    clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_TOMORROW]} ${languageTexts[lang].periods[
+      title
     ].toLowerCase()}?`;
-  } else if (title === FOR_TOMORROW) {
-    clearListMessage = `Какие планы ${languageTexts["ru"].periods[
+  } else if (title === FOR_WEEK) {
+    clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_WEEK]} ${languageTexts[lang].periods[
       title
     ].toLowerCase()}?`;
   } else if (title === EXPIRED) {
-    clearListMessage = 'Нет просроченных задач';
+    clearListMessage = languageTexts[lang].sectionEmptyList[EXPIRED];
   }
 
   return clearListMessage;

@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
-import { Animated, Text, StyleSheet, View } from "react-native";
-import { headerStyle } from "../../../styles/header";
+import { useNavigation, useTheme } from "@react-navigation/native";
+import { Animated, Text, StyleSheet, View, StatusBar } from "react-native";
 import { screenLayoutStyles } from "./styles";
 import { ScreenLayoutProps } from "./types";
 import { subTitle16, textGrey, title30 } from "../../../styles/global/texts";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { BlurView } from "expo-blur";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { headerTitleStyle } from "../../../styles/header";
 
 const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
   ({
@@ -17,6 +17,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
     subtitle,
     subtitleComponent: SubtitleComponent,
   }) => {
+    const theme = useTheme();
     const [headerShown, setHeaderShown] = useState(false);
     const headerHeight = useHeaderHeight();
     const tabBarHeight = useBottomTabBarHeight();
@@ -24,6 +25,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const headerOpactiy = useRef(new Animated.Value(0)).current;
+    const [themeToggling, _] = useState(new Animated.Value(1));
 
     const titleScale = scrollY.interpolate({
       inputRange: [-100, 0],
@@ -37,21 +39,15 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
       extrapolate: "clamp",
     });
 
-    const headerBackgroundOpacity = scrollY.interpolate({
-      inputRange: [20, 35],
-      outputRange: [0, 1],
-      extrapolate: "clamp",
-    });
-
     const handleScroll = (event: any) => {
-      if (event.nativeEvent.contentOffset.y > 35 && !headerShown) {
+      if (event.nativeEvent.contentOffset.y > 30 && !headerShown) {
         setHeaderShown(true);
         Animated.timing(headerOpactiy, {
           toValue: 1,
           useNativeDriver: true,
           duration: 200,
         }).start();
-      } else if (event.nativeEvent.contentOffset.y <= 35 && headerShown) {
+      } else if (event.nativeEvent.contentOffset.y <= 30 && headerShown) {
         setHeaderShown(false);
         Animated.timing(headerOpactiy, {
           toValue: 0,
@@ -62,24 +58,34 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
     };
 
     useEffect(() => {
+      Animated.timing(themeToggling, {
+        toValue: theme.dark ? 0 : 1,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
       navigation.setOptions({
-        headerStyle: [{ opacity: headerOpactiy }, headerStyle],
+        headerStyle: { opacity: headerOpactiy },
+        headerTitleStyle: {
+          ...headerTitleStyle,
+          color: theme.colors.text,
+        },
+        headerRight: () => HeadingRight,
         headerBackground: () => (
           <Animated.View
             style={[
               StyleSheet.absoluteFill,
-              { opacity: headerBackgroundOpacity, position: "absolute" },
+              { opacity: headerOpactiy, position: "absolute" },
             ]}
           >
             <BlurView
-              tint="light"
-              intensity={70}
+              tint={theme.dark ? "dark" : "default"}
+              intensity={80}
               style={[StyleSheet.absoluteFill]}
             />
           </Animated.View>
         ),
       });
-    }, []);
+    }, [theme]);
 
     return (
       <Animated.ScrollView
@@ -97,8 +103,14 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
           ],
           { useNativeDriver: true, listener: handleScroll }
         )}
-        style={[screenLayoutStyles.container, { paddingTop: headerHeight }]}
+        style={[
+          screenLayoutStyles.container,
+          {
+            paddingTop: headerHeight,
+          },
+        ]}
       >
+        <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} />
         <View style={screenLayoutStyles.headingContainer}>
           <View style={screenLayoutStyles.titleContainer}>
             <Animated.Text

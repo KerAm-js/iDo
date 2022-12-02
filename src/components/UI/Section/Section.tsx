@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { arrowBottomGrey } from "../../../../assets/icons/arrowBottom";
+import { arrowBottom } from "../../../../assets/icons/arrowBottom";
 import { textGrey, textSemiBold, title22 } from "../../../styles/global/texts";
 import { sectionStyles } from "./style";
 import { SectionProps } from "./types";
@@ -21,7 +21,7 @@ import { languageTexts } from "../../../utils/languageTexts";
 import ClearList from "../ClearList/ClearList";
 import { FOR_TODAY, FOR_TOMORROW } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   completeTaskAction,
   deleteTaskAction,
@@ -32,6 +32,8 @@ import {
   sortTasks,
 } from "../../../utils/section/sections";
 import { SvgXml } from "react-native-svg";
+import { textColors, themeColors } from "../../../styles/global/colors";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 
 const TaskMargin = 10;
 const TaskHeight = 62 + TaskMargin;
@@ -41,6 +43,7 @@ const baseHeight = 44;
 
 const Section: FC<SectionProps> = React.memo(({ title, list }) => {
   const dispatch: AppDispatch = useDispatch();
+  const { language, theme } = useSelector(prefsSelector);
   const gesturePositions = useSharedValue<GesturePositionsType>({});
   const [sortedTasks, completedTasksLength] = sortTasks(
     list,
@@ -199,8 +202,8 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
     }
   }, [list.length]);
 
-  const titleString = languageTexts["ru"].periods[getSectionTitle(title)];
-  const clearListMessage = getSectionListEmptyMessage(title);
+  const titleString = languageTexts[language].periods[getSectionTitle(title)];
+  const clearListMessage = getSectionListEmptyMessage(title, language);
   
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
@@ -209,7 +212,7 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
         style={sectionStyles.headerContainer}
       >
         <View style={sectionStyles.headerTextContainer}>
-          <Text style={[title22]}>{titleString}</Text>
+          <Text style={[title22, { color: themeColors[theme].colors.text }]}>{titleString}</Text>
           {list.length > 0 && (
             <Text style={[textGrey, textSemiBold, sectionStyles.counter]}>
               {`${completedTasksLength}/${sortedTasks.length}`}
@@ -217,7 +220,7 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
           )}
         </View>
         <Animated.View style={[arrowStyle, sectionStyles.arrowButton]}>
-          <SvgXml xml={arrowBottomGrey} width={16} height={16} />
+          <SvgXml xml={arrowBottom(textColors.grey)} width={16} height={16} />
         </Animated.View>
       </Pressable>
       <Animated.View

@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from "react";
 import { Pressable } from "react-native";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import { backdropColor } from "../../../styles/global/colors";
 import { modalLayoutStyles } from "./styles";
 import { ModalLayoutPropType } from "./types";
 
@@ -21,6 +22,7 @@ const ModalLayout: FC<ModalLayoutPropType> = ({ children, visible, close }) => {
   const backdropStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
+      backgroundColor: backdropColor
     }
   }, [opacity.value])
 

@@ -1,22 +1,25 @@
 import React, { FC, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { SquircleView } from "react-native-figma-squircle";
 import { SvgXml } from "react-native-svg";
 import { useDispatch, useSelector } from "react-redux";
-import { calendarEventGrey } from "../../../../assets/icons/calendar";
+import { calendarEvent } from "../../../../assets/icons/calendar";
 import { clock } from "../../../../assets/icons/clock";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import { folderSelector } from "../../../redux/selectors/folderSelector";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { AppDispatch } from "../../../redux/types/appDispatch";
+import { regularBorderRadius } from "../../../styles/global/borderRadiuses";
+import { textColors, themeColors } from "../../../styles/global/colors";
 import {
-  borderSmoothing,
-  regularBorderRadius,
-} from "../../../styles/global/borderRadiuses";
-import { cardColors, textColors } from "../../../styles/global/colors";
-import { text12LineHeight, text16LineHeight, textGrey, textRed } from "../../../styles/global/texts";
+  text12LineHeight,
+  text16LineHeight,
+  textGrey,
+  textRed,
+} from "../../../styles/global/texts";
 import { FOR_WEEK, TODAY, TOMORROW } from "../../../utils/constants/periods";
 import { getDate, isToday, isTomorrow } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
+import ListItem from "../../Layouts/ListItem/ListItem";
 import CheckButton from "../buttons/CheckButton/CheckButton";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
@@ -32,10 +35,11 @@ const Task: FC<TaskPropTypes> = ({
   completeTask,
   folder,
   isExpired,
-  remindTime
+  remindTime,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const { folders } = useSelector(folderSelector);
+  const { theme } = useSelector(prefsSelector);
 
   const openEditTaskPopup = () =>
     dispatch(
@@ -48,7 +52,7 @@ const Task: FC<TaskPropTypes> = ({
         timeType,
         folder,
         isExpired,
-        remindTime
+        remindTime,
       })
     );
   const [isChecked, setIsChecked] = useState(isCompleted);
@@ -57,49 +61,48 @@ const Task: FC<TaskPropTypes> = ({
     setIsChecked((value) => !value);
   };
 
-  const folderIconXml: string  = folder ? folders.find(item => item.id === folder)?.title || '' : '';
+  const folderIconXml: string = folder
+    ? folders.find((item) => item.id === folder)?.title || ""
+    : "";
   let timeString = "";
   let xml = "";
 
   if (sectionType === FOR_WEEK) {
     const date = new Date(time);
     if (isToday(date)) {
-      timeString = languageTexts['ru'].periods[TODAY];
+      timeString = languageTexts["ru"].periods[TODAY];
     } else if (isTomorrow(date)) {
-      timeString = languageTexts['ru'].periods[TOMORROW];
+      timeString = languageTexts["ru"].periods[TOMORROW];
     } else {
       timeString = getDate("ru", { date: new Date(time) }).weekDay;
     }
-    xml = calendarEventGrey;
+    xml = calendarEvent(textColors.grey);
   } else {
-    xml = clock( isExpired ? textColors.red : textColors.grey );
+    xml = clock(isExpired ? textColors.red : textColors.grey);
   }
 
   if (timeType === "time") {
-    timeString += (timeString.length > 0 ? ', ' : '') + new Date(time)?.toTimeString().slice(0, 5);
-  } 
+    timeString +=
+      (timeString.length > 0 ? ", " : "") +
+      new Date(time)?.toTimeString().slice(0, 5);
+  }
+
+  if (remindTime) console.log(new Date(remindTime).toLocaleString());
 
   return (
-    <SquircleView
-      style={[taskStyles.container]}
-      squircleParams={{
-        cornerSmoothing: borderSmoothing,
-        cornerRadius: regularBorderRadius,
-        fillColor: cardColors.white,
-      }}
-    >
+    <ListItem isCardColor borderRadius={regularBorderRadius} style={taskStyles.container}>
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
       <Pressable
         style={[taskStyles.textContainer, { marginTop: timeString ? 6 : 0 }]}
         onPress={openEditTaskPopup}
       >
-        <Text style={[text16LineHeight]} numberOfLines={1}>
+        <Text style={[text16LineHeight, { color: themeColors[theme].colors.text }]} numberOfLines={1}>
           {task}
         </Text>
-        <View style={[ taskStyles.infoContainer ]}>
+        <View style={[taskStyles.infoContainer]}>
           {timeString && (
-            <View style={[ taskStyles.infoBlock ]}>
-              <SvgXml 
+            <View style={[taskStyles.infoBlock]}>
+              <SvgXml
                 width={12}
                 height={12}
                 xml={xml}
@@ -110,19 +113,15 @@ const Task: FC<TaskPropTypes> = ({
               </Text>
             </View>
           )}
-          {
-            folderIconXml && (
-              <View style={[ taskStyles.infoBlock ]}>
-                {timeString && <Text style={[ textGrey ]}>・</Text>}
-                <Text style={[text12LineHeight, textGrey]}>
-                  {folderIconXml}
-                </Text>
-              </View>
-            )
-          }
+          {folderIconXml && (
+            <View style={[taskStyles.infoBlock]}>
+              {timeString && <Text style={[textGrey]}>・</Text>}
+              <Text style={[text12LineHeight, textGrey]}>{folderIconXml}</Text>
+            </View>
+          )}
         </View>
       </Pressable>
-    </SquircleView>
+    </ListItem>
   );
 };
 

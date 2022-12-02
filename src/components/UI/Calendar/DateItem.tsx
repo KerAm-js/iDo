@@ -1,7 +1,9 @@
-import React, { FC, useEffect } from "react";
+import { useTheme } from "@react-navigation/native";
+import React, { FC } from "react";
 import { Pressable, Text } from "react-native";
-import { backgroundColors, textColors } from "../../../styles/global/colors";
-import { text17, textGrey, textRed } from "../../../styles/global/texts";
+import { buttonColors, textColors, themeColors } from "../../../styles/global/colors";
+import { text17, textGrey } from "../../../styles/global/texts";
+import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { calendarStyles } from "./styles";
 import { DateItemPropType } from "./types";
 
@@ -10,6 +12,9 @@ const DateItem: FC<DateItemPropType> = React.memo(({
   onClick,
   isSelected,
 }) => {
+
+  const theme = useTheme();
+
   const onClickHandler = () => {
     onClick(date);
   };
@@ -19,20 +24,20 @@ const DateItem: FC<DateItemPropType> = React.memo(({
     <Pressable
       style={[
         calendarStyles.calendarItem,
-        { backgroundColor: isSelected && isCurrentMonth ? backgroundColors.blue : textColors.white }
+        { backgroundColor: isSelected && isCurrentMonth ? buttonColors.blue : theme.colors.card }
       ]}
       onPress={isCurrentMonth && !isExpired ? onClickHandler : undefined}
     >
-      <Text
+      <ThemeText
         style={[
           calendarStyles.item,
           text17,
-          { color: isSelected ? textColors.white : textColors.black },
-          (!isCurrentMonth || isExpired) && textGrey,
+          (isSelected) ? { color: themeColors.dark.colors.text } : null,
+          (!isCurrentMonth || isExpired) ? textGrey : null,
         ]}
       >
         {date.getDate()}
-      </Text>
+      </ThemeText>
     </Pressable>
   );
 }, (prevProps, currProps) => {

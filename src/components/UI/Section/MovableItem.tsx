@@ -18,7 +18,6 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
-import { trashGrey, trashRed } from "../../../../assets/icons/trash";
 import { shadowStyle } from "../../../styles/global/shadow";
 import {
   getInsideLayoutTranslationY,
@@ -28,6 +27,8 @@ import {
 import { movableItemStyles } from "./style";
 import { ContextType, MovableItemProps } from "./types";
 import { moveGesturePosition } from "../../../utils/section/gesturePostions";
+import { trash } from "../../../../assets/icons/trash";
+import { textColors } from "../../../styles/global/colors";
 
 const MovableItem: FC<MovableItemProps> = React.memo(
   ({
@@ -274,14 +275,14 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         >
           {componentProps.isCompleted ? (
             <SvgXml
-              xml={trashGrey}
+              xml={trash(textColors.grey)}
               width={movableItemStyles.trashIcon.width}
               height={movableItemStyles.trashIcon.height}
               style={movableItemStyles.trashIcon}
             />
           ) : (
             <SvgXml
-              xml={trashRed}
+              xml={trash(textColors.red)}
               width={movableItemStyles.trashIcon.width}
               height={movableItemStyles.trashIcon.height}
               style={movableItemStyles.trashIcon}

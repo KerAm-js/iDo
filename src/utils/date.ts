@@ -2,6 +2,29 @@ import { CalendarMonthItemType } from "../components/UI/Calendar/types";
 import { CHOOSE, TODAY, TOMORROW, YESTERDAY } from "./constants/periods";
 import { languageTexts } from "./languageTexts";
 
+export const reminderStateList = [
+  {
+    id: "0",
+    minutes: 0,
+  },
+  {
+    id: "1",
+    minutes: 15,
+  },
+  {
+    id: "2",
+    hours: 1,
+  },
+  {
+    id: "3",
+    days: 1,
+  },
+  {
+    id: "4",
+    weeks: 1,
+  },
+];
+
 export const getDate = (
   lang: string,
   options?: { date?: Date; isShort?: boolean }
@@ -62,6 +85,34 @@ export const isTomorrow = (date: Date) => {
   );
   return dateCopy.setHours(0, 0, 0, 0) === tomorrowDate.setHours(0, 0, 0, 0);
 };
+
+export const extractReminderState = (defaultDate: Date, remindDate: number) => {
+  const defaultState = reminderStateList[0].id
+  const diff = defaultDate.valueOf() - remindDate;
+
+  if (diff <= 0) {
+    return defaultState;
+  }
+
+  const days = diff / (1000 * 3600 * 24);
+  const hours = (defaultDate.valueOf() - remindDate) / (1000 * 3600);
+  const minutes = (defaultDate.valueOf() - remindDate) / (1000 * 60);
+
+  if (days === 7) {
+    return reminderStateList.find(item => item.weeks === 1)?.id || reminderStateList[0].id;
+  } else if (days === 1) {
+    return reminderStateList.find(item => item.days === 1)?.id || reminderStateList[0].id;
+  } else if (hours === 1) {
+    return reminderStateList.find(item => item.hours === 1)?.id || reminderStateList[0].id;
+  } else if (minutes === 15) {
+    return reminderStateList.find(item => item.minutes === 15)?.id || reminderStateList[0].id;
+  } else if (minutes === 0) {
+    return reminderStateList[0].id;
+  } else {
+    return CHOOSE;
+  }
+
+}
 
 export const extractCalendarState = (date: Date) => {
   if (isYesterday(date)) {

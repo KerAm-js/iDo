@@ -6,26 +6,29 @@ import {
   Text,
   View,
 } from "react-native";
+import { useSelector } from "react-redux";
+import { languageSelector } from "../../../redux/selectors/prefsSelectors";
 import { text17, textSemiBold, title18 } from "../../../styles/global/texts";
 import { getCalendarArray, getMonthName } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
+import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import List from "./List";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, CalendarPropType } from "./types";
 
-
 const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
+  const language = useSelector(languageSelector);
   const { width: WIDTH } = Dimensions.get("screen");
   const currDate = new Date();
-  const weekDaysArr = languageTexts["ru"].weekDays.shorts;
+  const weekDaysArr = languageTexts[language].weekDays.shorts;
   const weekDays = [weekDaysArr[1], ...weekDaysArr.slice(2), weekDaysArr[0]];
   const currentIndex = 0;
   const scrollViewRef = useRef(null);
   const [title, setTitle] = useState<string>(
-    getMonthName("ru", currDate.getMonth()) + " " + currDate.getFullYear()
+    getMonthName(language, currDate.getMonth()) + " " + currDate.getFullYear()
   );
   const [state, setState] = useState<Array<CalendarMonthItemType>>(
-    getCalendarArray(currDate, 36)
+    getCalendarArray(currDate, 1)
   );
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -35,7 +38,9 @@ const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
 
     if (newCurrentIndex === 0) {
       setTitle(
-        getMonthName("ru", currDate.getMonth()) + " " + currDate.getFullYear()
+        getMonthName(language, currDate.getMonth()) +
+          " " +
+          currDate.getFullYear()
       );
     }
 
@@ -48,7 +53,7 @@ const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
         nextSlideDate.getMonth(),
         nextSlideDate.getFullYear(),
       ];
-      setTitle(getMonthName("ru", nextMonth) + " " + nextYear);
+      setTitle(getMonthName(language, nextMonth) + " " + nextYear);
     }
 
     if (newCurrentIndex === state.length - 1) {
@@ -65,23 +70,35 @@ const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
 
   const renderList = useMemo(
     () => (
-      <List reference={scrollViewRef} state={state} date={date} setDate={setDate} onScroll={onScroll} />
+      <List
+        reference={scrollViewRef}
+        state={state}
+        date={date}
+        setDate={setDate}
+        onScrollEnd={onScroll}
+      />
     ),
     [state, date]
   );
 
+  useEffect(() => {
+    setTitle(
+      getMonthName(language, currDate.getMonth()) + " " + currDate.getFullYear()
+    );
+  }, [language]);
+
   return (
     <View style={[calendarStyles.container]}>
-      <Text style={[calendarStyles.title, title18]}>{title}</Text>
+      <ThemeText style={[calendarStyles.title, title18]}>{title}</ThemeText>
       <View style={[calendarStyles.weekDaysContainer]}>
         {weekDays.map((weekDay) => {
           return (
-            <Text
+            <ThemeText
               style={[calendarStyles.item, text17, textSemiBold]}
               key={weekDay}
             >
               {weekDay}
-            </Text>
+            </ThemeText>
           );
         })}
       </View>
