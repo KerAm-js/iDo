@@ -13,8 +13,8 @@ import { getDate } from "../../../utils/date";
 import { popupItemStyles } from "./styles";
 import { DateCheckItemPropType } from "./types";
 import ListItem from "../../Layouts/ListItem/ListItem";
-import { useSelector } from "react-redux";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { useTheme } from "@react-navigation/native";
+import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 
 const DateCheckItem: FC<DateCheckItemPropType> = ({
   title,
@@ -24,7 +24,7 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
   isToggleCalendarShownComponent,
   isChecked,
 }) => {
-  const { theme } = useSelector(prefsSelector);
+  const { colors } = useTheme();
   const { weekDay } = getDate("ru", { date: date, isShort: true });
   const onPressHandler = () => {
     onPress(state, date);
@@ -37,7 +37,7 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
             <View style={[popupItemStyles.calendarIconContainer]}>
               <SvgXml
                 xml={calendarEvent(
-                  isChecked ? textColors.blue : themeColors[theme].colors.text
+                  isChecked ? textColors.blue : colors.text
                 )}
                 width={22}
                 height={22}
@@ -47,32 +47,30 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
             <View style={[popupItemStyles.calendarIconContainer]}>
               <SvgXml
                 xml={calendar(
-                  isChecked ? textColors.blue : themeColors[theme].colors.text
+                  isChecked ? textColors.blue : colors.text
                 )}
                 width={22}
                 height={22}
               />
-              <Text
+              <ThemeText
                 style={[
                   text12,
-                  { color: themeColors[theme].colors.text },
                   popupItemStyles.calendarIconText,
                   isChecked && { color: textColors.blue },
                 ]}
               >
                 {date?.getDate()}
-              </Text>
+              </ThemeText>
             </View>
           )}
-          <Text
+          <ThemeText
             style={[
               text17LineHeight,
-              { color: themeColors[theme].colors.text },
               isChecked && { color: textColors.blue },
             ]}
           >
             {title}
-          </Text>
+          </ThemeText>
         </View>
         {isToggleCalendarShownComponent ? (
           <SvgXml

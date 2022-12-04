@@ -9,7 +9,7 @@ import {
   addTaskAction,
   editTaskAction,
 } from "../../../redux/actions/taskActions";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { textColors, themeColors } from "../../../styles/global/colors";
@@ -20,6 +20,7 @@ import {
 } from "../../../styles/global/texts";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
+import ThemeInput from "../../Layouts/Theme/Input/ThemeInput";
 import CircleButton from "../../UI/buttons/CircleButton/CircleButton";
 import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { addTaskPopupStyles } from "./styles";
@@ -32,7 +33,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   openCalendar,
   openReminderModal,
 }) => {
-  const { language, theme } = useSelector(prefsSelector);
+  const language = useSelector(getLanguage);
   const { taskToEdit, newTaskData } = useSelector(taskStateSelector);
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
@@ -79,7 +80,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               remindTime,
             })
           : addTaskAction({
-              id: `${new Date().toString()}`,
+              id: `${new Date().valueOf()}`,
               isCompleted: false,
               task,
               description,
@@ -144,26 +145,22 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       visible={visible}
       handleKeyboard={handleKeyboard}
     >
-      <TextInput
+      <ThemeInput
         value={task}
         onChangeText={(text) => setTask(text)}
-        keyboardAppearance={ theme === 'dark' ? 'dark' : 'default' }
         multiline
         maxLength={50}
-        ref={taskInput}
+        reference={taskInput}
         placeholder={languageTexts[language].words.task}
-        placeholderTextColor={textColors.grey}
-        style={[text17Input, textSemiBold, addTaskPopupStyles.input, { color: themeColors[theme].colors.text }]}
+        style={[text17Input, textSemiBold, addTaskPopupStyles.input]}
       />
-      <TextInput
+      <ThemeInput
         value={description}
         onChangeText={(text) => setDescription(text)}
-        keyboardAppearance={ theme === 'dark' ? 'dark' : 'default' }
         multiline
         maxLength={100}
         placeholder={languageTexts[language].words.description}
-        placeholderTextColor={textColors.grey}
-        style={[text16Input, addTaskPopupStyles.input, { color: themeColors[theme].colors.text }]}
+        style={[text16Input, addTaskPopupStyles.input]}
       />
       {/* <ScrollView
         style={[addTaskPopupStyles.foldersContainer]}

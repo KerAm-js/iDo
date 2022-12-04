@@ -1,9 +1,8 @@
 import React, { FC } from "react";
 import { Pressable, Text } from "react-native";
 import { useSelector } from "react-redux";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { getNewTaskData } from "../../../redux/selectors/taskSelector";
-import { buttonColors, themeColors } from "../../../styles/global/colors";
+import { buttonColors } from "../../../styles/global/colors";
 import {
   text17LineHeight,
   textGrey,
@@ -12,6 +11,7 @@ import { CHOOSE } from "../../../utils/constants/periods";
 import { extractCalendarState, getDate } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import ListItem from "../../Layouts/ListItem/ListItem";
+import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { popupItemStyles } from "./styles";
 import { ReminderCheckItemPropType } from "./types";
 
@@ -24,7 +24,6 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   onPress,
   isChecked,
 }) => {
-  const {theme} = useSelector(prefsSelector);
   const newTaskData = useSelector(getNewTaskData);
   const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
   const isCurrentYear = new Date().getFullYear() === date.getFullYear();
@@ -77,16 +76,15 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   return (
     <Pressable disabled={disabled} onPress={onPressHandler}>
       <ListItem style={popupItemStyles.listItem}>
-        <Text
+        <ThemeText
           style={[
             text17LineHeight,
-            { color: themeColors[theme].colors.text },
             isChecked && { color: buttonColors.blue },
             disabled && textGrey,
           ]}
         >
           {titleString}
-        </Text>
+        </ThemeText>
         {/* <Text style={[text14LineHeight, textGrey]}>
           {minutes || hours || days || weeks
             ? "до даты выполнения"

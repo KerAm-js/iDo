@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { View } from "react-native";
 import { tabBarStyles } from "./styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CircleButton from "../buttons/CircleButton/CircleButton";
@@ -8,8 +8,7 @@ import { FC } from "react";
 import { TabBarPropTypes } from "./types";
 import { BlurView } from "expo-blur";
 import { themeColors } from "../../../styles/global/colors";
-import { useSelector } from "react-redux";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { useTheme } from "@react-navigation/native";
 
 const TabBar: FC<TabBarPropTypes> = ({
   state,
@@ -17,7 +16,7 @@ const TabBar: FC<TabBarPropTypes> = ({
   navigation,
   onBigButtonClick,
 }) => {
-  const { theme } = useSelector(prefsSelector);
+  const { dark } = useTheme();
   const { bottom } = useSafeAreaInsets();
   const onCircleButtonClick = () => {
     setTimeout(onBigButtonClick, 200);
@@ -25,7 +24,7 @@ const TabBar: FC<TabBarPropTypes> = ({
   const middleIndex = Math.round(state.routes.length / 2);
   return (
     <BlurView
-      tint={theme === "dark" ? "dark" : "default"}
+      tint={dark ? "dark" : "default"}
       intensity={70}
       style={[
         tabBarStyles.container,

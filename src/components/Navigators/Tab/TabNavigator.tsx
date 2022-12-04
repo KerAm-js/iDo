@@ -1,19 +1,19 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React, { FC } from "react";
 import { rootTabNavigatorParamList, TabNavigatorPropTypes } from "./types";
-import Home from "../../screens/Home/Home";
-import Prefs from "../../screens/Prefs/Prefs";
+import Home from "../../Screens/Home/Home";
+import Prefs from "../../Screens/Prefs/Prefs";
 import TabBar from "../../UI/TabBar/TabBar";
 import { getDate } from "../../../utils/date";
 import { useSelector } from "react-redux";
-import { languageSelector } from "../../../redux/selectors/prefsSelectors";
-import { languageTexts } from "../../../utils/languageTexts";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
+import { languageTexts } from "../../../utils/languageTexts"; 
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
 const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
   ({ periodsState, openModal, openAddTaskModal, openLanguageModal }) => {
-    const language = useSelector(languageSelector);
+    const language = useSelector(getLanguage);
     const { date } = getDate(language);
 
     const RenderHome = () => {

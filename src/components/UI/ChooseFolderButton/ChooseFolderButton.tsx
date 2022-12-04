@@ -1,17 +1,12 @@
+import { useTheme } from "@react-navigation/native";
 import React, { FC } from "react";
 import { Pressable, Text } from "react-native";
 import { SquircleView } from "react-native-figma-squircle";
-import { useSelector } from "react-redux";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import {
   borderSmoothing,
   ultraSmallBorderRadius,
 } from "../../../styles/global/borderRadiuses";
-import {
-  buttonColors,
-  textColors,
-  themeColors,
-} from "../../../styles/global/colors";
+import { buttonColors, themeColors } from "../../../styles/global/colors";
 import { text16 } from "../../../styles/global/texts";
 import { chooseFolderButtonStyles } from "./styles";
 import { ChooseFolderButtonPropTypes } from "./types";
@@ -23,7 +18,7 @@ const ChooseFolderButton: FC<ChooseFolderButtonPropTypes> = ({
   isLast,
   onPress,
 }) => {
-  const { theme } = useSelector(prefsSelector);
+  const { colors, dark } = useTheme();
 
   return (
     <Pressable onPress={onPress}>
@@ -35,21 +30,18 @@ const ChooseFolderButton: FC<ChooseFolderButtonPropTypes> = ({
         squircleParams={{
           cornerSmoothing: borderSmoothing,
           cornerRadius: ultraSmallBorderRadius,
-          fillColor: isActive
-            ? buttonColors.blue
-            : themeColors[theme].backgroundColor,
+          fillColor: isActive ? buttonColors.blue : colors.background,
         }}
       >
         <Text
           style={[
             text16,
             {
-              color:
-                theme === "night"
-                  ? themeColors[theme].textColor
-                  : isActive
-                  ? themeColors.night.textColor
-                  : themeColors.light.textColor,
+              color: dark
+                ? colors.text
+                : isActive
+                ? themeColors.dark.colors.text
+                : themeColors.light.colors.text,
             },
           ]}
         >

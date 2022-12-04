@@ -9,14 +9,13 @@ import { HomePropType, SectionsType } from "./types";
 import { useSelector } from "react-redux";
 import { getTasks } from "../../../redux/selectors/taskSelector";
 import { getSections } from "../../../utils/section/sections";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { themeColors } from "../../../styles/global/colors";
 import { useFocusEffect } from "@react-navigation/native";
-import ThemeBackground from "../../Layouts/Theme/Background/ThemeBackground";
 
 const Home: FC<HomePropType> = React.memo(
   ({ showSettingModal, periodsState }) => {
-    const { language, theme } = useSelector(prefsSelector);
+    const { language, theme } = useSelector(getPrefs);
     const [visible, setVisible] = useState<boolean>(false);
     const { date, weekDay } = getDate(language);
     const tasks = useSelector(getTasks);
@@ -32,26 +31,24 @@ const Home: FC<HomePropType> = React.memo(
     }
 
     return (
-      <ThemeBackground>
-        <ScreenLayout
-          title={date}
-          subtitle={weekDay}
-          headingRight={
-            <IconButton
-              onClick={showSettingModal}
-              xml={circles(themeColors[theme].colors.text)}
-              iconWidth={23}
-              iconHeight={5}
-            />
-          }
-        >
-          <View>
-            {sections.map(({ title, list }) => {
-              return <Section key={title} title={title} list={list} />;
-            })}
-          </View>
-        </ScreenLayout>
-      </ThemeBackground>
+      <ScreenLayout
+        title={date}
+        subtitle={weekDay}
+        headingRight={
+          <IconButton
+            onClick={showSettingModal}
+            xml={circles(themeColors[theme].colors.text)}
+            iconWidth={23}
+            iconHeight={5}
+          />
+        }
+      >
+        <View>
+          {sections.map(({ title, list }) => {
+            return <Section key={title} title={title} list={list} />;
+          })}
+        </View>
+      </ScreenLayout>
     );
   }
 );

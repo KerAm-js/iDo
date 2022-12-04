@@ -6,10 +6,9 @@ import { calendarEvent } from "../../../../assets/icons/calendar";
 import { clock } from "../../../../assets/icons/clock";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import { folderSelector } from "../../../redux/selectors/folderSelector";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { regularBorderRadius } from "../../../styles/global/borderRadiuses";
-import { textColors, themeColors } from "../../../styles/global/colors";
+import { textColors } from "../../../styles/global/colors";
 import {
   text12LineHeight,
   text16LineHeight,
@@ -20,6 +19,7 @@ import { FOR_WEEK, TODAY, TOMORROW } from "../../../utils/constants/periods";
 import { getDate, isToday, isTomorrow } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import ListItem from "../../Layouts/ListItem/ListItem";
+import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import CheckButton from "../buttons/CheckButton/CheckButton";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
@@ -39,8 +39,6 @@ const Task: FC<TaskPropTypes> = ({
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const { folders } = useSelector(folderSelector);
-  const { theme } = useSelector(prefsSelector);
-
   const openEditTaskPopup = () =>
     dispatch(
       chooseTaskToEditAction({
@@ -87,8 +85,6 @@ const Task: FC<TaskPropTypes> = ({
       new Date(time)?.toTimeString().slice(0, 5);
   }
 
-  if (remindTime) console.log(new Date(remindTime).toLocaleString());
-
   return (
     <ListItem isCardColor borderRadius={regularBorderRadius} style={taskStyles.container}>
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
@@ -96,9 +92,9 @@ const Task: FC<TaskPropTypes> = ({
         style={[taskStyles.textContainer, { marginTop: timeString ? 6 : 0 }]}
         onPress={openEditTaskPopup}
       >
-        <Text style={[text16LineHeight, { color: themeColors[theme].colors.text }]} numberOfLines={1}>
+        <ThemeText style={text16LineHeight} numberOfLines={1}>
           {task}
-        </Text>
+        </ThemeText>
         <View style={[taskStyles.infoContainer]}>
           {timeString && (
             <View style={[taskStyles.infoBlock]}>

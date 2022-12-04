@@ -28,7 +28,7 @@ import ReminderCheckItem from "../../UI/PopupItems/ReminderCheckItem";
 import { textColors } from "../../../styles/global/colors";
 import { useTimeValidation } from "../../../hooks/useTimeValidation";
 import {
-  languageSelector,
+  getLanguage,
 } from "../../../redux/selectors/prefsSelectors";
 import { useTheme } from "@react-navigation/native";
 
@@ -40,7 +40,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   closePopup,
   isReminderChoosing,
 }) => {
-  const language = useSelector(languageSelector);
+  const language = useSelector(getLanguage);
   const theme = useTheme();
   const dispatch: AppDispatch = useDispatch();
   const { taskToEdit, newTaskData } = useSelector(taskStateSelector);

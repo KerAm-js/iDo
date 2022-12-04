@@ -104,7 +104,7 @@ export const getSections = (
   periodsState: SwitchPopupStateType,
   tasks: Array<TaskType>
 ): SectionsType[] => {
-  let periods: Array<HomePeriodsKeys> = Object.keys(periodsState).filter(
+  let periods: Array<any> = Object.keys(periodsState).filter(
     (key) => periodsState[key]
   );
 

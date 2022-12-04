@@ -2,8 +2,8 @@ import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { updateLanguageAction } from "../../../redux/actions/prefsActions";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
-import { getTaskToEdit } from "../../../redux/selectors/taskSelector";
+import { getPrefs } from "../../../redux/selectors/prefsSelectors";
+import { getTasks, getTaskToEdit } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { LanguageType } from "../../../redux/types/prefs";
 import {
@@ -22,10 +22,12 @@ import { lagnuages, languageTexts } from "../../../utils/languageTexts";
 import TabNavigator from "../Tab/TabNavigator";
 import { NavigationContainer } from "@react-navigation/native";
 import { themeColors } from "../../../styles/global/colors";
+import { scheduleTaskExpiration } from "../../../redux/actions/taskActions";
 
 const Root: FC = () => {
   const taskToEdit = useSelector(getTaskToEdit);
-  const { language, theme } = useSelector(prefsSelector);
+  const tasks = useSelector(getTasks);
+  const { language, theme } = useSelector(getPrefs);
   const dispatch: AppDispatch = useDispatch();
   const [addTaskModalVisible, setAddTaskModalVisible] =
     useState<boolean>(false);
@@ -44,9 +46,10 @@ const Root: FC = () => {
     [FOR_WEEK]: false,
   });
 
-  const languagesList = lagnuages.map(
-    (key) => ({ title: languageTexts[language].languages[key], value: key })
-  );
+  const languagesList = lagnuages.map((key) => ({
+    title: languageTexts[language].languages[key],
+    value: key,
+  }));
 
   const openPeriodsModal = useCallback(() => setPeriodsModalVisible(true), []);
   const closePeriodsModal = () => setPeriodsModalVisible(false);
@@ -80,7 +83,10 @@ const Root: FC = () => {
     setAddTaskModalVisible(true);
   };
 
-  const openLanguageModal = useCallback(() => setLanguageModalVisible(true), []);
+  const openLanguageModal = useCallback(
+    () => setLanguageModalVisible(true),
+    []
+  );
   const closeLanguageModal = () => setLanguageModalVisible(false);
 
   const updateLanguage = (value: LanguageType) => {
@@ -90,6 +96,10 @@ const Root: FC = () => {
   useEffect(() => {
     setAddTaskModalVisible(taskToEdit ? true : false);
   }, [taskToEdit]);
+
+  useEffect(() => {
+    tasks.forEach(task => scheduleTaskExpiration(task, dispatch));
+  }, []);
 
   return (
     <NavigationContainer theme={themeColors[theme]}>

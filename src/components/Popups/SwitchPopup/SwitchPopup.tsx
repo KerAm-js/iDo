@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import SwitchItem from "../../UI/PopupItems/SwitchItem";
@@ -13,7 +13,7 @@ const SwitchPopup: FC<SwitchPopupPropType> = ({
   state,
   updateState,
 }) => {
-  const { language } = useSelector(prefsSelector);
+  const language = useSelector(getLanguage);
   const onStateChange = (key: string, value: boolean) => {
     updateState({
       ...state,

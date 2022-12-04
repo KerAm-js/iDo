@@ -4,18 +4,18 @@ import { View } from "react-native";
 import Animated from "react-native-reanimated";
 import { ThemeViewPropType } from "../types";
 
-const ThemeBackground: FC<ThemeViewPropType> = ({
+const ThemeView: FC<ThemeViewPropType> = ({
   children,
   style,
+  card,
   animated,
   ...props
 }) => {
-  const theme = useTheme();
-
+  const { colors } = useTheme();
   if (animated) {
     return (
       <Animated.View
-        style={[{ backgroundColor: theme.colors.background }, style]}
+        style={[{ backgroundColor: card ? colors.card : colors.background }, style]}
         {...props}
       >
         {children}
@@ -24,7 +24,7 @@ const ThemeBackground: FC<ThemeViewPropType> = ({
   } else {
     return (
       <View
-        style={[{ backgroundColor: theme.colors.background }, style]}
+        style={[{ backgroundColor: card ? colors.card : colors.background }, style]}
         {...props}
       >
         {children}
@@ -33,4 +33,4 @@ const ThemeBackground: FC<ThemeViewPropType> = ({
   }
 };
 
-export default ThemeBackground;
+export default ThemeView;

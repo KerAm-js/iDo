@@ -1,3 +1,4 @@
+import { useTheme } from "@react-navigation/native";
 import React, { FC, useEffect } from "react";
 import { Pressable } from "react-native";
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
@@ -6,6 +7,8 @@ import { modalLayoutStyles } from "./styles";
 import { ModalLayoutPropType } from "./types";
 
 const ModalLayout: FC<ModalLayoutPropType> = ({ children, visible, close }) => {
+
+  const { dark } = useTheme();
 
   const opacity = useSharedValue(0);
 
@@ -22,9 +25,9 @@ const ModalLayout: FC<ModalLayoutPropType> = ({ children, visible, close }) => {
   const backdropStyle = useAnimatedStyle(() => {
     return {
       opacity: opacity.value,
-      backgroundColor: backdropColor
+      backgroundColor: dark ? backdropColor.dark : backdropColor.light
     }
-  }, [opacity.value])
+  }, [opacity.value]);
 
   useEffect(() => {
     opacity.value = withTiming(visible ? 1 : 0, { duration: 200 });

@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
-import { languageSelector } from "../../../redux/selectors/prefsSelectors";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { text17, textSemiBold, title18 } from "../../../styles/global/texts";
 import { getCalendarArray, getMonthName } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -17,7 +17,7 @@ import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, CalendarPropType } from "./types";
 
 const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
-  const language = useSelector(languageSelector);
+  const language = useSelector(getLanguage);
   const { width: WIDTH } = Dimensions.get("screen");
   const currDate = new Date();
   const weekDaysArr = languageTexts[language].weekDays.shorts;

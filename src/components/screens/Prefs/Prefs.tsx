@@ -5,7 +5,7 @@ import { languageIcon } from "../../../../assets/icons/languages";
 import { themeIcon } from "../../../../assets/icons/theme";
 import { version } from "../../../../assets/icons/version";
 import { toggleThemeAction } from "../../../redux/actions/prefsActions";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { themeColors } from "../../../styles/global/colors";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -15,7 +15,7 @@ import { PrefsPropType } from "./types";
 
 const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { language, theme } = useSelector(prefsSelector);
+  const { language, theme } = useSelector(getPrefs);
 
   const toggleTheme = () => {
     dispatch(toggleThemeAction());
@@ -41,7 +41,7 @@ const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
         type="info"
         title={languageTexts[language].words.version}
         iconXml={version(themeColors[theme].colors.text)}
-        state={languageTexts[language].words.beta}
+        state={languageTexts[language].words.beta + ' 2.0'}
       />
     </ScreenLayout>
   );

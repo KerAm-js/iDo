@@ -7,6 +7,7 @@ import {
   UPDATE_TASK_REMIND_TIME,
   UPDATE_TASKS,
   COMPLETE_TASK,
+  SET_TASK_EXPIRATION,
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
@@ -32,7 +33,7 @@ export const taskReducer = (
       return {
         ...state,
         tasks,
-        newTaskData: {...initialState.newTaskData}
+        newTaskData: { ...initialState.newTaskData },
       };
     }
     case DELETE_TASK: {
@@ -50,7 +51,7 @@ export const taskReducer = (
         ...state,
         tasks,
         taskToEdit: undefined,
-        newTaskData: {...initialState.newTaskData}
+        newTaskData: { ...initialState.newTaskData },
       };
     }
     case COMPLETE_TASK: {
@@ -107,11 +108,26 @@ export const taskReducer = (
         gesturePositions: { ...action.positions },
       };
     }
+    case SET_TASK_EXPIRATION: {
+      const tasks = state.tasks.map((task) => {
+        if (task.id === action.id) {
+          return {
+            ...task,
+            isExpired: true,
+          };
+        } else {
+          return task;
+        }
+      });
+      return {
+        ...state,
+        tasks,
+      };
+    }
     default:
       return state;
   }
 };
-
 
 // const tasks = [
 //   {

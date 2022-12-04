@@ -1,12 +1,11 @@
 import React, { FC } from "react";
 import { Pressable, Switch, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { useSelector } from "react-redux";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
-import { buttonColors, textColors, themeColors } from "../../../styles/global/colors";
+import { buttonColors, textColors } from "../../../styles/global/colors";
 import { text14LineHeight, text17LineHeight, textGrey } from "../../../styles/global/texts";
 import ListItem from "../../Layouts/ListItem/ListItem";
+import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { prefItemStyles } from "./styles";
 import { PrefItemPropTypes } from "./types";
 
@@ -17,8 +16,6 @@ const PrefItem: FC<PrefItemPropTypes> = React.memo(({
   onPress,
   state,
 }) => {
-
-  const { theme } = useSelector(prefsSelector);
 
   let rightItem;
 
@@ -50,7 +47,7 @@ const PrefItem: FC<PrefItemPropTypes> = React.memo(({
       <ListItem isCardColor style={prefItemStyles.container}>
         <View style={prefItemStyles.leftItemsContainer}>
           <SvgXml xml={iconXml} style={prefItemStyles.icon} width={22} height={22} />
-          <Text style={[ text17LineHeight, { color: themeColors[theme].colors.text } ]}>{title}</Text>
+          <ThemeText style={[ text17LineHeight ]}>{title}</ThemeText>
         </View>
         {rightItem}
       </ListItem>

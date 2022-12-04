@@ -3,23 +3,19 @@ import {
   Dimensions,
   Keyboard,
   LayoutChangeEvent,
-  Text,
   TextStyle,
   View,
-  ViewStyle,
 } from "react-native";
-import Animated, {
+import {
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useKeyboard } from "../../../hooks/useKeyboard";
-import { themeColors } from "../../../styles/global/colors";
 import { title22 } from "../../../styles/global/texts";
-import ThemeBackground from "../Theme/Background/ThemeBackground";
-import ThemeCard from "../Theme/Card/ThemeCard";
 import ThemeText from "../Theme/Text/ThemeText";
+import ThemeView from "../Theme/View/ThemeView";
 import { bottomPopupStyles } from "./styles";
 import { BottomPopupPropType } from "./types";
 
@@ -72,7 +68,8 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
     }
 
     return (
-      <ThemeCard
+      <ThemeView
+        card
         animated
         onLayout={onLayout}
         style={[containerStyleR, bottomPopupStyles.container]}
@@ -87,7 +84,7 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
           )}
           {children}
         </View>
-      </ThemeCard>
+      </ThemeView>
     );
   }
 );

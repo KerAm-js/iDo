@@ -33,7 +33,8 @@ import {
 } from "../../../utils/section/sections";
 import { SvgXml } from "react-native-svg";
 import { textColors, themeColors } from "../../../styles/global/colors";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { getLanguage, getPrefs } from "../../../redux/selectors/prefsSelectors";
+import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 
 const TaskMargin = 10;
 const TaskHeight = 62 + TaskMargin;
@@ -43,7 +44,7 @@ const baseHeight = 44;
 
 const Section: FC<SectionProps> = React.memo(({ title, list }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { language, theme } = useSelector(prefsSelector);
+  const language = useSelector(getLanguage);
   const gesturePositions = useSharedValue<GesturePositionsType>({});
   const [sortedTasks, completedTasksLength] = sortTasks(
     list,
@@ -212,7 +213,7 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
         style={sectionStyles.headerContainer}
       >
         <View style={sectionStyles.headerTextContainer}>
-          <Text style={[title22, { color: themeColors[theme].colors.text }]}>{titleString}</Text>
+          <ThemeText style={title22}>{titleString}</ThemeText>
           {list.length > 0 && (
             <Text style={[textGrey, textSemiBold, sectionStyles.counter]}>
               {`${completedTasksLength}/${sortedTasks.length}`}
