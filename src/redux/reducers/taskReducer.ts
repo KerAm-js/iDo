@@ -59,8 +59,9 @@ export const taskReducer = (
         if (el.id === action.id) {
           return {
             ...el,
-            isCompleted: !el.isCompleted,
-            completingTime: new Date().valueOf(),
+            isCompleted: action.isCompleted,
+            completionTime: action.completionTime,
+            isExpired: action.isExpired,
           };
         } else {
           return el;
@@ -110,10 +111,11 @@ export const taskReducer = (
     }
     case SET_TASK_EXPIRATION: {
       const tasks = state.tasks.map((task) => {
-        if (task.id === action.id) {
+        const isCompletedInTime = task.completionTime && task.completionTime < task.time;
+        if (task.id === action.id && !task.isExpired && !isCompletedInTime) {
           return {
             ...task,
-            isExpired: true,
+            isExpired: 1,
           };
         } else {
           return task;

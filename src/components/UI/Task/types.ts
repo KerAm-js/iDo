@@ -1,19 +1,10 @@
 import { HomePeriodsKeys } from './../../../types/constants';
-import { TimeType } from './../../../redux/types/task';
-import { FOR_TODAY, FOR_TOMORROW, FOR_WEEK } from "../../../types/constants";
+import { TimeType, TaskType } from './../../../redux/types/task';
 
 export type TaskPropTypes = {
-  id: string;
-  task: string;
-  description?: string;
-  time: number;
-  timeType: TimeType,
+  taskObject: TaskType,
   sectionType?: HomePeriodsKeys;
-  isCompleted: boolean;
-  isExpired: boolean,
-  folder?: string,
-  remindTime?: number,
-  completeTask: (id: string) => void;
+  completeTask: (task: TaskType) => void;
   deleteTask: (id: string) => void;
 };
 
@@ -22,8 +13,4 @@ export type CompletedMarkerPropTypes = {
   completedListOpacity: { value: number };
   top: { value: number };
   opacity: { value: number };
-};
-
-export type CompletedMarkerType = {
-  isMarker: boolean;
 };

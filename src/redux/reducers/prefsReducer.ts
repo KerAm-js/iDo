@@ -1,4 +1,4 @@
-import { TOGGLE_THEME } from "./../constants/prefs";
+import { SET_THEME, TOGGLE_THEME } from "./../constants/prefs";
 import { UPDATE_LANGUAGE } from "../constants/prefs";
 import { PrefsAction, PrefsState } from "../types/prefs";
 
@@ -22,6 +22,12 @@ export const prefsReducer = (
       return {
         ...state,
         theme: state.theme === "dark" ? "light" : "dark",
+      };
+    }
+    case SET_THEME: {
+      return {
+        ...state,
+        theme: action.theme,
       };
     }
     default: {

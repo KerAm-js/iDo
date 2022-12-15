@@ -29,6 +29,7 @@ import { ContextType, MovableItemProps } from "./types";
 import { moveGesturePosition } from "../../../utils/section/gesturePostions";
 import { trash } from "../../../../assets/icons/trash";
 import { textColors } from "../../../styles/global/colors";
+import { TaskType } from "../../../redux/types/task";
 
 const MovableItem: FC<MovableItemProps> = React.memo(
   ({
@@ -42,7 +43,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     sectionType,
     completeTask,
     deleteTask,
-    componentProps,
+    taskObject,
     upperBound,
   }) => {
     const [isDragged, setIsDragged] = useState(false);
@@ -166,7 +167,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         if (
           translationX < translateThreshold &&
           trashIconOpacity.value === 0 &&
-          !componentProps.isCompleted
+          !taskObject.isCompleted
         ) {
           runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
         }
@@ -197,7 +198,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       } else {
         if (
           translateX.value < translateThreshold &&
-          !componentProps.isCompleted
+          !taskObject.isCompleted
         ) {
           translateX.value = withSpring(-SCREEN_WIDTH);
           trashIconOpacity.value = withTiming(
@@ -238,17 +239,17 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       }
     };
 
-    const completeTaskHandler = (taskId: string) => {
-      if (componentProps.isCompleted || timeOut.current) {
+    const completeTaskHandler = (task: TaskType) => {
+      if (taskObject.isCompleted || timeOut.current) {
         if (timeOut.current) {
           clearCompletingTimeout();
           return;
         }
-        completeTask(taskId);
+        completeTask(task);
       } else {
         timeOut.current = setTimeout(() => {
           clearCompletingTimeout();
-          completeTask(taskId);
+          completeTask(task);
         }, 500);
       }
     };
@@ -265,7 +266,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         <PanGestureHandler onGestureEvent={gestureEventHanlder}>
           <Animated.View style={movableItemStyles.panGestureContainer}>
             <Pressable
-              onLongPress={componentProps.isCompleted ? undefined : onLongPress}
+              onLongPress={taskObject.isCompleted ? undefined : onLongPress}
               style={movableItemStyles.pressable}
             ></Pressable>
           </Animated.View>
@@ -273,7 +274,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         <Animated.View
           style={[trashIconStyleR, movableItemStyles.trashIconContainer]}
         >
-          {componentProps.isCompleted ? (
+          {taskObject.isCompleted ? (
             <SvgXml
               xml={trash(textColors.grey)}
               width={movableItemStyles.trashIcon.width}
@@ -291,7 +292,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         </Animated.View>
         <Animated.View style={taskContainerStyleR}>
           <Component
-            {...componentProps}
+            taskObject={taskObject}
             completeTask={completeTaskHandler}
             deleteTask={deleteTask}
             sectionType={sectionType}

@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { updateLanguageAction } from "../../../redux/actions/prefsActions";
-import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
+import { setThemeAction, updateLanguageAction } from "../../../redux/actions/prefsActions";
+import { chooseTaskToEditAction, getTasksFromLocalDB } from "../../../redux/actions/taskActions";
 import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { getTasks, getTaskToEdit } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -23,10 +23,13 @@ import TabNavigator from "../Tab/TabNavigator";
 import { NavigationContainer } from "@react-navigation/native";
 import { themeColors } from "../../../styles/global/colors";
 import { scheduleTaskExpiration } from "../../../redux/actions/taskActions";
+import { useColorScheme } from "react-native";
+import { RootPropType } from "./types";
 
-const Root: FC = () => {
+const Root: FC<RootPropType> = ({ onAppReady }) => {
   const taskToEdit = useSelector(getTaskToEdit);
   const tasks = useSelector(getTasks);
+  const systemTheme = useColorScheme();
   const { language, theme } = useSelector(getPrefs);
   const dispatch: AppDispatch = useDispatch();
   const [addTaskModalVisible, setAddTaskModalVisible] =
@@ -40,7 +43,7 @@ const Root: FC = () => {
   const [languageModalVisible, setLanguageModalVisible] =
     useState<boolean>(false);
   const [periodsState, setPeriodsState] = useState<SwitchPopupStateType>({
-    [EXPIRED]: false,
+    [EXPIRED]: true,
     [FOR_TODAY]: true,
     [FOR_TOMORROW]: false,
     [FOR_WEEK]: false,
@@ -98,11 +101,12 @@ const Root: FC = () => {
   }, [taskToEdit]);
 
   useEffect(() => {
-    tasks.forEach(task => scheduleTaskExpiration(task, dispatch));
+    dispatch(setThemeAction(systemTheme));
+    dispatch(getTasksFromLocalDB());
   }, []);
 
   return (
-    <NavigationContainer theme={themeColors[theme]}>
+    <NavigationContainer onReady={onAppReady} theme={themeColors[theme]}>
       <ModalLayout visible={peridosModalVisible} close={closePeriodsModal}>
         <SwitchPopup
           title={languageTexts[language].popupTitles.taskCategories}

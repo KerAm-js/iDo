@@ -6,6 +6,7 @@ import { calendarEvent } from "../../../../assets/icons/calendar";
 import { clock } from "../../../../assets/icons/clock";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import { folderSelector } from "../../../redux/selectors/folderSelector";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { regularBorderRadius } from "../../../styles/global/borderRadiuses";
 import { textColors } from "../../../styles/global/colors";
@@ -15,8 +16,8 @@ import {
   textGrey,
   textRed,
 } from "../../../styles/global/texts";
-import { FOR_WEEK, TODAY, TOMORROW } from "../../../utils/constants/periods";
-import { getDate, isToday, isTomorrow } from "../../../utils/date";
+import { EXPIRED, FOR_WEEK, TODAY, TOMORROW, YESTERDAY } from "../../../utils/constants/periods";
+import { getDate, isToday, isTomorrow, isYesterday } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import ListItem from "../../Layouts/ListItem/ListItem";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
@@ -25,37 +26,23 @@ import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
 
 const Task: FC<TaskPropTypes> = ({
-  task,
-  time,
-  timeType,
+  taskObject,
   sectionType,
-  id,
-  description,
-  isCompleted,
   completeTask,
-  folder,
-  isExpired,
-  remindTime,
 }) => {
   const dispatch: AppDispatch = useDispatch();
   const { folders } = useSelector(folderSelector);
+  const language = useSelector(getLanguage);
+
+  const { id, task, time, isCompleted, timeType, folder, isExpired } = taskObject
+
   const openEditTaskPopup = () =>
     dispatch(
-      chooseTaskToEditAction({
-        task,
-        time,
-        id,
-        isCompleted,
-        description,
-        timeType,
-        folder,
-        isExpired,
-        remindTime,
-      })
+      chooseTaskToEditAction({...taskObject})
     );
-  const [isChecked, setIsChecked] = useState(isCompleted);
+  const [isChecked, setIsChecked] = useState(isCompleted ? true : false);
   const toggleChecked = () => {
-    completeTask(id);
+    completeTask(taskObject);
     setIsChecked((value) => !value);
   };
 
@@ -65,16 +52,24 @@ const Task: FC<TaskPropTypes> = ({
   let timeString = "";
   let xml = "";
 
+  const taskTime = new Date(time);
+
   if (sectionType === FOR_WEEK) {
-    const date = new Date(time);
-    if (isToday(date)) {
-      timeString = languageTexts["ru"].periods[TODAY];
-    } else if (isTomorrow(date)) {
-      timeString = languageTexts["ru"].periods[TOMORROW];
+    if (isToday(taskTime)) {
+      timeString = languageTexts[language].periods[TODAY];
+    } else if (isTomorrow(taskTime)) {
+      timeString = languageTexts[language].periods[TOMORROW];
     } else {
-      timeString = getDate("ru", { date: new Date(time) }).weekDay;
+      timeString = getDate(language, { date: new Date(time) }).weekDay;
     }
     xml = calendarEvent(textColors.grey);
+  } else if (sectionType === EXPIRED) {
+    if (isYesterday(taskTime)) {
+      timeString = languageTexts[language].periods[YESTERDAY]
+    } else {
+      timeString = getDate(language, { date: new Date(time) }).date;
+    }
+    xml = calendarEvent(textColors.red);
   } else {
     xml = clock(isExpired ? textColors.red : textColors.grey);
   }
@@ -96,7 +91,7 @@ const Task: FC<TaskPropTypes> = ({
           {task}
         </ThemeText>
         <View style={[taskStyles.infoContainer]}>
-          {timeString && (
+          {timeString && xml && (
             <View style={[taskStyles.infoBlock]}>
               <SvgXml
                 width={12}

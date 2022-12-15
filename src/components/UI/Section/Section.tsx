@@ -35,6 +35,7 @@ import { SvgXml } from "react-native-svg";
 import { textColors, themeColors } from "../../../styles/global/colors";
 import { getLanguage, getPrefs } from "../../../redux/selectors/prefsSelectors";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
+import { TaskType } from "../../../redux/types/task";
 
 const TaskMargin = 10;
 const TaskHeight = 62 + TaskMargin;
@@ -149,8 +150,8 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
   };
 
   const completeTask = useCallback(
-    (id: string) => {
-      dispatch(completeTaskAction(id));
+    (task: TaskType) => {
+      dispatch(completeTaskAction(task));
     },
     [dispatch]
   );
@@ -251,7 +252,7 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
                 id={item.id}
                 itemHeight={TaskHeight}
                 component={Task}
-                componentProps={item}
+                taskObject={item}
                 completeTask={completeTask}
                 deleteTask={deleteTask}
                 sectionType={title}

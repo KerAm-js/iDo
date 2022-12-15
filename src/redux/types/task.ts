@@ -24,18 +24,22 @@ export interface TaskAction extends Action {
   newTaskData: TaskData;
   tasks: Array<TaskType>;
   positions: GesturePositionsType;
+  newCompletionStatus: number,
+  completionTime?: number,
+  isCompleted: number,
+  isExpired: number,
   id: string;
 }
 
 export interface TaskType {
   id: string;
   task: string;
-  isCompleted: boolean;
-  completingTime?: number,
+  description?: string;
   time: number;
   timeType: TimeType,
-  isExpired: boolean,
+  isCompleted: number;
+  isExpired: number,
+  completionTime?: number,
   remindTime?: number,
-  description?: string;
   folder?: string,
 };

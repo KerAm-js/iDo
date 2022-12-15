@@ -1,5 +1,5 @@
 import { SwitchPopupStateType } from "../../Popups/SwitchPopup/types";
-import { HomePropType } from "../../Screens/Home/types";
+import { HomePropType } from "../../screens/Home/types";
 
 export type rootTabNavigatorParamList = {
   Home: HomePropType;

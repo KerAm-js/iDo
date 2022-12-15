@@ -86,8 +86,8 @@ export const sortTasks = (
   });
 
   completedList.sort((prev, curr) => {
-    const prevCompletedTime = new Date(prev.completingTime || "").valueOf();
-    const currCompletedTime = new Date(curr.completingTime || "").valueOf();
+    const prevCompletedTime = new Date(prev.completionTime || "").valueOf();
+    const currCompletedTime = new Date(curr.completionTime || "").valueOf();
     return currCompletedTime - prevCompletedTime;
   });
 
@@ -140,9 +140,9 @@ export const getSections = (
       currYear,
       currMonth,
       currDay + timeBound
-    ).valueOf();;
+    ).valueOf() && task.time > new Date().setHours(0, 0, 0, 0);
 
-    if (time < currDate && periodTasks[EXPIRED]) {
+    if (time < currDate && periodTasks[EXPIRED] && !isWeeklyTime) {
       periodTasks[EXPIRED].list.push(task);
     } else if (isWeeklyTime) {
       const dayDiff = getDaysDiff(currDate, time);
