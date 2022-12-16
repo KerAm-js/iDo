@@ -38,8 +38,12 @@ export default function App() {
   const onAppReady = useCallback(() => {
     if (isAppReady) {
       setTimeout(async () => {
-        await SplashScreen.hideAsync();
-      }, 1000)
+        try {
+          await SplashScreen.hideAsync(); 
+        } catch (error) {
+          console.log(error)
+        }
+      }, 1500)
     }
   }, [isAppReady]);
 

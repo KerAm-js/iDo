@@ -104,12 +104,21 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   ) => {
     if (isReminderChoosing) {
       if (remindTime && defaultTaskTime) {
+        const state = extractReminderState(defaultTaskTime, remindTime)
         dispatch(updateNewTaskRemindTimeAction(remindTime));
-        setState(extractReminderState(defaultTaskTime, remindTime));
+        setState(state);
         setDate(new Date(remindTime));
+
+        if (state === CHOOSE) {
+          updateChoosedTitle(date);
+        } else {
+          setChooseItemTitle(languageTexts[language].words[CHOOSE]);
+        }
+
       } else {
         setState("0");
         setDate(newTaskData.time ? new Date(newTaskData.time) : new Date());
+        setChooseItemTitle(languageTexts[language].words[CHOOSE]);
       }
     } else {
       const state = defaultTaskTime ? extractCalendarState(defaultTaskTime) : TODAY;

@@ -28,11 +28,11 @@ export interface TaskAction extends Action {
   completionTime?: number,
   isCompleted: number,
   isExpired: number,
-  id: string;
+  id: number;
 }
 
 export interface TaskType {
-  id: string;
+  id: number;
   task: string;
   description?: string;
   time: number;

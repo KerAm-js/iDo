@@ -1,4 +1,5 @@
 import { CalendarMonthItemType } from "../components/UI/Calendar/types";
+import { LanguageType } from "../redux/types/prefs";
 import { CHOOSE, TODAY, TOMORROW, YESTERDAY } from "./constants/periods";
 import { languageTexts } from "./languageTexts";
 
@@ -26,7 +27,7 @@ export const reminderStateList = [
 ];
 
 export const getDate = (
-  lang: string,
+  lang: LanguageType,
   options?: { date?: Date; isShort?: boolean }
 ) => {
   const language = languageTexts[lang];
@@ -126,7 +127,7 @@ export const extractCalendarState = (date: Date) => {
   }
 };
 
-export const getMonthName = (lang: string, month: number) => {
+export const getMonthName = (lang: LanguageType, month: number) => {
   const language = languageTexts[lang];
   return language?.months?.names[month] || language?.months?.fulls[month];
 };

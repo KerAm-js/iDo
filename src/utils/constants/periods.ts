@@ -1,3 +1,5 @@
+import { PeriodsListType } from "../../redux/types/prefs";
+
 export const FOR_TODAY = 'forToday';
 export const FOR_TOMORROW = 'forTomorrow';
 export const FOR_WEEK = 'forWeek';
@@ -8,3 +10,5 @@ export const YESTERDAY = 'yesterday';
 export const TODAY = 'today';
 export const TOMORROW = 'tomorrow';
 export const CHOOSE = 'choose';
+
+export const PERIODS_LIST: PeriodsListType = [EXPIRED, FOR_TODAY, FOR_TOMORROW, FOR_WEEK]

@@ -1,5 +1,32 @@
+import { LanguageType } from "../redux/types/prefs";
 import { TaskType } from "../redux/types/task";
+import { languageTexts } from "./languageTexts";
 
+export const getReminderItemTitle = (language: LanguageType, counter: number, period: 'minute' | 'hour' | 'day' | 'week') => {
+  let word = '';
+
+  if (language === 'ru') {
+    const declinationObject = languageTexts['ru'].periodsDeclination;
+    const lastNumber = Number(counter.toString()[-1])
+    if (counter === 1 || (counter > 20 && lastNumber === 1)) {
+      word = declinationObject.one[period];
+    } else if ((counter > 1 && counter < 5) || (counter > 20 && lastNumber > 1 && lastNumber < 5)) {
+      word = declinationObject.lessThan5[period];
+    } else {
+      word = declinationObject.equalAndMoreThan5[period];
+    }
+  } else if (language === 'ch') {
+    word = languageTexts['ch'].periodsDeclination[period];
+  } else {
+    if (counter === 1) {
+      word = languageTexts[language].periodsDeclination.one[period];
+    } else {
+      word = languageTexts[language].periodsDeclination.moreThanOne[period];
+    }
+  }
+
+  return counter + ' ' + word.toLowerCase();
+}
 
 export const addTaskWithSorting = (
   task: TaskType,

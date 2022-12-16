@@ -26,7 +26,10 @@ import {
 } from "../../../utils/section/positionsObject";
 import { movableItemStyles } from "./style";
 import { ContextType, MovableItemProps } from "./types";
-import { moveGesturePosition } from "../../../utils/section/gesturePostions";
+import {
+  moveGesturePosition,
+  saveGesturePositions,
+} from "../../../utils/section/gesturePostions";
 import { trash } from "../../../../assets/icons/trash";
 import { textColors } from "../../../styles/global/colors";
 import { TaskType } from "../../../redux/types/task";
@@ -46,6 +49,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     taskObject,
     upperBound,
   }) => {
+    console.log(taskObject.task);
     const [isDragged, setIsDragged] = useState(false);
     const { width: SCREEN_WIDTH } = Dimensions.get("screen");
     const translateThreshold = SCREEN_WIDTH * -0.3;
@@ -61,26 +65,26 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     const timeOut: { current: ReturnType<typeof setTimeout> | null } =
       useRef(null);
 
-      const containerStyleR = useAnimatedStyle(() => {
-        return {
-          shadowOpacity: shadowOpacity.value,
-          top: translateY.value,
-          opacity: opacity.value,
-          zIndex: zIndex.value,
-        };
-      }, [positions, translateY, shadowOpacity, opacity]);
-  
-      const taskContainerStyleR = useAnimatedStyle(() => {
-        return {
-          transform: [{ translateX: translateX.value }],
-        };
-      }, [translateX]);
-  
-      const trashIconStyleR = useAnimatedStyle(() => {
-        return {
-          opacity: trashIconOpacity.value,
-        };
-      }, [translateX]);
+    const containerStyleR = useAnimatedStyle(() => {
+      return {
+        shadowOpacity: shadowOpacity.value,
+        top: translateY.value,
+        opacity: opacity.value,
+        zIndex: zIndex.value,
+      };
+    }, [positions, translateY, shadowOpacity, opacity]);
+
+    const taskContainerStyleR = useAnimatedStyle(() => {
+      return {
+        transform: [{ translateX: translateX.value }],
+      };
+    }, [translateX]);
+
+    const trashIconStyleR = useAnimatedStyle(() => {
+      return {
+        opacity: trashIconOpacity.value,
+      };
+    }, [translateX]);
 
     useAnimatedReaction(
       () => positions?.value[id],
@@ -99,13 +103,17 @@ const MovableItem: FC<MovableItemProps> = React.memo(
               zIndex.value = -1;
             }
 
-            translateY.value = withTiming(newTop, {
-              duration: 300,
-            }, (isFinished) => {
-              if (isFinished) {
-                zIndex.value = 0;
+            translateY.value = withTiming(
+              newTop,
+              {
+                duration: 300,
+              },
+              (isFinished) => {
+                if (isFinished) {
+                  zIndex.value = 0;
+                }
               }
-            });
+            );
           }
         }
       }
@@ -119,14 +127,14 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       context.startPositionsObject = positions.value;
       context.startPosition = positions.value[id].position;
       zIndex.value = 1;
-    }
+    };
 
     const onActiveGestureEvent = (
       event: Readonly<GestureEventPayload & PanGestureHandlerEventPayload>,
       context: ContextType
     ) => {
       "worklet";
-      const { translationY, translationX} = event
+      const { translationY, translationX } = event;
       if (isDragged) {
         const newPosition = getNewTaskPosition(
           translationY + top,
@@ -178,7 +186,10 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       }
     };
 
-    const onFinishGestureEvent = (_:  Readonly<GestureEventPayload & PanGestureHandlerEventPayload>, context: ContextType) => {
+    const onFinishGestureEvent = (
+      _: Readonly<GestureEventPayload & PanGestureHandlerEventPayload>,
+      context: ContextType
+    ) => {
       "worklet";
       if (isDragged) {
         zIndex.value = 0;
@@ -194,12 +205,10 @@ const MovableItem: FC<MovableItemProps> = React.memo(
           });
         }
         shadowOpacity.value = withTiming(0, { duration: 300 });
+        runOnJS(saveGesturePositions)(gesturePositions.value);
         runOnJS(setIsDragged)(false);
       } else {
-        if (
-          translateX.value < translateThreshold &&
-          !taskObject.isCompleted
-        ) {
+        if (translateX.value < translateThreshold && !taskObject.isCompleted) {
           translateX.value = withSpring(-SCREEN_WIDTH);
           trashIconOpacity.value = withTiming(
             0,
@@ -300,6 +309,9 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         </Animated.View>
       </Animated.View>
     );
+  },
+  (prev, curr) => {
+    return JSON.stringify(prev.taskObject) === JSON.stringify(curr.taskObject);
   }
 );
 

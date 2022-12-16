@@ -1,5 +1,5 @@
 import React, { FC, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { useDispatch, useSelector } from "react-redux";
 import { calendarEvent } from "../../../../assets/icons/calendar";
@@ -34,16 +34,39 @@ const Task: FC<TaskPropTypes> = ({
   const { folders } = useSelector(folderSelector);
   const language = useSelector(getLanguage);
 
-  const { id, task, time, isCompleted, timeType, folder, isExpired } = taskObject
+  const { task, time, isCompleted, timeType, folder, isExpired } = taskObject
 
   const openEditTaskPopup = () =>
     dispatch(
       chooseTaskToEditAction({...taskObject})
     );
   const [isChecked, setIsChecked] = useState(isCompleted ? true : false);
+
   const toggleChecked = () => {
-    completeTask(taskObject);
-    setIsChecked((value) => !value);
+    if (isCompleted && new Date().valueOf() > time && !isExpired) {
+      Alert.alert(
+        "Внимание!",
+        "Задача будет засчитана в статистике, как просроченная.",
+        [
+          {
+            text: "Отмена",
+            onPress: () => null,
+            style: "cancel",
+          },
+          {
+            text: "Ок",
+            onPress: () => {
+              completeTask(taskObject);
+              setIsChecked((value) => !value);
+            },
+            style: "destructive",
+          },
+        ]
+      );
+    } else {
+      completeTask(taskObject);
+      setIsChecked((value) => !value);
+    }
   };
 
   const folderIconXml: string = folder

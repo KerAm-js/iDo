@@ -6,9 +6,9 @@ export const taskListToObject = (list: Array<TaskType>): ListObject => {
   "worklet";
   const object: ListObject = {};
   list.forEach((task: TaskType, index: number) => {
-    object[task.id] = {
+    object[task.id.toString()] = {
       position: index,
-      isCompleted: task.isCompleted,
+      isCompleted: !!task.isCompleted,
       time: task?.time,
       timeType: task.timeType,
     };
@@ -54,7 +54,7 @@ export const moveTask = (
   listObject: ListObject,
   from: number,
   to: number
-): [ListObject, boolean, string] => {
+): [ListObject, boolean, number] => {
   "worklet";
   const newObject: ListObject = {};
   const fromItem: ListObject = {};
@@ -83,5 +83,5 @@ export const moveTask = (
     toItem[toKey].timeType === "time" ||
     fromItem[fromKey].time !== toItem[toKey].time;
 
-  return [newObject, isMovingDisabled, toKey];
+  return [newObject, isMovingDisabled, Number(toKey)];
 };

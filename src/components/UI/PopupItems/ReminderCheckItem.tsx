@@ -1,6 +1,7 @@
 import React, { FC } from "react";
 import { Pressable, Text } from "react-native";
 import { useSelector } from "react-redux";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { getNewTaskData } from "../../../redux/selectors/taskSelector";
 import { buttonColors } from "../../../styles/global/colors";
 import {
@@ -10,6 +11,7 @@ import {
 import { CHOOSE } from "../../../utils/constants/periods";
 import { extractCalendarState, getDate } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
+import { getReminderItemTitle } from "../../../utils/utils";
 import ListItem from "../../Layouts/ListItem/ListItem";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { popupItemStyles } from "./styles";
@@ -25,6 +27,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   isChecked,
 }) => {
   const newTaskData = useSelector(getNewTaskData);
+  const language = useSelector(getLanguage);
   const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
   const isCurrentYear = new Date().getFullYear() === date.getFullYear();
   const calendarState = extractCalendarState(date);
@@ -40,21 +43,17 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
       (isCurrentYear ? "" : " " + date.getFullYear()) +
       timeString;
   } else {
-    titleString = languageTexts["ru"].periods[calendarState] + timeString;
+    titleString = languageTexts[language].periods[calendarState] + timeString;
   }
 
   if (minutes) {
-    titleString = `${minutes} минут`;
+    titleString = getReminderItemTitle(language, minutes, 'minute');
   } else if (hours) {
-    titleString = `${hours} ${
-      hours === 1 ? "час" : hours <= 5 ? "часа" : "часов"
-    }`;
+    titleString = getReminderItemTitle(language, hours, 'hour');
   } else if (days) {
-    titleString = `${days} ${days === 1 ? "день" : days <= 5 ? "дня" : "дней"}`;
+    titleString = getReminderItemTitle(language, days, 'day');
   } else if (weeks) {
-    titleString = `${weeks} ${
-      weeks === 1 ? "неделя" : weeks <= 5 ? "недели" : "недель"
-    }`;
+    titleString = getReminderItemTitle(language, weeks, 'week');
   }
 
   const remindDate = new Date(

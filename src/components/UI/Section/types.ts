@@ -2,17 +2,18 @@ import { GesturePositionsType } from '../../../types/global/GesturePositions';
 import { ListObject } from './../../../types/global/ListObject';
 import { TaskPropTypes } from "../Task/types";
 import { FC } from 'react';
-import { HomePeriodsKeys } from '../../../types/constants';
+import { HomePeriodsKeys } from '../../../redux/types/prefs';
 import { TaskType } from '../../../redux/types/task';
 
 export type SectionProps = {
   title: HomePeriodsKeys,
   list: Array<TaskType>,
+  visible: boolean,
 }
 
 export type MovableItemProps = {
   taskObject: TaskType,
-  id: string,
+  id: number,
   index: number,
   positions: {value: ListObject},
   opacity: {value: number},
@@ -20,7 +21,7 @@ export type MovableItemProps = {
   itemHeight: number,
   component: FC<TaskPropTypes>,
   completeTask: (task: TaskType) => void,
-  deleteTask: (id: string) => void,
+  deleteTask: (id: number) => void,
   sectionType: HomePeriodsKeys,
   upperBound: number,
 }

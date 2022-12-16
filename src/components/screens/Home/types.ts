@@ -1,13 +1,15 @@
 import { TaskType } from './../../../redux/types/task';
-import { SwitchPopupStateType } from './../../Popups/SwitchPopup/types';
-import { HomePeriodsKeys } from '../../../types/constants';
+import { HomePeriodsKeys } from '../../../redux/types/prefs'; 
 
 export type HomePropType = {
-  periodsState: SwitchPopupStateType,
   showSettingModal: () => void,
 }
 
 export type SectionsType = {
   title: HomePeriodsKeys,
   list: Array<TaskType>
+}
+
+export type SectionsObjectType = {
+  [key: string]: SectionsType
 }

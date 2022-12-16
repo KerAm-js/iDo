@@ -9,57 +9,91 @@ import {
   SET_TASK_EXPIRATION,
   UPDATE_TASKS,
 } from "./../constants/task";
-import { GesturePositionsType } from "./../../types/global/GesturePositions";
 import { Dispatch } from "@reduxjs/toolkit";
 import { ADD_TASK, UPDATE_GESTURE_POSITIONS } from "../constants/task";
 import { LocalDB } from "../../backend/sqlite";
+import { getGesturePositionsFromAS } from "../../utils/section/gesturePostions";
+
+export const scheduleTaskExpiration = async (
+  task: TaskType,
+  dispatch: Dispatch
+) => {
+  try {
+    if (!task.isExpired) {
+      const currTime = new Date().valueOf();
+      const isCompletedInTime =
+        task.isCompleted &&
+        task.completionTime &&
+        task.completionTime < task.time;
+
+      if (!isCompletedInTime && !task.isExpired && task.time <= currTime) {
+        await LocalDB.setTaskExpiration(task.id);
+        dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
+      } else {
+        const timeDiff = task.time - currTime;
+        setTimeout(() => {
+          dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
+        }, timeDiff);
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 export const getTasksFromLocalDB = () => async (dispatch: Dispatch) => {
-  const tasks = await LocalDB.getTasks();
-  dispatch({ type: UPDATE_TASKS, tasks });
-  tasks.forEach(task => scheduleTaskExpiration(task, dispatch));
-}
-
-export const scheduleTaskExpiration = (task: TaskType, dispatch: Dispatch) => {
-  if (!task.isExpired) {
-    const currTime = new Date().valueOf();
-    const timeToCheck = task.completionTime ? task.completionTime : task.time;
-
-    if (timeToCheck <= currTime) {
-      dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
-    } else {
-      const timeDiff = timeToCheck- currTime;
-      setTimeout(() => {
-        dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
-      }, timeDiff);
-    }
+  try {
+    const currDate = new Date().setHours(0, 0, 0, 0);
+    const tasks = await LocalDB.getTasks();
+    tasks.reverse();
+    const filteredTasks = tasks.filter(
+      (task) => task.time >= currDate || !task.isCompleted
+    );
+    dispatch({ type: UPDATE_TASKS, tasks: filteredTasks });
+    filteredTasks.forEach((task) => scheduleTaskExpiration(task, dispatch));
+  } catch (error) {
+    console.log(error);
   }
 };
 
 export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
-  const taskId = await LocalDB.addTask(task)
-  const addedTask: TaskType = { ...task, id: taskId };
-  if (task.remindTime) {
-    const currentDate = new Date().valueOf();
-    const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
-    // const notificationId = await setNotification(
-    //   "Напоминание",
-    //   `${task.task}`,
-    //   notificationTime
-    // );
+  try {
+    const taskId = await LocalDB.addTask(task);
+    const addedTask: TaskType = { ...task, id: taskId };
+    if (task.remindTime) {
+      const currentDate = new Date().valueOf();
+      const notificationTime = Math.round(
+        (task.remindTime - currentDate) / 1000
+      );
+      // const notificationId = await setNotification(
+      //   "Напоминание",
+      //   `${task.task}`,
+      //   notificationTime
+      // );
+    }
+    await scheduleTaskExpiration(addedTask, dispath);
+    dispath({ type: ADD_TASK, task: addedTask });
+  } catch (error) {}
+};
+
+export const editTaskAction =
+  (task: TaskType) => async (dispatch: Dispatch) => {
+    try {
+      await LocalDB.editTask(task);
+      scheduleTaskExpiration(task, dispatch);
+      dispatch({ type: EDIT_TASK, task });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+export const deleteTaskAction = (id: number) => async (dispatch: Dispatch) => {
+  try {
+    await LocalDB.deleteTask(id);
+    dispatch({ type: DELETE_TASK, id });
+  } catch (error) {
+    console.log(error);
   }
-  scheduleTaskExpiration(addedTask, dispath);
-  dispath({ type: ADD_TASK, task: addedTask });
-};
-
-export const editTaskAction = (task: TaskType) => async (dispatch: Dispatch) => {
-  scheduleTaskExpiration(task, dispatch);
-  dispatch({ type: EDIT_TASK, task });
-};
-
-export const deleteTaskAction = (id: string) => async (dispatch: Dispatch) => {
-  await LocalDB.deleteTask(id);
-  dispatch({ type: DELETE_TASK, id });
 };
 
 export const updateNewTaskTimeAction =
@@ -77,16 +111,40 @@ export const chooseTaskToEditAction =
     dispatch({ type: CHOOSE_TASK_TO_EDIT, task });
   };
 
-export const completeTaskAction = (task: TaskType) => async (dispatch: Dispatch) => {
-  const isCompleted = task.isCompleted ? 0 : 1;
-  const completionTime = isCompleted ? new Date().valueOf() : null; // it is needed to set the same time to redux store and local db;
-  const isExpired = isCompleted ? task.isExpired : (new Date().valueOf() > task.time ? 1 : 0); 
+export const completeTaskAction =
+  (task: TaskType) => async (dispatch: Dispatch) => {
+    try {
+      const isCompleted = task.isCompleted ? 0 : 1;
+      const completionTime = isCompleted ? new Date().valueOf() : null; // it is needed to set the same time to redux store and local db;
+      const isExpired = isCompleted
+        ? task.isExpired
+        : new Date().valueOf() > task.time
+        ? 1
+        : 0;
+      await LocalDB.completeTask(
+        task.id,
+        isCompleted,
+        isExpired,
+        completionTime
+      );
+      dispatch({
+        type: COMPLETE_TASK,
+        id: task.id,
+        isCompleted,
+        isExpired,
+        completionTime,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-  await LocalDB.completeTask(task.id, isCompleted, isExpired, completionTime);
-  dispatch({ type: COMPLETE_TASK, id: task.id, isCompleted, isExpired, completionTime });
-};
-
-export const updateGesturePositionsAction =
-  (positions: GesturePositionsType) => (dispatch: Dispatch) => {
-    dispatch({ type: UPDATE_GESTURE_POSITIONS, positions });
+export const getGesturePositionsFromAsyncStorage =
+  () => async (dispatch: Dispatch) => {
+    try {
+      const positions = await getGesturePositionsFromAS();
+      dispatch({ type: UPDATE_GESTURE_POSITIONS, positions });
+    } catch (error) {
+      console.log(error);
+    }
   };

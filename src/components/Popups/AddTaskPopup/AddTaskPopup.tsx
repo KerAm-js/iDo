@@ -80,7 +80,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               remindTime,
             })
           : addTaskAction({
-              id: `${new Date().valueOf()}`,
+              id: new Date().valueOf(),
               isCompleted: 0,
               task,
               description,

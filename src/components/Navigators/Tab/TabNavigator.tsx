@@ -12,12 +12,12 @@ import { languageTexts } from "../../../utils/languageTexts";
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
 const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
-  ({ periodsState, openModal, openAddTaskModal, openLanguageModal }) => {
+  ({ openModal, openAddTaskModal, openLanguageModal }) => {
     const language = useSelector(getLanguage);
     const { date } = getDate(language);
 
     const RenderHome = () => {
-      return <Home periodsState={periodsState} showSettingModal={openModal} />
+      return <Home showSettingModal={openModal} />
     }
 
     const RenderPrefs = () => {

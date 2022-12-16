@@ -26,14 +26,11 @@ import {
   completeTaskAction,
   deleteTaskAction,
 } from "../../../redux/actions/taskActions";
-import {
-  getSectionListEmptyMessage,
-  getSectionTitle,
-  sortTasks,
-} from "../../../utils/section/sections";
+import { getSectionTitle, sortTasks } from "../../../utils/section/sections";
 import { SvgXml } from "react-native-svg";
-import { textColors, themeColors } from "../../../styles/global/colors";
-import { getLanguage, getPrefs } from "../../../redux/selectors/prefsSelectors";
+import { textColors } from "../../../styles/global/colors";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
+import { getGesturePositions } from "../../../redux/selectors/taskSelector";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { TaskType } from "../../../redux/types/task";
 
@@ -43,15 +40,18 @@ const TaskHeight = 62 + TaskMargin;
 const emptyListHeight = 220;
 const baseHeight = 44;
 
-const Section: FC<SectionProps> = React.memo(({ title, list }) => {
+const Section: FC<SectionProps> = React.memo(({ title, list, visible }) => {
+  console.log(title);
   const dispatch: AppDispatch = useDispatch();
   const language = useSelector(getLanguage);
+  const initialGesturePositions = useSelector(getGesturePositions);
   const gesturePositions = useSharedValue<GesturePositionsType>({});
-  const [sortedTasks, completedTasksLength] = sortTasks(
+  const sorting = useCallback(() => sortTasks(
     list,
     gesturePositions,
     title !== FOR_TODAY && title !== FOR_TOMORROW
-  );
+  ), [list, gesturePositions.value]);
+  const [sortedTasks, completedTasksLength] = sorting()
   const [isDeleting, setIsDeleting] = useState(false);
 
   const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
@@ -84,10 +84,11 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
 
   const containerStyle = useAnimatedStyle(() => {
     return {
-      height: height.value,
+      height: visible ? height.value : withTiming(0, { duration: 300 }),
       overflow: opacity.value === 1 ? "visible" : "hidden",
+      opacity: withTiming(visible ? 1 : 0, { duration: 300 })
     };
-  }, [opacity.value, height.value]);
+  }, [opacity.value, height.value, visible]);
 
   const listContainerOpacityStyle = useAnimatedStyle(() => {
     return {
@@ -157,7 +158,7 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
   );
 
   const deleteTask = useCallback(
-    (id: string) => {
+    (id: number) => {
       setIsDeleting(true);
       dispatch(deleteTaskAction(id));
     },
@@ -184,7 +185,7 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
           completedListOpacity.value === 1
             ? initialHeight
             : initialHeight - completedTasksLength * TaskHeight,
-          { duration: 300 }
+          { duration: 0 }
         )
       );
     }
@@ -204,9 +205,13 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
     }
   }, [list.length]);
 
+  useEffect(() => {
+    gesturePositions.value = initialGesturePositions;
+  }, [initialGesturePositions]);
+
   const titleString = languageTexts[language].periods[getSectionTitle(title)];
-  const clearListMessage = getSectionListEmptyMessage(title, language);
-  
+  const clearListMessage = languageTexts[language].sectionEmptyList[title];
+
   return (
     <Animated.View style={[sectionStyles.container, containerStyle]}>
       <Pressable
@@ -269,6 +274,10 @@ const Section: FC<SectionProps> = React.memo(({ title, list }) => {
       </Animated.View>
     </Animated.View>
   );
+}, (prev, curr) => {
+  const result = JSON.stringify(prev.list) === JSON.stringify(curr.list) && prev.visible === curr.visible;
+  console.log(result);
+  return result;
 });
 
 export default Section;

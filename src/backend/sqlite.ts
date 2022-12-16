@@ -27,7 +27,8 @@ export class LocalDB {
         tx.executeSql(
           `SELECT * FROM tasks`,
           [],
-          (_: SQLTransaction, result: SQLResultSet) => resolve(result.rows._array),
+          (_: SQLTransaction, result: SQLResultSet) =>
+            resolve(result.rows._array),
           (_: SQLTransaction, error: SQLError) => {
             reject(error);
             return false;
@@ -37,7 +38,7 @@ export class LocalDB {
     });
   }
 
-  static addTask(addedTask: TaskType): Promise<string> {
+  static addTask(addedTask: TaskType): Promise<number> {
     const {
       task,
       description,
@@ -63,7 +64,8 @@ export class LocalDB {
             completionTime || null,
             remindTime || null,
           ],
-          (_: SQLTransaction, result: SQLResultSet) => resolve(result.insertId?.toString() || '0'),
+          (_: SQLTransaction, result: SQLResultSet) =>
+            resolve(result.insertId || 0),
           (_: SQLTransaction, error: SQLError) => {
             reject(error);
             return false;
@@ -73,13 +75,31 @@ export class LocalDB {
     });
   }
 
-  static deleteTask(id: string): Promise<string> {
+  static deleteTask(id: number): Promise<number> {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
           "DELETE FROM tasks WHERE id = ?",
           [id],
-          (_: SQLTransaction, result: SQLResultSet) => resolve(result.rowsAffected.toString()),
+          (_: SQLTransaction, result: SQLResultSet) =>
+            resolve(result.rowsAffected),
+          (_: SQLTransaction, error: SQLError) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+  }
+
+  static deleteAllTasks(): Promise<Array<TaskType>> {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `DELETE FROM tasks`,
+          [],
+          (_: SQLTransaction, result: SQLResultSet) =>
+            resolve(result.rows._array),
           (_: SQLTransaction, error: SQLError) => {
             reject(error);
             return false;
@@ -105,7 +125,7 @@ export class LocalDB {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          "UPDATE tasks SET task = ?, description = ?, time = ?, timeType = ?, isCompleted = ?, isExpired = ?, completingTime = ?, remindTime = ? WHERE id = ?",
+          "UPDATE tasks SET task = ?, description = ?, time = ?, timeType = ?, isCompleted = ?, isExpired = ?, completionTime = ?, remindTime = ? WHERE id = ?",
           [
             task,
             description || "",
@@ -115,7 +135,7 @@ export class LocalDB {
             isExpired ? 1 : 0,
             completionTime || null,
             remindTime || null,
-            id
+            id,
           ],
           resolve,
           (_: SQLTransaction, error: SQLError) => {
@@ -127,9 +147,9 @@ export class LocalDB {
     });
   }
 
-  static setTaskExpiration(id: string) {
+  static setTaskExpiration(id: number) {
     return new Promise((resolve, reject) => {
-      db.transaction(tx => {
+      db.transaction((tx) => {
         tx.executeSql(
           "UPDATE tasks SET isExpired = 1 WHERE id = ?",
           [id],
@@ -138,15 +158,19 @@ export class LocalDB {
             reject(error);
             return false;
           }
-        )
-      })
-    })
+        );
+      });
+    });
   }
 
-  static completeTask(id: string, isCompleted: number, isExpired: number, completionTime: number | null) {
-
+  static completeTask(
+    id: number,
+    isCompleted: number,
+    isExpired: number,
+    completionTime: number | null
+  ) {
     return new Promise((resolve, reject) => {
-      db.transaction(tx => {
+      db.transaction((tx) => {
         tx.executeSql(
           "UPDATE tasks SET isCompleted = ?, completionTime = ?, isExpired = ? WHERE id = ?",
           [isCompleted, completionTime, isExpired, id],
@@ -155,8 +179,8 @@ export class LocalDB {
             reject(error);
             return false;
           }
-        )
-      })
-    })
+        );
+      });
+    });
   }
 }

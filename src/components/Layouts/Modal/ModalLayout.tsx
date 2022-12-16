@@ -27,7 +27,7 @@ const ModalLayout: FC<ModalLayoutPropType> = ({ children, visible, close }) => {
       opacity: opacity.value,
       backgroundColor: dark ? backdropColor.dark : backdropColor.light
     }
-  }, [opacity.value]);
+  }, [opacity.value, dark]);
 
   useEffect(() => {
     opacity.value = withTiming(visible ? 1 : 0, { duration: 200 });

@@ -1,21 +1,20 @@
-import { GesturePositionsType } from './../../types/global/GesturePositions';
+import { GesturePositionsType } from "./../../types/global/GesturePositions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ListObject } from "../../types/global/ListObject";
 import { GESTURE_POSITIONS } from "../constants/asyncStorage";
-import { TaskType } from '../../redux/types/task';
+import { TaskType } from "../../redux/types/task";
 
 export const taskListToPositionsObject = (
   gesturePositions: GesturePositionsType,
   forDayTasks: Array<TaskType>,
-  isMultipleDates?: boolean,
+  isMultipleDates?: boolean
 ): GesturePositionsType => {
-  "worklet";
   const object: GesturePositionsType = {};
   const gesturePositionsList = Object.keys(gesturePositions);
   const changingType = forDayTasks.length - gesturePositionsList.length;
 
   if (gesturePositionsList.length === 0) {
-    forDayTasks.forEach((task, index) => object[task.id] = index);
+    forDayTasks.forEach((task, index) => (object[task.id] = index));
     return object;
   }
 
@@ -25,25 +24,31 @@ export const taskListToPositionsObject = (
     const addedTasks: Array<TaskType> = [];
     const prevTasks: Array<TaskType> = [];
 
-    forDayTasks.forEach(task => {
+    forDayTasks.forEach((task) => {
       if (gesturePositions[task.id] === undefined) {
         addedTasks.push(task);
       } else {
         prevTasks.push(task);
       }
-    })
+    });
 
     prevTasks.sort((prev, curr) => {
       return gesturePositions[prev.id] - gesturePositions[curr.id];
     });
 
     if (isMultipleDates) {
-      let indexOfAddedTask = prevTasks.findIndex(task => task.time === addedTasks[0].time);
+      let indexOfAddedTask = prevTasks.findIndex(
+        (task) => task.time === addedTasks[0].time
+      );
       if (indexOfAddedTask === -1) {
         indexOfAddedTask = 0;
       }
 
-      [...prevTasks.slice(0, indexOfAddedTask), addedTasks[0], ...prevTasks.slice(indexOfAddedTask)].forEach((task, index) => {
+      [
+        ...prevTasks.slice(0, indexOfAddedTask),
+        addedTasks[0],
+        ...prevTasks.slice(indexOfAddedTask),
+      ].forEach((task, index) => {
         object[task.id] = index;
       });
     } else {
@@ -51,7 +56,6 @@ export const taskListToPositionsObject = (
         object[task.id] = index;
       });
     }
-
   } else if (changingType < 0) {
     forDayTasks.sort((prev, curr) => {
       return gesturePositions[prev.id] - gesturePositions[curr.id];
@@ -84,8 +88,8 @@ export const positionsObjectToList = (
 
 export const moveGesturePosition = (
   gesturePositions: GesturePositionsType,
-  from: string,
-  to: string
+  from: number,
+  to: number
 ): GesturePositionsType => {
   "worklet";
   const newObject: GesturePositionsType = {};
@@ -95,40 +99,40 @@ export const moveGesturePosition = (
 
   if (moving === 0) {
     return gesturePositions;
-  } else if (moving < 0) {
-    for (let key in gesturePositions) {
-      const position = gesturePositions[key];
-      if (key === from) {
-        newObject[key] = gesturePositions[to];
-      } else if (position >= newPosition && position < prevPosition) {
-        newObject[key] = gesturePositions[key] + 1;
-      } else {
-        newObject[key] = gesturePositions[key];
-      }
-    }
-  } else {
-    for (let key in gesturePositions) {
-      const position = gesturePositions[key];
-      if (key === from) {
-        newObject[key] = gesturePositions[to];
-      } else if (position <= newPosition && position > prevPosition) {
-        newObject[key] = gesturePositions[key] - 1;
-      } else {
-        newObject[key] = gesturePositions[key];
-      }
+  }
+
+  for (let key in gesturePositions) {
+    if (key === from.toString()) {
+      newObject[key] = newPosition;
+    } else if (key === to.toString()) {
+      newObject[key] = prevPosition;
+    } else {
+      newObject[key] = gesturePositions[key];
     }
   }
 
   return newObject;
 };
 
+export const extractGesturePositionsFromTasksArray = (
+  tasks: Array<TaskType>,
+  gesturePositions: GesturePositionsType
+): GesturePositionsType => {
+  const object: GesturePositionsType = {};
+  tasks.forEach((task) => {
+    object[task.id] = gesturePositions[task.id] || 0;
+  });
+  return object;
+};
+
 export const saveGesturePositions = async (
   gesturePositions: GesturePositionsType
 ) => {
   try {
+    const storedGesturePositions = await getGesturePositionsFromAS();
     await AsyncStorage.setItem(
       GESTURE_POSITIONS,
-      JSON.stringify(gesturePositions)
+      JSON.stringify({ ...storedGesturePositions, ...gesturePositions })
     );
   } catch (e) {
     console.log(e);
@@ -139,8 +143,18 @@ export const getGesturePositionsFromAS = async (): Promise<
   GesturePositionsType | undefined
 > => {
   try {
-    const result = (await AsyncStorage.getItem(GESTURE_POSITIONS)) || "";
-    return JSON.parse(result);
+    const result = (await AsyncStorage.getItem(GESTURE_POSITIONS));
+    if (result) {
+      return JSON.parse(result);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+export const clearASGesturePositions = async () => {
+  try {
+    await AsyncStorage.removeItem(GESTURE_POSITIONS);
   } catch (e) {
     console.log(e);
   }

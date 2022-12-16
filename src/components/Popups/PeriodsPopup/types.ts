@@ -7,6 +7,4 @@ export type SwitchPopupStateType = {
 
 export interface SwitchPopupPropType extends BottomPopupPropType {
   list: null;
-  state: SwitchPopupStateType;
-  updateState: Dispatch<SetStateAction<SwitchPopupStateType>>;
 }

@@ -1,3 +1,4 @@
+import { SectionsObjectType } from './../../components/Screens/Home/types';
 import { GesturePositionsType } from "../../types/global/GesturePositions";
 import {
   EXPIRED,
@@ -6,14 +7,13 @@ import {
   FOR_WEEK,
   TODAY,
 } from "../constants/periods";
-import { SwitchPopupStateType } from "../../components/Popups/SwitchPopup/types";
-import { SectionsType } from "../../components/screens/Home/types";
-import { HomePeriodsKeys } from "../../types/constants";
+import { SwitchPopupStateType } from "../../components/Popups/PeriodsPopup/types";
+
 import { taskListToPositionsObject } from "./gesturePostions";
 import { TaskType } from "../../redux/types/task";
 import { languageTexts } from "../languageTexts";
 import { getDaysDiff } from "../date";
-import { LanguageType } from "../../redux/types/prefs";
+import { HomePeriodsKeys, LanguageType } from "../../redux/types/prefs";
 
 export const getSectionListEmptyMessage = (title: HomePeriodsKeys, lang: LanguageType) => {
   let clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_TODAY]} ${languageTexts[lang].periods[
@@ -63,7 +63,7 @@ export const sortTasks = (
       uncompletedList.push(task);
     }
   });
-
+  console.log('sort', gesturePositions.value);
   const gesturesList = Object.keys(gesturePositions.value);
   const newGesturePositions = taskListToPositionsObject(
     gesturePositions?.value,
@@ -103,12 +103,11 @@ export const sortTasks = (
 export const getSections = (
   periodsState: SwitchPopupStateType,
   tasks: Array<TaskType>
-): SectionsType[] => {
-  let periods: Array<any> = Object.keys(periodsState).filter(
-    (key) => periodsState[key]
-  );
+): SectionsObjectType => {
 
-  const periodTasks: { [key: string]: SectionsType } = {};
+  let periods: Array<any> = Object.keys(periodsState)
+
+  const periodTasks: SectionsObjectType = {};
 
   periods.forEach(
     (period) =>
@@ -142,7 +141,7 @@ export const getSections = (
       currDay + timeBound
     ).valueOf() && task.time > new Date().setHours(0, 0, 0, 0);
 
-    if (time < currDate && periodTasks[EXPIRED] && !isWeeklyTime) {
+    if (time < currDate && task.isExpired && periodTasks[EXPIRED] && !isWeeklyTime) {
       periodTasks[EXPIRED].list.push(task);
     } else if (isWeeklyTime) {
       const dayDiff = getDaysDiff(currDate, time);
@@ -158,5 +157,5 @@ export const getSections = (
     }
   });
 
-  return Object.values(periodTasks);
+  return periodTasks;
 };
