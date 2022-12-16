@@ -12,13 +12,9 @@ import { languageTexts } from "../../../utils/languageTexts";
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
 const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
-  ({ openModal, openAddTaskModal, openLanguageModal }) => {
+  ({ openAddTaskModal, openLanguageModal }) => {
     const language = useSelector(getLanguage);
     const { date } = getDate(language);
-
-    const RenderHome = () => {
-      return <Home showSettingModal={openModal} />
-    }
 
     const RenderPrefs = () => {
       return <Prefs openLanguageModal={openLanguageModal} />;
@@ -38,7 +34,7 @@ const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
       >
         <Tab.Screen
           name="Home"
-          component={RenderHome}
+          component={Home}
           options={{
             title: date,
             tabBarLabel: languageTexts[language].screenTitles.main,

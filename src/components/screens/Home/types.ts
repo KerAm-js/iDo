@@ -2,7 +2,6 @@ import { TaskType } from './../../../redux/types/task';
 import { HomePeriodsKeys } from '../../../redux/types/prefs'; 
 
 export type HomePropType = {
-  showSettingModal: () => void,
 }
 
 export type SectionsType = {

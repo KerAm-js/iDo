@@ -38,9 +38,9 @@ const TaskMargin = 10;
 const TaskHeight = 62 + TaskMargin;
 
 const emptyListHeight = 220;
-const baseHeight = 44;
+const baseHeight = 50;
 
-const Section: FC<SectionProps> = React.memo(({ title, list, visible }) => {
+const Section: FC<SectionProps> = React.memo(({ title, list }) => {
   console.log(title);
   const dispatch: AppDispatch = useDispatch();
   const language = useSelector(getLanguage);
@@ -84,11 +84,10 @@ const Section: FC<SectionProps> = React.memo(({ title, list, visible }) => {
 
   const containerStyle = useAnimatedStyle(() => {
     return {
-      height: visible ? height.value : withTiming(0, { duration: 300 }),
+      height: height.value,
       overflow: opacity.value === 1 ? "visible" : "hidden",
-      opacity: withTiming(visible ? 1 : 0, { duration: 300 })
     };
-  }, [opacity.value, height.value, visible]);
+  }, [opacity.value, height.value]);
 
   const listContainerOpacityStyle = useAnimatedStyle(() => {
     return {
@@ -185,7 +184,7 @@ const Section: FC<SectionProps> = React.memo(({ title, list, visible }) => {
           completedListOpacity.value === 1
             ? initialHeight
             : initialHeight - completedTasksLength * TaskHeight,
-          { duration: 0 }
+          { duration: 300 }
         )
       );
     }
@@ -275,7 +274,7 @@ const Section: FC<SectionProps> = React.memo(({ title, list, visible }) => {
     </Animated.View>
   );
 }, (prev, curr) => {
-  const result = JSON.stringify(prev.list) === JSON.stringify(curr.list) && prev.visible === curr.visible;
+  const result = JSON.stringify(prev.list) === JSON.stringify(curr.list);
   console.log(result);
   return result;
 });

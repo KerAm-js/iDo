@@ -8,7 +8,6 @@ import { TaskType } from '../../../redux/types/task';
 export type SectionProps = {
   title: HomePeriodsKeys,
   list: Array<TaskType>,
-  visible: boolean,
 }
 
 export type MovableItemProps = {
