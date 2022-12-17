@@ -1,10 +1,7 @@
 import React, { FC, useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setThemeAction } from "../../../redux/actions/prefsActions";
 import {
   chooseTaskToEditAction,
-  getGesturePositionsFromAsyncStorage,
-  getTasksFromLocalDB,
 } from "../../../redux/actions/taskActions";
 import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { getTaskToEdit } from "../../../redux/selectors/taskSelector";
@@ -13,18 +10,15 @@ import ModalLayout from "../../Layouts/Modal/ModalLayout";
 import AddTaskPopup from "../../Popups/AddTaskPopup/AddTaskPopup";
 import CalendarPopup from "../../Popups/CalendarPopup/CalendarPopup";
 import LanguagePopup from "../../Popups/LanguagePopup/LanguagePopup";
-import PeriodsPopup from "../../Popups/PeriodsPopup/PeriodsPopup";
 import { languageTexts } from "../../../utils/languageTexts";
 import TabNavigator from "../Tab/TabNavigator";
 import { NavigationContainer } from "@react-navigation/native";
 import { themeColors } from "../../../styles/global/colors";
-import { useColorScheme } from "react-native";
 import { RootPropType } from "./types";
 
 const Root: FC<RootPropType> = ({ onAppReady }) => {
   const taskToEdit = useSelector(getTaskToEdit);
   const { language, theme } = useSelector(getPrefs);
-  const systemTheme = useColorScheme();
   const dispatch: AppDispatch = useDispatch();
   const [addTaskModalVisible, setAddTaskModalVisible] =
     useState<boolean>(false);
@@ -32,13 +26,8 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
     useState<boolean>(false);
   const [reminderModalVisible, setReminderModalVisible] =
     useState<boolean>(false);
-  const [peridosModalVisible, setPeriodsModalVisible] =
-    useState<boolean>(false);
   const [languageModalVisible, setLanguageModalVisible] =
     useState<boolean>(false);
-
-  const openPeriodsModal = useCallback(() => setPeriodsModalVisible(true), []);
-  const closePeriodsModal = () => setPeriodsModalVisible(false);
 
   const openAddTaskModal = useCallback(() => setAddTaskModalVisible(true), []);
   const closeAddTaskModal = () => {
@@ -79,21 +68,8 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
     setAddTaskModalVisible(taskToEdit ? true : false);
   }, [taskToEdit]);
 
-  useEffect(() => {
-    dispatch(setThemeAction(systemTheme));
-    dispatch(getTasksFromLocalDB());
-    dispatch(getGesturePositionsFromAsyncStorage());
-  }, []);
-
   return (
     <NavigationContainer onReady={onAppReady} theme={themeColors[theme]}>
-      <ModalLayout visible={peridosModalVisible} close={closePeriodsModal}>
-        <PeriodsPopup
-          title={languageTexts[language].popupTitles.taskCategories}
-          visible={peridosModalVisible}
-          list={null}
-        />
-      </ModalLayout>
       <ModalLayout visible={addTaskModalVisible} close={closeAddTaskModal}>
         <AddTaskPopup
           visible={addTaskModalVisible}
@@ -125,7 +101,6 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
       </ModalLayout>
       <TabNavigator
         openAddTaskModal={openAddTaskModal}
-        openModal={openPeriodsModal}
         openLanguageModal={openLanguageModal}
       />
     </NavigationContainer>

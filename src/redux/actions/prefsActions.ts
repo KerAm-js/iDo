@@ -1,21 +1,42 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { ColorSchemeName } from "react-native";
-import { UPDATE_LANGUAGE, TOGGLE_THEME, SET_THEME, UPDATE_PERIODS } from "../constants/prefs";
-import { LanguageType, PeriodsType } from "../types/prefs";
+import {
+  getPrefsFromAS,
+  savePrefsToAS,
+} from "../../backend/asyncStorage/prefs";
+import { lagnuages } from "../../utils/languageTexts";
+import { UPDATE_LANGUAGE, SET_THEME, UPDATE_PREFS } from "../constants/prefs";
+import { store } from "../store";
+import { LanguageType, ThemeType } from "../types/prefs";
 
 export const updateLanguageAction =
-  (language: LanguageType) => (dispatch: Dispatch) => {
+  (language: LanguageType) => async (dispatch: Dispatch) => {
+    const prefsState = store.getState().prefs;
+    await savePrefsToAS({ ...prefsState, language });
     dispatch({ type: UPDATE_LANGUAGE, language });
   };
 
-export const toggleThemeAction = () => (dispatch: Dispatch) => {
-  dispatch({ type: TOGGLE_THEME });
-};
+export const getPrefsFromASAction =
+  (colorScheme: ColorSchemeName, locale: string) =>
+  async (dispatch: Dispatch) => {
+    const prefs = await getPrefsFromAS();
+    if (prefs) {
+      dispatch({ type: UPDATE_PREFS, prefs });
+    } else {
+      const langCode = locale.slice(0, 2);
+      const languageStrings: Array<string> = lagnuages;
+      const language = languageStrings.includes(langCode) ? langCode : "en";
+      const theme: ThemeType =
+        colorScheme === "dark" || colorScheme === "light"
+          ? colorScheme
+          : "light";
+      dispatch({ type: UPDATE_PREFS, prefs: { theme, language } });
+    }
+  };
 
-export const setThemeAction = (theme: ColorSchemeName) => (dispatch: Dispatch) => {
-  dispatch({ type: SET_THEME, theme });
-};
-
-export const updatePeriodsAction = (periods: PeriodsType) => (dispatch: Dispatch) => {
-  dispatch({ type: UPDATE_PERIODS, periods });
-};
+export const setThemeAction =
+  (theme: ThemeType) => async (dispatch: Dispatch) => {
+    const prefsState = store.getState().prefs;
+    await savePrefsToAS({ ...prefsState, theme });
+    dispatch({ type: SET_THEME, theme });
+  };

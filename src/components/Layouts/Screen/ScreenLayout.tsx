@@ -16,6 +16,8 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
     headingRight: HeadingRight,
     subtitle,
     subtitleComponent: SubtitleComponent,
+    onMount,
+    onUnmount,
   }) => {
     const theme = useTheme();
     const [headerShown, setHeaderShown] = useState(false);
@@ -56,6 +58,13 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
         }).start();
       }
     };
+
+    useEffect(() => {
+      if (onMount) onMount();
+      return () => {
+        if (onUnmount) onUnmount();
+      }
+    }, [])
 
     useEffect(() => {
       Animated.timing(themeToggling, {

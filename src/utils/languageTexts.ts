@@ -13,9 +13,9 @@ import {
 export const languageTexts = {
   ru: {
     sectionEmptyList: {
-      [FOR_TODAY]: "Что делаем сегодня",
-      [FOR_WEEK]: "Что планируете на завтра",
-      [FOR_TOMORROW]: "Какие планы на неделю",
+      [FOR_TODAY]: "Что делаем сегодня?",
+      [FOR_WEEK]: "Какие планы на неделю?",
+      [FOR_TOMORROW]: "Что планируете на завтра?",
       [EXPIRED]: "Нет просроченных задач",
     },
     popupTitles: {
@@ -146,9 +146,9 @@ export const languageTexts = {
   },
   en: {
     sectionEmptyList: {
-      [FOR_TODAY]: "What are we doing today",
-      [FOR_WEEK]: "What are you planning for a week",
-      [FOR_TOMORROW]: "What are the plans for tomorrow",
+      [FOR_TODAY]: "What are we doing today?",
+      [FOR_WEEK]: "What are you planning for a week?",
+      [FOR_TOMORROW]: "What are the plans for tomorrow?",
       [EXPIRED]: "No expired tasks",
     },
     popupTitles: {

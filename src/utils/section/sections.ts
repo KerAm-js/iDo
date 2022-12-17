@@ -7,13 +7,13 @@ import {
   FOR_WEEK,
   TODAY,
 } from "../constants/periods";
-import { SwitchPopupStateType } from "../../components/Popups/PeriodsPopup/types";
 
 import { taskListToPositionsObject } from "./gesturePostions";
 import { TaskType } from "../../redux/types/task";
 import { languageTexts } from "../languageTexts";
 import { getDaysDiff } from "../date";
-import { HomePeriodsKeys, LanguageType } from "../../redux/types/prefs";
+import { LanguageType } from "../../redux/types/prefs";
+import { HomePeriodsKeys, PeriodsListType } from '../../types/global/Periods';
 
 export const getSectionListEmptyMessage = (title: HomePeriodsKeys, lang: LanguageType) => {
   let clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_TODAY]} ${languageTexts[lang].periods[
@@ -63,10 +63,10 @@ export const sortTasks = (
       uncompletedList.push(task);
     }
   });
-  console.log('sort', gesturePositions.value);
+
   const gesturesList = Object.keys(gesturePositions.value);
   const newGesturePositions = taskListToPositionsObject(
-    gesturePositions?.value,
+    gesturePositions.value,
     forDayList,
     isMultipleDates
   );
@@ -90,7 +90,7 @@ export const sortTasks = (
     const currCompletedTime = new Date(curr.completionTime || "").valueOf();
     return currCompletedTime - prevCompletedTime;
   });
-
+  
   gesturePositions.value = newGesturePositions;
 
   return [
@@ -101,19 +101,19 @@ export const sortTasks = (
 };
 
 export const getSections = (
-  periodsState: SwitchPopupStateType,
-  tasks: Array<TaskType>
+  periodsList: PeriodsListType,
+  tasks: Array<TaskType>,
+  gesturePositions: GesturePositionsType,
 ): SectionsObjectType => {
-
-  let periods: Array<any> = Object.keys(periodsState)
 
   const periodTasks: SectionsObjectType = {};
 
-  periods.forEach(
+  periodsList.forEach(
     (period) =>
       (periodTasks[period] = {
         title: period,
         list: [],
+        gesturePositions: {},
       })
   );
 
@@ -127,6 +127,7 @@ export const getSections = (
 
   tasks.forEach((task) => {
     const time = new Date(task.time);
+    const position = gesturePositions[task.id];
     let timeBound = 7
 
     if (currWeekDay === 0) {
@@ -143,16 +144,20 @@ export const getSections = (
 
     if (time < currDate && task.isExpired && periodTasks[EXPIRED] && !isWeeklyTime) {
       periodTasks[EXPIRED].list.push(task);
+      if (position) periodTasks[EXPIRED].gesturePositions[task.id] = position;
     } else if (isWeeklyTime) {
       const dayDiff = getDaysDiff(currDate, time);
       if (dayDiff < 0) {
         return;
       } else if (dayDiff < 1 && periodTasks[FOR_TODAY]) {
         periodTasks[FOR_TODAY].list.push(task);
+        if (position)periodTasks[FOR_TODAY].gesturePositions[task.id] = position;
       } else if (dayDiff >= 1 && dayDiff < 2 && periodTasks[FOR_TOMORROW]) {
         periodTasks[FOR_TOMORROW].list.push(task);
+        if (position)periodTasks[FOR_TOMORROW].gesturePositions[task.id] = position;
       } else if (dayDiff >= 2 && periodTasks[FOR_WEEK]) {
         periodTasks[FOR_WEEK].list.push(task);
+        if (position)periodTasks[FOR_WEEK].gesturePositions[task.id] = position;
       }
     }
   });

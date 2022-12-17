@@ -5,7 +5,7 @@ import { updateLanguageAction } from "../../../redux/actions/prefsActions";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { LanguageType } from "../../../redux/types/prefs";
-import { lagnuages } from "../../../utils/languageTexts";
+import { lagnuages, languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import CheckItem from "../../UI/PopupItems/CheckItem";
 import { CheckPopupPropType } from "./types";
@@ -29,7 +29,7 @@ const LanguagePopup: FC<CheckPopupPropType> = ({
           return (
             <CheckItem
               key={lang}
-              title={lang}
+              title={languageTexts[language].languages[lang]}
               onPress={() => onCheck(lang)}
               isChecked={language === lang}
             />

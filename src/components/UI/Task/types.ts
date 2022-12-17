@@ -1,12 +1,10 @@
-
-import { HomePeriodsKeys } from '../../../redux/types/prefs';
-import { TimeType, TaskType } from './../../../redux/types/task';
+import { HomePeriodsKeys } from '../../../types/global/Periods';
+import { TaskType } from './../../../redux/types/task';
 
 export type TaskPropTypes = {
   taskObject: TaskType,
   sectionType?: HomePeriodsKeys;
   completeTask: (task: TaskType) => void;
-  deleteTask: (id: number) => void;
 };
 
 export type CompletedMarkerPropTypes = {

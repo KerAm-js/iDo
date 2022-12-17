@@ -1,4 +1,4 @@
-import { PeriodsListType } from "../../redux/types/prefs";
+import { PeriodsListType } from "../../types/global/Periods";
 
 export const FOR_TODAY = 'forToday';
 export const FOR_TOMORROW = 'forTomorrow';

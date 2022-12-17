@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { languageIcon } from "../../../../assets/icons/languages";
 import { themeIcon } from "../../../../assets/icons/theme";
 import { version } from "../../../../assets/icons/version";
-import { toggleThemeAction } from "../../../redux/actions/prefsActions";
+import { setThemeAction } from "../../../redux/actions/prefsActions";
 import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { themeColors } from "../../../styles/global/colors";
@@ -18,7 +18,7 @@ const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
   const { language, theme } = useSelector(getPrefs);
 
   const toggleTheme = () => {
-    dispatch(toggleThemeAction());
+    dispatch(setThemeAction( theme === 'dark' ? 'light' : 'dark' ));
   };
 
   return (

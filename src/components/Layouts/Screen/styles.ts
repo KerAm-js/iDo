@@ -12,7 +12,7 @@ export const screenLayoutStyles = StyleSheet.create({
     color: textColors.blue,
   },
   headingContainer: {
-    marginBottom: 35,
+    marginBottom: 30,
   },
   titleContainer: {
     flexDirection: "row",

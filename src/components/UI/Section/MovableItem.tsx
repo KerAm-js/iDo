@@ -28,7 +28,6 @@ import { movableItemStyles } from "./style";
 import { ContextType, MovableItemProps } from "./types";
 import {
   moveGesturePosition,
-  saveGesturePositions,
 } from "../../../utils/section/gesturePostions";
 import { trash } from "../../../../assets/icons/trash";
 import { textColors } from "../../../styles/global/colors";
@@ -43,13 +42,12 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     opacity,
     itemHeight,
     component: Component,
-    sectionType,
+    sectionTitle,
     completeTask,
     deleteTask,
     taskObject,
     upperBound,
   }) => {
-    console.log(taskObject.task);
     const [isDragged, setIsDragged] = useState(false);
     const { width: SCREEN_WIDTH } = Dimensions.get("screen");
     const translateThreshold = SCREEN_WIDTH * -0.3;
@@ -165,7 +163,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
               id,
               toId
             );
-            gesturePositions.value = newGesturePositions;
+            gesturePositions.value = newGesturePositions
           }
           positions.value = newPositionsObject;
           context.isMovingDisabled = isTaskMovingDisabled;
@@ -205,7 +203,6 @@ const MovableItem: FC<MovableItemProps> = React.memo(
           });
         }
         shadowOpacity.value = withTiming(0, { duration: 300 });
-        runOnJS(saveGesturePositions)(gesturePositions.value);
         runOnJS(setIsDragged)(false);
       } else {
         if (translateX.value < translateThreshold && !taskObject.isCompleted) {
@@ -303,15 +300,14 @@ const MovableItem: FC<MovableItemProps> = React.memo(
           <Component
             taskObject={taskObject}
             completeTask={completeTaskHandler}
-            deleteTask={deleteTask}
-            sectionType={sectionType}
+            sectionType={sectionTitle}
           />
         </Animated.View>
       </Animated.View>
     );
   },
   (prev, curr) => {
-    return JSON.stringify(prev.taskObject) === JSON.stringify(curr.taskObject);
+    return JSON.stringify(prev.taskObject) === JSON.stringify(curr.taskObject) && prev.upperBound === curr.upperBound;
   }
 );
 

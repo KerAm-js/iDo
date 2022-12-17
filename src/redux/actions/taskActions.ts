@@ -12,7 +12,8 @@ import {
 import { Dispatch } from "@reduxjs/toolkit";
 import { ADD_TASK, UPDATE_GESTURE_POSITIONS } from "../constants/task";
 import { LocalDB } from "../../backend/sqlite";
-import { getGesturePositionsFromAS } from "../../utils/section/gesturePostions";
+import { getGesturePositionsFromAS } from "../../backend/asyncStorage/gesturePositions";
+import { setNotification } from "../../native/notifications";
 
 export const scheduleTaskExpiration = async (
   task: TaskType,
@@ -65,11 +66,11 @@ export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
       const notificationTime = Math.round(
         (task.remindTime - currentDate) / 1000
       );
-      // const notificationId = await setNotification(
-      //   "Напоминание",
-      //   `${task.task}`,
-      //   notificationTime
-      // );
+      const notificationId = await setNotification(
+        "Напоминание",
+        `${task.task}`,
+        notificationTime
+      );
     }
     await scheduleTaskExpiration(addedTask, dispath);
     dispath({ type: ADD_TASK, task: addedTask });
@@ -139,7 +140,7 @@ export const completeTaskAction =
     }
   };
 
-export const getGesturePositionsFromAsyncStorage =
+export const getGesturePositionsFromASAction =
   () => async (dispatch: Dispatch) => {
     try {
       const positions = await getGesturePositionsFromAS();

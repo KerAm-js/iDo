@@ -1,12 +1,14 @@
+import { GesturePositionsType } from '../../../types/global/GesturePositions';
+import { HomePeriodsKeys } from '../../../types/global/Periods';
 import { TaskType } from './../../../redux/types/task';
-import { HomePeriodsKeys } from '../../../redux/types/prefs'; 
 
 export type HomePropType = {
 }
 
 export type SectionsType = {
   title: HomePeriodsKeys,
-  list: Array<TaskType>
+  list: Array<TaskType>,
+  gesturePositions: GesturePositionsType,
 }
 
 export type SectionsObjectType = {

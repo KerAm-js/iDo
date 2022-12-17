@@ -1,7 +1,5 @@
 import { GesturePositionsType } from "./../../types/global/GesturePositions";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ListObject } from "../../types/global/ListObject";
-import { GESTURE_POSITIONS } from "../constants/asyncStorage";
 import { TaskType } from "../../redux/types/task";
 
 export const taskListToPositionsObject = (
@@ -64,7 +62,6 @@ export const taskListToPositionsObject = (
       object[task.id] = index;
     });
   }
-
   return object;
 };
 
@@ -110,7 +107,6 @@ export const moveGesturePosition = (
       newObject[key] = gesturePositions[key];
     }
   }
-
   return newObject;
 };
 
@@ -123,39 +119,4 @@ export const extractGesturePositionsFromTasksArray = (
     object[task.id] = gesturePositions[task.id] || 0;
   });
   return object;
-};
-
-export const saveGesturePositions = async (
-  gesturePositions: GesturePositionsType
-) => {
-  try {
-    const storedGesturePositions = await getGesturePositionsFromAS();
-    await AsyncStorage.setItem(
-      GESTURE_POSITIONS,
-      JSON.stringify({ ...storedGesturePositions, ...gesturePositions })
-    );
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-export const getGesturePositionsFromAS = async (): Promise<
-  GesturePositionsType | undefined
-> => {
-  try {
-    const result = (await AsyncStorage.getItem(GESTURE_POSITIONS));
-    if (result) {
-      return JSON.parse(result);
-    }
-  } catch (e) {
-    console.log(e);
-  }
-};
-
-export const clearASGesturePositions = async () => {
-  try {
-    await AsyncStorage.removeItem(GESTURE_POSITIONS);
-  } catch (e) {
-    console.log(e);
-  }
 };

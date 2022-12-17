@@ -9,5 +9,7 @@ export const clearListStyles = StyleSheet.create({
   },
   title: {
     marginTop: 25,
+    maxWidth: '80%',
+    textAlign: 'center',
   }
 })
