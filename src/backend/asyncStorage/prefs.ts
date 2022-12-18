@@ -9,7 +9,7 @@ export const getPrefsFromAS = async (): Promise<PrefsState | undefined> => {
       return JSON.parse(storedPrefs);
     }
   } catch (error) {
-    console.log(error);
+    console.log('getPrefsFromAS', error);
   }
 };
 
@@ -17,6 +17,6 @@ export const savePrefsToAS = async (prefs: PrefsState) => {
   try {
     await AsyncStorage.setItem(PREFS, JSON.stringify(prefs));
   } catch (error) {
-    console.log(error);
+    console.log('savePrefsToAS', error);
   }
 };

@@ -15,7 +15,7 @@ export const deleteGesturePosition = async (id: number) => {
       );
     }
   } catch (e) {
-    console.log(e);
+    console.log('deleteGesturePosition', e);
   }
 };
 
@@ -26,7 +26,7 @@ export const saveGesturePositions = async (
   try {
     await AsyncStorage.setItem(period, JSON.stringify(gesturePositions));
   } catch (e) {
-    console.log(e);
+    console.log('saveGesturePositions', e);
   }
 };
 
@@ -43,7 +43,7 @@ export const getGesturePositionsFromAS = async (): Promise<
     }
     return gesturePositions;
   } catch (e) {
-    console.log(e);
+    console.log('getGesturePositionsFromAS', e);
   }
 };
 
@@ -51,6 +51,6 @@ export const clearASGesturePositions = async () => {
   try {
     await AsyncStorage.removeItem(GESTURE_POSITIONS);
   } catch (e) {
-    console.log(e);
+    console.log('clearASGesturePositions', e);
   }
 };

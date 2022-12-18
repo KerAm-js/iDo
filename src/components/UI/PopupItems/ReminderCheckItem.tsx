@@ -39,7 +39,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
 
   if (calendarState === CHOOSE) {
     titleString =
-      getDate("ru", { date }).date +
+      getDate(language, { date }).date +
       (isCurrentYear ? "" : " " + date.getFullYear()) +
       timeString;
   } else {

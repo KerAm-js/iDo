@@ -19,18 +19,22 @@ export const updateLanguageAction =
 export const getPrefsFromASAction =
   (colorScheme: ColorSchemeName, locale: string) =>
   async (dispatch: Dispatch) => {
-    const prefs = await getPrefsFromAS();
-    if (prefs) {
-      dispatch({ type: UPDATE_PREFS, prefs });
-    } else {
-      const langCode = locale.slice(0, 2);
-      const languageStrings: Array<string> = lagnuages;
-      const language = languageStrings.includes(langCode) ? langCode : "en";
-      const theme: ThemeType =
-        colorScheme === "dark" || colorScheme === "light"
-          ? colorScheme
-          : "light";
-      dispatch({ type: UPDATE_PREFS, prefs: { theme, language } });
+    try {
+      const prefs = await getPrefsFromAS();
+      if (prefs) {
+        dispatch({ type: UPDATE_PREFS, prefs });
+      } else {
+        const langCode = locale.slice(0, 2);
+        const languageStrings: Array<string> = lagnuages;
+        const language = languageStrings.includes(langCode) ? langCode : "en";
+        const theme: ThemeType =
+          colorScheme === "dark" || colorScheme === "light"
+            ? colorScheme
+            : "light";
+        dispatch({ type: UPDATE_PREFS, prefs: { theme, language } });
+      }
+    } catch (error) {
+      console.log("getPrefsFromASAction", error);
     }
   };
 

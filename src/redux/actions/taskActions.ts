@@ -38,7 +38,7 @@ export const scheduleTaskExpiration = async (
       }
     }
   } catch (error) {
-    console.log(error);
+    console.log('scheduleTaskExpiration', error);
   }
 };
 
@@ -53,7 +53,7 @@ export const getTasksFromLocalDB = () => async (dispatch: Dispatch) => {
     dispatch({ type: UPDATE_TASKS, tasks: filteredTasks });
     filteredTasks.forEach((task) => scheduleTaskExpiration(task, dispatch));
   } catch (error) {
-    console.log(error);
+    console.log('getTasksFromLocalDB', error);
   }
 };
 
@@ -74,7 +74,9 @@ export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
     }
     await scheduleTaskExpiration(addedTask, dispath);
     dispath({ type: ADD_TASK, task: addedTask });
-  } catch (error) {}
+  } catch (error) {
+    console.log('addTaskAction', error)
+  }
 };
 
 export const editTaskAction =
@@ -84,7 +86,7 @@ export const editTaskAction =
       scheduleTaskExpiration(task, dispatch);
       dispatch({ type: EDIT_TASK, task });
     } catch (error) {
-      console.log(error);
+      console.log('editTaskAction', error);
     }
   };
 
@@ -93,7 +95,7 @@ export const deleteTaskAction = (id: number) => async (dispatch: Dispatch) => {
     await LocalDB.deleteTask(id);
     dispatch({ type: DELETE_TASK, id });
   } catch (error) {
-    console.log(error);
+    console.log('deleteTaskAction', error);
   }
 };
 
@@ -116,7 +118,7 @@ export const completeTaskAction =
   (task: TaskType) => async (dispatch: Dispatch) => {
     try {
       const isCompleted = task.isCompleted ? 0 : 1;
-      const completionTime = isCompleted ? new Date().valueOf() : null; // it is needed to set the same time to redux store and local db;
+      const completionTime = isCompleted ? new Date().valueOf() : null;
       const isExpired = isCompleted
         ? task.isExpired
         : new Date().valueOf() > task.time
@@ -136,7 +138,7 @@ export const completeTaskAction =
         completionTime,
       });
     } catch (error) {
-      console.log(error);
+      console.log('completeTaskAction', error);
     }
   };
 
@@ -146,6 +148,6 @@ export const getGesturePositionsFromASAction =
       const positions = await getGesturePositionsFromAS();
       dispatch({ type: UPDATE_GESTURE_POSITIONS, positions });
     } catch (error) {
-      console.log(error);
+      console.log('getGesturePositionsFromASAction', error);
     }
   };

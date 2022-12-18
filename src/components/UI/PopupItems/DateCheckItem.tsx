@@ -15,6 +15,8 @@ import { DateCheckItemPropType } from "./types";
 import ListItem from "../../Layouts/ListItem/ListItem";
 import { useTheme } from "@react-navigation/native";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
+import { useSelector } from "react-redux";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 
 const DateCheckItem: FC<DateCheckItemPropType> = ({
   title,
@@ -25,7 +27,8 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
   isChecked,
 }) => {
   const { colors } = useTheme();
-  const { weekDay } = getDate("ru", { date: date, isShort: true });
+  const language = useSelector(getLanguage);
+  const { weekDay } = getDate(language, { date: date, isShort: true });
   const onPressHandler = () => {
     onPress(state, date);
   };

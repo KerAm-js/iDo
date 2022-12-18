@@ -18,7 +18,7 @@ const loadApp = async () => {
   try {
     await LocalDB.initTasks();
   } catch (err) {
-    console.log(err);
+    console.log('loadApp', err);
   }
 };
 
@@ -38,7 +38,7 @@ export default function AppLoading() {
           await loadApp();
         }
       } catch (error) {
-        console.log(error);
+        console.log('prepare', error);
       } finally {
         setTimeout(() => {
           setIsAppReady(true);
@@ -53,7 +53,7 @@ export default function AppLoading() {
       try {
         await SplashScreen.hideAsync();
       } catch (error) {
-        console.log(error);
+        console.log('onAppReady', error);
       }
     }
   }, [isAppReady]);

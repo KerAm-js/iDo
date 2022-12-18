@@ -21,7 +21,7 @@ async function requestPermissionsAsync() {
       return true;
     }
   } catch (error) {
-    console.log(error);
+    console.log('requestPermissionsAsync', error);
   }
 }
 
@@ -51,7 +51,7 @@ export const setNotification = async (
       return identifier;
     }
   } catch (error) {
-    console.log(error);
+    console.log('setNotification', error);
   }
 };
 
@@ -76,7 +76,7 @@ export const presentNotification = async (title: string, body: string) => {
       });
     }
   } catch (error) {
-    console.log(error);
+    console.log('presentNotification', error);
   }
 };
 
@@ -85,7 +85,7 @@ export const getAllNotifications = async () => {
     const result = await Notifications.getAllScheduledNotificationsAsync();
     return result;
   } catch (error) {
-    console.log(error);
+    console.log('getAllNotifications', error);
   }
 };
 
@@ -93,7 +93,7 @@ export const deleteNotification = async (notificationId: string) => {
   try {
     await Notifications.cancelScheduledNotificationAsync(notificationId);
   } catch (error) {
-    console.log(error);
+    console.log('deleteNotification', error);
   }
 };
 
@@ -101,6 +101,6 @@ export const deleteAllNotifications = async () => {
   try {
     await Notifications.cancelAllScheduledNotificationsAsync();
   } catch (error) {
-    console.log(error);
+    console.log('deleteAllNotifications', error);
   }
 };
