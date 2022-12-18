@@ -5,6 +5,7 @@ import { circleButtonProps } from "./types";
 import { LinearGradient } from "expo-linear-gradient";
 import { buttonColors, textColors } from "../../../../styles/global/colors";
 import AnimatedButton from "../../../Layouts/AnimatedButton/AnimatedButton";
+import { View } from "react-native";
 
 const CircleButton: FC<circleButtonProps> = ({
   xml,
@@ -26,11 +27,12 @@ const CircleButton: FC<circleButtonProps> = ({
       onPress={clickHanlder}
       style={size === "big" ? circleButtonStyles.shadows : undefined}
     >
-      <LinearGradient
-        colors={size === "big" ? ["#248DFF", "#0271EA"] : [color, color]}
+      <View
+        // colors={size === "big" ? ["#248DFF", "#0271EA"] : [color, color]}
         style={[
           circleButtonStyles.container,
           size === "small" && circleButtonStyles.containerSmall,
+          { backgroundColor: color }
         ]}
       >
         <SvgXml
@@ -47,7 +49,7 @@ const CircleButton: FC<circleButtonProps> = ({
               : circleButtonStyles.iconSmall.height
           }
         />
-      </LinearGradient>
+      </View>
     </AnimatedButton>
   );
 };

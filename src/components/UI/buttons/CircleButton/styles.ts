@@ -12,8 +12,8 @@ export const circleButtonStyles = StyleSheet.create({
   },
   shadows: {
     shadowColor: textColors.blue,
-    shadowRadius: 3,
-    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOpacity: 0.6,
     shadowOffset: {
       height: 0,
       width: 0,

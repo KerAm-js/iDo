@@ -12,6 +12,7 @@ import {
   getGesturePositionsFromASAction,
   getTasksFromLocalDB,
 } from "./src/redux/actions/taskActions";
+import { getSectionsVisibilitiesFromASAction } from "./src/redux/actions/interfaceActions";
 
 const loadApp = async () => {
   try {
@@ -31,6 +32,7 @@ export default function AppLoading() {
       try {
         if (!isAppReady) {
           dispatch(getPrefsFromASAction(systemTheme, Localization.locale));
+          dispatch(getSectionsVisibilitiesFromASAction());
           dispatch(getTasksFromLocalDB());
           dispatch(getGesturePositionsFromASAction());
           await loadApp();

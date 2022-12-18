@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { View } from "react-native";
 import { getDate } from "../../../utils/date";
 import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
@@ -12,11 +12,14 @@ import { useFocusEffect } from "@react-navigation/native";
 import { PERIODS_LIST } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { getGesturePositionsFromASAction } from "../../../redux/actions/taskActions";
+import { getSectionsVisibilities } from "../../../redux/selectors/interfaceSelectors";
+import { getSectionsVisibilitiesFromASAction } from "../../../redux/actions/interfaceActions";
 
 const Home: FC<HomePropType> = () => {
   const { language } = useSelector(getPrefs);
   const dispatch: AppDispatch = useDispatch();
   const gesturePositions = useSelector(getGesturePositions);
+  const sectionsVisibilities = useSelector(getSectionsVisibilities);
   const [visible, setVisible] = useState<boolean>(false);
   const { date, weekDay } = getDate(language);
   const tasks = useSelector(getTasks);
@@ -37,7 +40,10 @@ const Home: FC<HomePropType> = () => {
     <ScreenLayout
       title={date}
       subtitle={weekDay}
-      onUnmount={() => dispatch(getGesturePositionsFromASAction())}
+      onUnmount={() => {
+        dispatch(getSectionsVisibilitiesFromASAction());
+        dispatch(getGesturePositionsFromASAction());
+      }}
     >
       <View>
         {PERIODS_LIST.map((period) => {
@@ -47,6 +53,7 @@ const Home: FC<HomePropType> = () => {
               title={sections[period].title}
               list={sections[period].list}
               initialGesturePositions={sections[period].gesturePositions}
+              visibilities={sectionsVisibilities[period]}
             />
           );
         })}

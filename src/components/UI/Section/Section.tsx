@@ -35,6 +35,7 @@ import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { TaskType } from "../../../redux/types/task";
 import { saveGesturePositions } from "../../../backend/asyncStorage/gesturePositions";
+import { saveSectionVisibilityToAS } from "../../../backend/asyncStorage/section";
 
 const TaskMargin = 10;
 const TaskHeight = 62 + TaskMargin;
@@ -43,10 +44,12 @@ const emptyListHeight = 220;
 const baseHeight = 50;
 
 const Section: FC<SectionProps> = React.memo(
-  ({ title, list, initialGesturePositions }) => {
+  ({ title, list, initialGesturePositions, visibilities }) => {
     const dispatch: AppDispatch = useDispatch();
     const language = useSelector(getLanguage);
-    const gesturePositions = useSharedValue<GesturePositionsType>(initialGesturePositions);
+    const gesturePositions = useSharedValue<GesturePositionsType>(
+      initialGesturePositions
+    );
     const [sortedTasks, completedTasksLength] = sortTasks(
       list,
       gesturePositions,
@@ -65,14 +68,25 @@ const Section: FC<SectionProps> = React.memo(
           30
         : emptyListHeight;
 
-    const opacity = useSharedValue(1);
+    const opacity = useSharedValue(
+      typeof visibilities.list === "number" ? visibilities.list : 1
+    );
+    const completedListOpacity = useSharedValue(
+      typeof visibilities.completedList === "number"
+        ? visibilities.completedList
+        : 1
+    );
     const height = useSharedValue(
-      opacity.value === 1 ? initialHeight : baseHeight
+      opacity.value === 1
+        ? initialHeight -
+            (completedListOpacity.value === 0
+              ? completedTasksLength * TaskHeight
+              : 0)
+        : baseHeight
     );
     const emptyListImageOpacity = useSharedValue(
       sortedTasks.length === 0 ? 1 : 0
     );
-    const completedListOpacity = useSharedValue(1);
     const completedMarkerTop = useSharedValue(
       upperBound === sortedTasks.length - 1
         ? upperBound * TaskHeight
@@ -113,6 +127,10 @@ const Section: FC<SectionProps> = React.memo(
     });
 
     const toggleListVisible = () => {
+      saveSectionVisibilityToAS(title, {
+        list: opacity.value === 0 ? 1 : 0,
+        completedList: completedListOpacity.value,
+      });
       height.value = withTiming(
         opacity.value === 0
           ? completedListOpacity.value === 1
@@ -129,6 +147,10 @@ const Section: FC<SectionProps> = React.memo(
     };
 
     const toggleCompletedListVisible = () => {
+      saveSectionVisibilityToAS(title, {
+        list: opacity.value,
+        completedList: completedListOpacity.value === 0 ? 1 : 0,
+      });
       height.value = withTiming(
         completedListOpacity.value === 0
           ? initialHeight
@@ -210,7 +232,6 @@ const Section: FC<SectionProps> = React.memo(
       () => gesturePositions.value,
       (curr, prev) => {
         if (JSON.stringify(prev) !== JSON.stringify(curr)) {
-          console.log(curr)
           runOnJS(saveGesturePositions)(curr, title);
         }
       },

@@ -5,11 +5,13 @@ import { FC } from "react";
 
 import { TaskType } from "../../../redux/types/task";
 import { HomePeriodsKeys } from "../../../types/global/Periods";
+import { SectionVisibilityValueType } from "../../../redux/types/interface";
 
 export type SectionProps = {
   title: HomePeriodsKeys;
   list: Array<TaskType>;
   initialGesturePositions: GesturePositionsType;
+  visibilities: SectionVisibilityValueType;
 };
 
 export type MovableItemProps = {
