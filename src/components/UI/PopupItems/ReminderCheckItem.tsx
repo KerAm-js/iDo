@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { Pressable, Text } from "react-native";
 import { useSelector } from "react-redux";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
@@ -46,31 +46,27 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
     titleString = languageTexts[language].periods[calendarState] + timeString;
   }
 
+  let remindDate = date;
+
   if (minutes) {
     titleString = getReminderItemTitle(language, minutes, 'minute');
+    remindDate = new Date(date.valueOf() - (1000 * 60 * minutes));
   } else if (hours) {
     titleString = getReminderItemTitle(language, hours, 'hour');
+    remindDate = new Date(date.valueOf() - (1000 * 60 * 60 * hours));
   } else if (days) {
     titleString = getReminderItemTitle(language, days, 'day');
+    remindDate = new Date(date.valueOf() - (1000 * 60 * 60 * 24 * days));
   } else if (weeks) {
     titleString = getReminderItemTitle(language, weeks, 'week');
+    remindDate = new Date(date.valueOf() - (1000 * 60 * 60 * 24 * 7 * weeks));
   }
-
-  const remindDate = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate() - days - weeks * 7,
-    date.getHours() - hours,
-    date.getMinutes() - minutes,
-    date.getSeconds(),
-    date.getMilliseconds()
-  );
 
   const disabled = new Date() > remindDate;
 
-  const onPressHandler = () => {
+  const onPressHandler = useCallback(() => {
     onPress(id, remindDate);
-  };
+  }, [newTaskData.time]);
 
   return (
     <Pressable disabled={disabled} onPress={onPressHandler}>

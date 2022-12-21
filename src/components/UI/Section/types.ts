@@ -24,7 +24,7 @@ export type MovableItemProps = {
   itemHeight: number;
   component: FC<TaskPropTypes>;
   completeTask: (task: TaskType) => void;
-  deleteTask: (id: number) => void;
+  deleteTask: (id: number, notificationId?: string) => void;
   sectionTitle: HomePeriodsKeys;
   upperBound: number;
 };

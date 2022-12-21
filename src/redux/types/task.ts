@@ -21,6 +21,7 @@ export interface TaskAction extends Action {
   time: number,
   timeType: TimeType,
   remindTime: number,
+  notificationId: number,
   newTaskData: TaskData;
   tasks: Array<TaskType>;
   positions: GesturePositionsType;
@@ -41,5 +42,6 @@ export interface TaskType {
   isExpired: number,
   completionTime?: number,
   remindTime?: number,
+  notificationId?: string,
   folder?: string,
 };

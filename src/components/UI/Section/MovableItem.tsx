@@ -155,8 +155,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
             newPosition
           );
           if (
-            positions.value[id].timeType === "day" &&
-            positions.value[toId].timeType === "day"
+            positions.value[id].time === positions.value[toId].time
           ) {
             const newGesturePositions = moveGesturePosition(
               gesturePositions.value,
@@ -212,7 +211,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
             { duration: 250 },
             (isFinished) => {
               if (isFinished && deleteTask) {
-                runOnJS(deleteTask)(id);
+                runOnJS(deleteTask)(id, taskObject.notificationId);
               }
             }
           );

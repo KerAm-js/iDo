@@ -15,7 +15,12 @@ import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { TimeType } from "../../../redux/types/task";
 import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
-import { extractCalendarState, extractReminderState, getDate, reminderStateList } from "../../../utils/date";
+import {
+  extractCalendarState,
+  extractReminderState,
+  getDate,
+  reminderStateList,
+} from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import Calendar from "../../UI/Calendar/Calendar";
@@ -27,11 +32,8 @@ import { useKeyboard } from "../../../hooks/useKeyboard";
 import ReminderCheckItem from "../../UI/PopupItems/ReminderCheckItem";
 import { textColors } from "../../../styles/global/colors";
 import { useTimeValidation } from "../../../hooks/useTimeValidation";
-import {
-  getLanguage,
-} from "../../../redux/selectors/prefsSelectors";
+import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { useTheme } from "@react-navigation/native";
-
 
 const CalendarPopup: FC<CalendarPopupPropType> = ({
   visible,
@@ -104,7 +106,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   ) => {
     if (isReminderChoosing) {
       if (remindTime && defaultTaskTime) {
-        const state = extractReminderState(defaultTaskTime, remindTime)
+        const state = extractReminderState(defaultTaskTime, remindTime);
         dispatch(updateNewTaskRemindTimeAction(remindTime));
         setState(state);
         setDate(new Date(remindTime));
@@ -114,14 +116,14 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         } else {
           setChooseItemTitle(languageTexts[language].words[CHOOSE]);
         }
-
       } else {
-        setState("0");
         setDate(newTaskData.time ? new Date(newTaskData.time) : new Date());
         setChooseItemTitle(languageTexts[language].words[CHOOSE]);
       }
     } else {
-      const state = defaultTaskTime ? extractCalendarState(defaultTaskTime) : TODAY;
+      const state = defaultTaskTime
+        ? extractCalendarState(defaultTaskTime)
+        : TODAY;
       const time = defaultTaskTime
         ? defaultTimeType === "time"
           ? defaultTaskTime.toTimeString().slice(0, 5)
@@ -139,39 +141,45 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       }
 
       if (defaultTaskTime && defaultTimeType) {
-        dispatch(updateNewTaskTimeAction(defaultTaskTime.valueOf(), defaultTimeType));
+        dispatch(
+          updateNewTaskTimeAction(defaultTaskTime.valueOf(), defaultTimeType)
+        );
       } else {
         setTimeInputPlaceholder(languageTexts[language].words.time);
       }
     }
   };
 
-  const addTime = (date: Date, time: string) => {
+  const addTime = () => {
+    if (!state) {
+      return;
+    }
     const hours = time.slice(0, 2);
     const minutes = time.slice(3, 5);
     const timeType: TimeType = time ? "time" : "day";
-    const timeValue: Date =
-      time
-        ? new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            Number(hours),
-            Number(minutes)
-          )
-        : isReminderChoosing 
-        ? date
-        : new Date(
-            date.getFullYear(),
-            date.getMonth(),
-            date.getDate(),
-            23,
-            59,
-            59,
-            999
-          );
+    const timeValue: Date = time
+      ? new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          Number(hours),
+          Number(minutes)
+        )
+      : isReminderChoosing
+      ? date
+      : new Date(
+          date.getFullYear(),
+          date.getMonth(),
+          date.getDate(),
+          23,
+          59,
+          59,
+          999
+        );
     if (isReminderChoosing) {
-      dispatch(updateNewTaskRemindTimeAction(timeValue.valueOf()));
+      if (state) {
+        dispatch(updateNewTaskRemindTimeAction(timeValue.valueOf()));
+      }
     } else {
       dispatch(updateNewTaskTimeAction(timeValue.valueOf(), timeType));
     }
@@ -181,12 +189,15 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     if (keyboardHeight > 0) {
       Keyboard.dismiss();
     }
-    addTime(date, time);
+    if (isReminderChoosing) {
+      setState("");
+    }
+    addTime();
     closePopup();
   };
 
-  const onItemClick = (state: string, newDate?: Date) => {
-    if (state === CHOOSE) {
+  const onItemClick = (newState: string, newDate?: Date) => {
+    if (newState === CHOOSE) {
       if (calendarShown) {
         setCalendarShown(false);
       } else {
@@ -201,7 +212,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         setTime("");
       }
     }
-    setState(state);
+    setState(newState);
   };
 
   const onSubmit = () => {

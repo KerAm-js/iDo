@@ -1,7 +1,7 @@
 import React from "react";
 import { useColorScheme } from "react-native";
 import * as Localization from "expo-localization";
-import { LocalDB } from "./src/backend/sqlite";
+import { LocalDB } from "./src/backend/sqlite/sqlite";
 import Root from "./src/components/Navigators/Root/Root";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
@@ -17,6 +17,13 @@ import { getSectionsVisibilitiesFromASAction } from "./src/redux/actions/interfa
 const loadApp = async () => {
   try {
     await LocalDB.initTasks();
+    const result = await LocalDB.getTasksTableColumns();
+    if (result) {
+      const hasNotificationId = result.find(column => column.name === 'notificationId');
+      if (!hasNotificationId) {
+        await LocalDB.addColumn('tasks', 'notificationId', false)
+      }
+    }
   } catch (err) {
     console.log('loadApp', err);
   }

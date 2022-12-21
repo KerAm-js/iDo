@@ -3,7 +3,7 @@ import { Pressable, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
 import { calendar, calendarEvent } from "../../../../assets/icons/calendar";
-import { textColors, themeColors } from "../../../styles/global/colors";
+import { textColors } from "../../../styles/global/colors";
 import {
   text12,
   text17LineHeight,
@@ -29,9 +29,11 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
   const { colors } = useTheme();
   const language = useSelector(getLanguage);
   const { weekDay } = getDate(language, { date: date, isShort: true });
+
   const onPressHandler = () => {
     onPress(state, date);
   };
+
   return (
     <Pressable onPress={onPressHandler}>
       <ListItem style={popupItemStyles.listItem}>

@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { TextInput, View } from "react-native";
+import { Alert, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { bell } from "../../../../assets/icons/bell";
 import { clock } from "../../../../assets/icons/clock";
@@ -8,6 +8,7 @@ import { plus } from "../../../../assets/icons/plus";
 import {
   addTaskAction,
   editTaskAction,
+  updateNewTaskTimeAction,
 } from "../../../redux/actions/taskActions";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
@@ -78,7 +79,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
               timeType,
               isExpired: isExpired ? 1 : 0,
               remindTime,
-            })
+            }, taskToEdit.notificationId)
           : addTaskAction({
               id: new Date().valueOf(),
               isCompleted: 0,
@@ -99,8 +100,26 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     setChoosedFolder(choosedFolder === id ? "" : id);
   };
 
+  const openReminderHandler = () => {
+    if (newTaskData.time && newTaskData.timeType) {
+      openReminderModal();
+    } else {
+      Alert.alert(
+        languageTexts[language].alerts.taskTimeIsNotChoosen.title,
+        "",
+        [
+          {
+            text: languageTexts[language].words.ok,
+            onPress: openCalendar,
+            style: "default",
+          },
+        ]
+      );
+    }
+  };
+
   useEffect(() => {
-    if (visible && !taskToEdit ) {
+    if (visible && !taskToEdit) {
       taskInput.current?.focus();
     }
   }, [visible]);
@@ -121,9 +140,13 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         task === taskToEdit.task && description === taskToEdit.description;
       const isTimeNotEdited = newTaskData?.time === taskToEdit.time;
       const isFolderNotEdited = choosedFolder === taskToEdit.folder;
-      const isReminderNotEdited = newTaskData?.remindTime === taskToEdit.remindTime;
+      const isReminderNotEdited =
+        newTaskData?.remindTime === taskToEdit.remindTime;
       if (
-        (isTaskNotEdited && isTimeNotEdited && isFolderNotEdited && isReminderNotEdited) ||
+        (isTaskNotEdited &&
+          isTimeNotEdited &&
+          isFolderNotEdited &&
+          isReminderNotEdited) ||
         task.length === 0
       ) {
         setCircleButtonDisabled(true);
@@ -209,11 +232,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
-            onClick={
-              newTaskData.time && newTaskData.timeType
-                ? openReminderModal
-                : undefined
-            }
+            onClick={openReminderHandler}
           />
         </View>
         <View style={[addTaskPopupStyles.buttonsGroup]}>

@@ -43,18 +43,19 @@ const Task: FC<TaskPropTypes> = ({
   const [isChecked, setIsChecked] = useState(isCompleted ? true : false);
 
   const toggleChecked = () => {
+    const { title, subTitle } = languageTexts[language].alerts.taskUncompleting;
     if (isCompleted && new Date().valueOf() > time && !isExpired) {
       Alert.alert(
-        "Внимание!",
-        "Задача будет засчитана в статистике, как просроченная.",
+        title,
+        subTitle,
         [
           {
-            text: "Отмена",
+            text: languageTexts[language].words.cancel,
             onPress: () => null,
             style: "cancel",
           },
           {
-            text: "Ок",
+            text: languageTexts[language].words.ok,
             onPress: () => {
               completeTask(taskObject);
               setIsChecked((value) => !value);

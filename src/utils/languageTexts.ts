@@ -12,6 +12,20 @@ import {
 
 export const languageTexts = {
   ru: {
+    notifications: {
+      taskReminder: {
+        title: "Напоминание о задаче"
+      }
+    },
+    alerts: {
+      taskUncompleting: {
+        title: "Внимание!",
+        subTitle: "Задача будет засчитана в статистике, как просроченная",
+      },
+      taskTimeIsNotChoosen: {
+        title: "Пожалуйста, выберите дату выполнения задачи"
+      }
+    },
     sectionEmptyList: {
       [FOR_TODAY]: "Что делаем сегодня?",
       [FOR_WEEK]: "Какие планы на неделю?",
@@ -118,6 +132,8 @@ export const languageTexts = {
       task: "Задача",
       description: "Описание",
       completed: "Выполнено",
+      cancel: "Отмена",
+      ok: "Ок",
     },
     periodsDeclination: {
       one: {
@@ -145,6 +161,20 @@ export const languageTexts = {
     },
   },
   en: {
+    notifications: {
+      taskReminder: {
+        title: "Task reminder"
+      }
+    },
+    alerts: {
+      taskUncompleting: {
+        title: "Attention!",
+        subTitle: "Die Aufgabe wird in der Statistik als überfällig gezählt",
+      },
+      taskTimeIsNotChoosen: {
+        title: "Please, select a due date for the task"
+      }
+    },
     sectionEmptyList: {
       [FOR_TODAY]: "What are we doing today?",
       [FOR_WEEK]: "What are you planning for a week?",
@@ -168,6 +198,8 @@ export const languageTexts = {
       task: "Task",
       description: "Description",
       completed: "Completed",
+      cancel: "Cancel",
+      ok: "Ok",
     },
     screenTitles: {
       main: "Main",
@@ -270,6 +302,20 @@ export const languageTexts = {
     },
   },
   de: {
+    notifications: {
+      taskReminder: {
+        title: "Aufgabenerinnerung"
+      }
+    },
+    alerts: {
+      taskUncompleting: {
+        title: "Attention!",
+        subTitle: "Задача будет засчитана в статистике, как просроченная",
+      },
+      taskTimeIsNotChoosen: {
+        title: "Bitte wählen Sie ein Fälligkeitsdatum für die Aufgabe aus"
+      }
+    },
     sectionEmptyList: {
       [FOR_TODAY]: "Was machen wir heute?",
       [FOR_WEEK]: "Was sind deine Pläne für die Woche?",
@@ -297,6 +343,8 @@ export const languageTexts = {
       task: "Aufgabe",
       description: "Beschreibung",
       completed: "Erledigt",
+      cancel: "Abbruch",
+      ok: "Ok",
     },
     weekDays: {
       fulls: [
@@ -381,6 +429,20 @@ export const languageTexts = {
     },
   },
   ch: {
+    notifications: {
+      taskReminder: {
+        title: "ГIуллакх дагадаийтар"
+      }
+    },
+    alerts: {
+      taskUncompleting: {
+        title: "Тидам белахь!",
+        subTitle: "Х1окху гIуллакхийн ханн тиллина лорур ю хьуна",
+      },
+      taskTimeIsNotChoosen: {
+        title: "Цкъа хьалха гIуллакх кхочушдаран хан харжа еза"
+      }
+    },
     sectionEmptyList: {
       [FOR_TODAY]: "Тахана хIун до вай?",
       [FOR_WEEK]: "Кху кIиранахь хIун дича бакъахь хира дара те?",
@@ -408,6 +470,8 @@ export const languageTexts = {
       task: "ГIуллакх",
       description: "Хаам",
       completed: "Кхочушдина",
+      cancel: "Юхадаккха",
+      ok: "Дика ду",
     },
     weekDays: {
       fulls: [
