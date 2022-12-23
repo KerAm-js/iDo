@@ -39,6 +39,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   visible,
   title,
   handleKeyboard,
+  setDefaultsFlag,
   closePopup,
   isReminderChoosing,
 }) => {
@@ -102,15 +103,12 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   const setDefaults = (
     defaultTaskTime?: Date,
     defaultTimeType?: TimeType,
-    remindTime?: number
   ) => {
     if (isReminderChoosing) {
-      if (remindTime && defaultTaskTime) {
-        const state = extractReminderState(defaultTaskTime, remindTime);
-        dispatch(updateNewTaskRemindTimeAction(remindTime));
+      if (newTaskData.remindTime && defaultTaskTime) {
+        const state = extractReminderState(defaultTaskTime, newTaskData.remindTime);
         setState(state);
-        setDate(new Date(remindTime));
-
+        setDate(new Date(newTaskData.remindTime));
         if (state === CHOOSE) {
           updateChoosedTitle(date);
         } else {
@@ -119,6 +117,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       } else {
         setDate(newTaskData.time ? new Date(newTaskData.time) : new Date());
         setChooseItemTitle(languageTexts[language].words[CHOOSE]);
+        setState('');
       }
     } else {
       const state = defaultTaskTime
@@ -140,11 +139,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         setChooseItemTitle(languageTexts[language].words[CHOOSE]);
       }
 
-      if (defaultTaskTime && defaultTimeType) {
-        dispatch(
-          updateNewTaskTimeAction(defaultTaskTime.valueOf(), defaultTimeType)
-        );
-      } else {
+      if (!(defaultTaskTime && defaultTimeType)) {
         setTimeInputPlaceholder(languageTexts[language].words.time);
       }
     }
@@ -180,7 +175,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       if (state) {
         dispatch(updateNewTaskRemindTimeAction(timeValue.valueOf()));
       }
-    } else {
+    } else if (timeValue.valueOf() !== newTaskData.time) {
       dispatch(updateNewTaskTimeAction(timeValue.valueOf(), timeType));
     }
   };
@@ -188,9 +183,6 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   const saveTime = () => {
     if (keyboardHeight > 0) {
       Keyboard.dismiss();
-    }
-    if (isReminderChoosing) {
-      setState("");
     }
     addTime();
     closePopup();
@@ -243,25 +235,25 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 
   useEffect(() => {
     translateFormButtonY.value = 0;
+    if (visible && isReminderChoosing && !newTaskData.remindTime) {
+      setDefaults()
+    }
   }, [visible]);
 
   useEffect(() => {
-    if (!taskToEdit) {
+    if (!visible && setDefaultsFlag.current) {
       setDefaults();
-    } else {
+    }
+  }, [setDefaultsFlag.current])
+
+  useEffect(() => {
+    if (taskToEdit) {
       setDefaults(
         new Date(taskToEdit.time),
         taskToEdit.timeType,
-        taskToEdit.remindTime
       );
     }
   }, [taskToEdit]);
-
-  useEffect(() => {
-    if (!newTaskData.time && !newTaskData.timeType && !newTaskData.remindTime) {
-      setDefaults();
-    }
-  }, [newTaskData]);
 
   useEffect(() => {
     translateX.value = withTiming(calendarShown ? -SCREEN_WIDTH : 0, {

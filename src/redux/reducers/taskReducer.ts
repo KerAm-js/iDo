@@ -8,6 +8,7 @@ import {
   UPDATE_TASKS,
   COMPLETE_TASK,
   SET_TASK_EXPIRATION,
+  SET_DEFAULT_NEW_TASK_DATA,
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
@@ -79,6 +80,7 @@ export const taskReducer = (
           ...state.newTaskData,
           time: action.time,
           timeType: action.timeType,
+          remindTime: undefined,
         },
       };
     }
@@ -91,10 +93,25 @@ export const taskReducer = (
         },
       };
     }
+    case SET_DEFAULT_NEW_TASK_DATA: {
+      return {
+        ...state,
+        newTaskData: {
+          time: undefined,
+          timeType: undefined,
+          remindTime: undefined,
+        },
+      }
+    }
     case CHOOSE_TASK_TO_EDIT: {
       return {
         ...state,
-        taskToEdit: action.task,
+        taskToEdit: action?.task,
+        newTaskData: {
+          time: action.task?.time,
+          timeType: action.task?.timeType,
+          remindTime: action.task?.remindTime
+        }
       };
     }
     case UPDATE_TASKS: {
@@ -112,7 +129,7 @@ export const taskReducer = (
     case SET_TASK_EXPIRATION: {
       const tasks = state.tasks.map((task) => {
         const isCompletedInTime = task.completionTime && task.completionTime < task.time;
-        if (task.id === action.id && !task.isExpired && !isCompletedInTime) {
+        if (task.id === action.id && !task.isExpired && !isCompletedInTime && action.time === task.time) {
           return {
             ...task,
             isExpired: 1,

@@ -49,7 +49,7 @@ export default function AppLoading() {
       } finally {
         setTimeout(() => {
           setIsAppReady(true);
-        }, 1500);
+        }, 1000);
       }
     }
     prepare();

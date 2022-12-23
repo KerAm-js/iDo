@@ -8,7 +8,7 @@ import { plus } from "../../../../assets/icons/plus";
 import {
   addTaskAction,
   editTaskAction,
-  updateNewTaskTimeAction,
+  setDefaultNewTaskDataAction,
 } from "../../../redux/actions/taskActions";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
@@ -33,6 +33,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   handleKeyboard,
   openCalendar,
   openReminderModal,
+  setDefaultsFlag
 }) => {
   const language = useSelector(getLanguage);
   const { taskToEdit, newTaskData } = useSelector(taskStateSelector);
@@ -110,7 +111,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         [
           {
             text: languageTexts[language].words.ok,
-            onPress: openCalendar,
             style: "default",
           },
         ]
@@ -122,6 +122,10 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     if (visible && !taskToEdit) {
       taskInput.current?.focus();
     }
+    if (!visible && setDefaultsFlag.current) {
+      setDefaults();
+      dispatch(setDefaultNewTaskDataAction());
+    }
   }, [visible]);
 
   useEffect(() => {
@@ -129,8 +133,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       setTask(taskToEdit?.task || "");
       setDescription(taskToEdit?.description || "");
       setChoosedFolder(taskToEdit?.folder || "");
-    } else {
-      setDefaults();
     }
   }, [taskToEdit]);
 
@@ -139,13 +141,11 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       const isTaskNotEdited =
         task === taskToEdit.task && description === taskToEdit.description;
       const isTimeNotEdited = newTaskData?.time === taskToEdit.time;
-      const isFolderNotEdited = choosedFolder === taskToEdit.folder;
       const isReminderNotEdited =
         newTaskData?.remindTime === taskToEdit.remindTime;
       if (
         (isTaskNotEdited &&
           isTimeNotEdited &&
-          isFolderNotEdited &&
           isReminderNotEdited) ||
         task.length === 0
       ) {
@@ -172,7 +172,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         value={task}
         onChangeText={(text) => setTask(text)}
         multiline
-        maxLength={50}
+        maxLength={150}
         reference={taskInput}
         placeholder={languageTexts[language].words.task}
         style={[text17Input, textSemiBold, addTaskPopupStyles.input]}
@@ -181,7 +181,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         value={description}
         onChangeText={(text) => setDescription(text)}
         multiline
-        maxLength={100}
+        maxLength={500}
         placeholder={languageTexts[language].words.description}
         style={[text16Input, addTaskPopupStyles.input]}
       />
@@ -225,7 +225,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
           /> */}
           <IconButton
             xml={bell(
-              newTaskData.remindTime || (taskToEdit && taskToEdit.remindTime)
+              newTaskData.remindTime
                 ? textColors.blue
                 : textColors.grey
             )}

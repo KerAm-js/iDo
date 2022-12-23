@@ -14,6 +14,7 @@ import { AppDispatch } from "../../../redux/types/appDispatch";
 import { getGesturePositionsFromASAction } from "../../../redux/actions/taskActions";
 import { getSectionsVisibilities } from "../../../redux/selectors/interfaceSelectors";
 import { getSectionsVisibilitiesFromASAction } from "../../../redux/actions/interfaceActions";
+import { getAllNotifications } from "../../../native/notifications";
 
 const Home: FC<HomePropType> = () => {
   const { language } = useSelector(getPrefs);

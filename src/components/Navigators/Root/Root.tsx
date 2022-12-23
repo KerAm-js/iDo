@@ -1,8 +1,6 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  chooseTaskToEditAction,
-} from "../../../redux/actions/taskActions";
+import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { getTaskToEdit } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -28,44 +26,53 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
     useState<boolean>(false);
   const [languageModalVisible, setLanguageModalVisible] =
     useState<boolean>(false);
+  const didAllAddTaskModalsClosed = useRef<boolean>(true);
 
-  const openAddTaskModal = useCallback(() => setAddTaskModalVisible(true), []);
+  const openAddTaskModal = useCallback(() => {
+    setAddTaskModalVisible(true);
+    didAllAddTaskModalsClosed.current = false;
+  }, []);
   const closeAddTaskModal = () => {
     if (taskToEdit) {
       dispatch(chooseTaskToEditAction(undefined));
-    } else {
-      setAddTaskModalVisible(false);
     }
+    setAddTaskModalVisible(false);
+    didAllAddTaskModalsClosed.current = true;
   };
 
-  const openCalendar = () => {
+  const openCalendar = useCallback(() => {
     setAddTaskModalVisible(false);
     setCalendarModalVisible(true);
-  };
+  }, []);
 
-  const closeCalendar = () => {
+  const closeCalendar = useCallback(() => {
     setCalendarModalVisible(false);
     setAddTaskModalVisible(true);
-  };
+  }, []);
 
-  const openReminderModal = () => {
+  const openReminderModal = useCallback(() => {
     setAddTaskModalVisible(false);
     setReminderModalVisible(true);
-  };
+  }, []);
 
-  const closeReminderModal = () => {
+  const closeReminderModal = useCallback(() => {
     setReminderModalVisible(false);
     setAddTaskModalVisible(true);
-  };
+  }, []);
 
   const openLanguageModal = useCallback(
     () => setLanguageModalVisible(true),
     []
   );
-  const closeLanguageModal = () => setLanguageModalVisible(false);
+  const closeLanguageModal = useCallback(
+    () => setLanguageModalVisible(false),
+    []
+  );
 
   useEffect(() => {
-    setAddTaskModalVisible(taskToEdit ? true : false);
+    if (taskToEdit) {
+      openAddTaskModal();
+    }
   }, [taskToEdit]);
 
   return (
@@ -73,6 +80,7 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
       <ModalLayout visible={addTaskModalVisible} close={closeAddTaskModal}>
         <AddTaskPopup
           visible={addTaskModalVisible}
+          setDefaultsFlag={didAllAddTaskModalsClosed}
           handleKeyboard={true}
           openCalendar={openCalendar}
           openReminderModal={openReminderModal}
@@ -81,6 +89,7 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
       <ModalLayout visible={calendarModalVisible} close={closeCalendar}>
         <CalendarPopup
           visible={calendarModalVisible}
+          setDefaultsFlag={didAllAddTaskModalsClosed}
           closePopup={closeCalendar}
           title={languageTexts[language].popupTitles.dateOfCompletion}
         />
@@ -88,6 +97,7 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
       <ModalLayout visible={reminderModalVisible} close={closeReminderModal}>
         <CalendarPopup
           visible={reminderModalVisible}
+          setDefaultsFlag={didAllAddTaskModalsClosed}
           closePopup={closeReminderModal}
           isReminderChoosing
           title={languageTexts[language].popupTitles.reminder}

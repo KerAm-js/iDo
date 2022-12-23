@@ -45,6 +45,8 @@ export const setNotification = async (
         content: {
           title,
           body,
+          sound: '../../assets/notification-sound.wav',
+          vibrate: [0, 250, 250, 250],
         },
         trigger: { seconds: time },
       });
@@ -71,6 +73,8 @@ export const presentNotification = async (title: string, body: string) => {
         content: {
           title,
           body,
+          sound: '../../assets/notification-sound.wav',
+          vibrate: [0, 250, 250, 250],
         },
         trigger: null,
       });
