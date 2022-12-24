@@ -244,16 +244,19 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     if (!visible && setDefaultsFlag.current) {
       setDefaults();
     }
-  }, [setDefaultsFlag.current])
+  }, [setDefaultsFlag.current]);
 
   useEffect(() => {
+    console.log(newTaskData);
     if (taskToEdit) {
       setDefaults(
         new Date(taskToEdit.time),
         taskToEdit.timeType,
       );
+    } else if (!newTaskData.remindTime && !newTaskData.time && !newTaskData.timeType) {
+      setDefaults();
     }
-  }, [taskToEdit]);
+  }, [taskToEdit, newTaskData]);
 
   useEffect(() => {
     translateX.value = withTiming(calendarShown ? -SCREEN_WIDTH : 0, {
