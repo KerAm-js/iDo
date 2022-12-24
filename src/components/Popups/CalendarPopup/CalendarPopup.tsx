@@ -247,7 +247,6 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   }, [setDefaultsFlag.current]);
 
   useEffect(() => {
-    console.log(newTaskData);
     if (taskToEdit) {
       setDefaults(
         new Date(taskToEdit.time),
