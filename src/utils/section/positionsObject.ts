@@ -78,10 +78,7 @@ export const moveTask = (
   fromItem[fromKey].position = toPosition;
   toItem[toKey].position = fromPosition;
 
-  const isMovingDisabled =
-    fromItem[fromKey].timeType === "time" ||
-    toItem[toKey].timeType === "time" ||
-    fromItem[fromKey].time !== toItem[toKey].time;
+  const isMovingDisabled = fromItem[fromKey].time !== toItem[toKey].time;
 
   return [newObject, isMovingDisabled, Number(toKey)];
 };

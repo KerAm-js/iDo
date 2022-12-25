@@ -6,5 +6,5 @@ export const shadowStyle: ViewStyle = {
     height: 0,
     width: 0
   },
-  shadowOpacity: 0.12
+  shadowOpacity: 0.15
 }

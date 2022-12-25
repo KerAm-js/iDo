@@ -47,16 +47,11 @@ export const getSectionTitle = (title: HomePeriodsKeys) => {
 export const sortTasks = (
   list: Array<TaskType>,
   gesturePositions: { value: GesturePositionsType },
-  isMultipleDates?: boolean
-): [Array<TaskType>, number, Array<TaskType>] => {
+): [Array<TaskType>, number] => {
   const uncompletedList: Array<TaskType> = [];
   const completedList: Array<TaskType> = [];
-  const forDayList: Array<TaskType> = [];
 
   list.forEach((task) => {
-    if (task.timeType === "day") {
-      forDayList.push(task);
-    }
     if (task.isCompleted) {
       completedList.push(task);
     } else {
@@ -67,8 +62,7 @@ export const sortTasks = (
   const gesturesList = Object.keys(gesturePositions.value);
   const newGesturePositions = taskListToPositionsObject(
     gesturePositions.value,
-    forDayList,
-    isMultipleDates
+    list,
   );
 
   uncompletedList.sort((prev, curr) => {
@@ -76,8 +70,6 @@ export const sortTasks = (
     const currTime = new Date(curr.time).valueOf();
     if (
       gesturesList.length > 0 &&
-      prev.timeType === "day" &&
-      curr.timeType === "day" &&
       prevTime === currTime
     ) {
       return newGesturePositions[prev.id] - newGesturePositions[curr.id];
@@ -96,7 +88,6 @@ export const sortTasks = (
   return [
     uncompletedList.concat(completedList),
     completedList.length,
-    forDayList,
   ];
 };
 
@@ -144,20 +135,20 @@ export const getSections = (
 
     if (time < currDate && task.isExpired && periodTasks[EXPIRED] && !isWeeklyTime) {
       periodTasks[EXPIRED].list.push(task);
-      if (position) periodTasks[EXPIRED].gesturePositions[task.id] = position;
+      if (position !== undefined) periodTasks[EXPIRED].gesturePositions[task.id] = position;
     } else if (isWeeklyTime) {
       const dayDiff = getDaysDiff(currDate, time);
       if (dayDiff < 0) {
         return;
       } else if (dayDiff < 1 && periodTasks[FOR_TODAY]) {
         periodTasks[FOR_TODAY].list.push(task);
-        if (position)periodTasks[FOR_TODAY].gesturePositions[task.id] = position;
+        if (position !== undefined)periodTasks[FOR_TODAY].gesturePositions[task.id] = position;
       } else if (dayDiff >= 1 && dayDiff < 2 && periodTasks[FOR_TOMORROW]) {
         periodTasks[FOR_TOMORROW].list.push(task);
-        if (position)periodTasks[FOR_TOMORROW].gesturePositions[task.id] = position;
+        if (position !== undefined)periodTasks[FOR_TOMORROW].gesturePositions[task.id] = position;
       } else if (dayDiff >= 2 && periodTasks[FOR_WEEK]) {
         periodTasks[FOR_WEEK].list.push(task);
-        if (position)periodTasks[FOR_WEEK].gesturePositions[task.id] = position;
+        if (position !== undefined)periodTasks[FOR_WEEK].gesturePositions[task.id] = position;
       }
     }
   });

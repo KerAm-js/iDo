@@ -53,7 +53,6 @@ const Section: FC<SectionProps> = React.memo(
     const [sortedTasks, completedTasksLength] = sortTasks(
       list,
       gesturePositions,
-      title !== FOR_TODAY && title !== FOR_TOMORROW
     );
     const [isDeleting, setIsDeleting] = useState(false);
 

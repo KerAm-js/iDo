@@ -4,15 +4,14 @@ import { TaskType } from "../../redux/types/task";
 
 export const taskListToPositionsObject = (
   gesturePositions: GesturePositionsType,
-  forDayTasks: Array<TaskType>,
-  isMultipleDates?: boolean
+  tasks: Array<TaskType>,
 ): GesturePositionsType => {
   const object: GesturePositionsType = {};
   const gesturePositionsList = Object.keys(gesturePositions);
-  const changingType = forDayTasks.length - gesturePositionsList.length;
+  const changingType = tasks.length - gesturePositionsList.length;
 
   if (gesturePositionsList.length === 0) {
-    forDayTasks.forEach((task, index) => (object[task.id] = index));
+    tasks.forEach((task, index) => (object[task.id] = index));
     return object;
   }
 
@@ -22,7 +21,7 @@ export const taskListToPositionsObject = (
     const addedTasks: Array<TaskType> = [];
     const prevTasks: Array<TaskType> = [];
 
-    forDayTasks.forEach((task) => {
+    tasks.forEach((task) => {
       if (gesturePositions[task.id] === undefined) {
         addedTasks.push(task);
       } else {
@@ -34,31 +33,25 @@ export const taskListToPositionsObject = (
       return gesturePositions[prev.id] - gesturePositions[curr.id];
     });
 
-    if (isMultipleDates) {
-      let indexOfAddedTask = prevTasks.findIndex(
-        (task) => task.time === addedTasks[0].time
-      );
-      if (indexOfAddedTask === -1) {
-        indexOfAddedTask = 0;
-      }
-
-      [
-        ...prevTasks.slice(0, indexOfAddedTask),
-        addedTasks[0],
-        ...prevTasks.slice(indexOfAddedTask),
-      ].forEach((task, index) => {
-        object[task.id] = index;
-      });
-    } else {
-      [addedTasks[0], ...prevTasks].forEach((task, index) => {
-        object[task.id] = index;
-      });
+    let indexOfAddedTask = prevTasks.findIndex(
+      (task) => task.time === addedTasks[0].time
+    );
+    if (indexOfAddedTask === -1) {
+      indexOfAddedTask = 0;
     }
+
+    [
+      ...prevTasks.slice(0, indexOfAddedTask),
+      addedTasks[0],
+      ...prevTasks.slice(indexOfAddedTask),
+    ].forEach((task, index) => {
+      object[task.id] = index;
+    });
   } else if (changingType < 0) {
-    forDayTasks.sort((prev, curr) => {
+    tasks.sort((prev, curr) => {
       return gesturePositions[prev.id] - gesturePositions[curr.id];
     });
-    forDayTasks.forEach((task, index) => {
+    tasks.forEach((task, index) => {
       object[task.id] = index;
     });
   }

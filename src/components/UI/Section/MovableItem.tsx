@@ -69,8 +69,9 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         top: translateY.value,
         opacity: opacity.value,
         zIndex: zIndex.value,
+        transform: [{scale: withTiming(isDragged ? 1.04 : 1)}]
       };
-    }, [positions, translateY, shadowOpacity, opacity]);
+    }, [positions, translateY, shadowOpacity, opacity, isDragged]);
 
     const taskContainerStyleR = useAnimatedStyle(() => {
       return {
@@ -201,7 +202,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
             duration: 300,
           });
         }
-        shadowOpacity.value = withTiming(0, { duration: 300 });
+        shadowOpacity.value = withTiming(0);
         runOnJS(setIsDragged)(false);
       } else {
         if (translateX.value < translateThreshold && !taskObject.isCompleted) {
@@ -234,7 +235,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     const onLongPress = () => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setIsDragged(true);
-      shadowOpacity.value = withTiming(0.1, { duration: 300 });
+      shadowOpacity.value = withTiming(shadowStyle.shadowOpacity || 0.1);
     };
 
     const clearCompletingTimeout = () => {

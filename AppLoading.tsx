@@ -47,7 +47,9 @@ export default function AppLoading() {
       } catch (error) {
         console.log('prepare', error);
       } finally {
-        setIsAppReady(true);
+        setTimeout(() => {
+          setIsAppReady(true);
+        }, 500)
       }
     }
     prepare();
