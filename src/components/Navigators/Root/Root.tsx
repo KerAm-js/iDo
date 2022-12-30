@@ -72,6 +72,8 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
   useEffect(() => {
     if (taskToEdit) {
       openAddTaskModal();
+    } else {
+      closeAddTaskModal();
     }
   }, [taskToEdit]);
 
@@ -100,6 +102,7 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
           setDefaultsFlag={didAllAddTaskModalsClosed}
           closePopup={closeReminderModal}
           isReminderChoosing
+          hasDeleteButton
           title={languageTexts[language].popupTitles.reminder}
         />
       </ModalLayout>

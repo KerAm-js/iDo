@@ -21,7 +21,7 @@ import {
   setNotification,
 } from "../../native/notifications";
 import { store } from "../store";
-import { languageTexts } from "../../utils/languageTexts";
+import { toLocaleStateString } from "../../utils/date";
 
 export const scheduleTaskExpiration = async (
   task: TaskType,
@@ -55,15 +55,24 @@ export const getTasksFromLocalDB = () => async (dispatch: Dispatch) => {
     const currDate = new Date().setHours(0, 0, 0, 0);
     const tasks = await LocalDB.getTasks();
     await deleteAllNotifications();
-    tasks.reverse();
-    const filteredTasks = tasks.filter(
+    const notificationsUpdatedTasks = await Promise.all(
+      tasks.map(async (task) => {
+        await scheduleTaskExpiration(task, dispatch);
+        const notificationId = await scheduleReminder(
+          task,
+          task.notificationId
+        );
+        return {
+          ...task,
+          notificationId,
+        };
+      })
+    );
+    const filteredTasks = notificationsUpdatedTasks.filter(
       (task) => task.time >= currDate || !task.isCompleted
     );
+    filteredTasks.reverse();
     dispatch({ type: UPDATE_TASKS, tasks: filteredTasks });
-    filteredTasks.forEach((task) => {
-      scheduleTaskExpiration(task, dispatch);
-      scheduleReminder(task);
-    });
   } catch (error) {
     console.log("getTasksFromLocalDB", error);
   }
@@ -73,16 +82,20 @@ export const scheduleReminder = async (
   task: TaskType,
   oldNotificationId?: string
 ): Promise<string | undefined> => {
+  if (oldNotificationId) {
+    await deleteNotification(oldNotificationId);
+  }
   if (task.remindTime) {
     const currentDate = new Date().valueOf();
     const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
-    if (oldNotificationId) {
-      await deleteNotification(oldNotificationId);
-    }
     const { language } = store.getState().prefs;
     const notificationId = await setNotification(
-      languageTexts[language].notifications.taskReminder.title,
-      `${task.task}`,
+      "🔔 " + task.task,
+      `🕐 ${toLocaleStateString({
+        dateValue: task.time,
+        timeType: task.timeType,
+        language,
+      })}`,
       notificationTime
     );
     return notificationId;
@@ -134,7 +147,7 @@ export const updateNewTaskTimeAction =
   };
 
 export const updateNewTaskRemindTimeAction =
-  (remindTime: number) => (dispatch: Dispatch) => {
+  (remindTime: number | undefined) => (dispatch: Dispatch) => {
     dispatch({ type: UPDATE_TASK_REMIND_TIME, remindTime });
   };
 

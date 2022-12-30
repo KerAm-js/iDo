@@ -1,11 +1,5 @@
 import React, { FC, useEffect, useRef } from "react";
-import {
-  Dimensions,
-  Keyboard,
-  LayoutChangeEvent,
-  TextStyle,
-  View,
-} from "react-native";
+import { Dimensions, Keyboard, LayoutChangeEvent, View } from "react-native";
 import {
   useAnimatedStyle,
   useSharedValue,
@@ -14,13 +8,22 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useKeyboard } from "../../../hooks/useKeyboard";
 import { title22 } from "../../../styles/global/texts";
+import TextButton from "../../UI/buttons/TextButton/TextButton";
 import ThemeText from "../Theme/Text/ThemeText";
 import ThemeView from "../Theme/View/ThemeView";
 import { bottomPopupStyles } from "./styles";
 import { BottomPopupPropType } from "./types";
 
 const BottomPopup: FC<BottomPopupPropType> = React.memo(
-  ({ visible, title, children, handleKeyboard }) => {
+  ({
+    visible,
+    title,
+    children,
+    handleKeyboard,
+    rightButtonColor,
+    rightButtonTitle,
+    onRightButtonPress,
+  }) => {
     const { height: SCREEN_HEIGHT } = Dimensions.get("screen");
     const { bottom } = useSafeAreaInsets();
     const { top } = useSafeAreaInsets();
@@ -62,11 +65,6 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
       }
     }, [visible]);
 
-    const textStyle: TextStyle = {
-      ...bottomPopupStyles.title,
-      ...title22,
-    }
-
     return (
       <ThemeView
         card
@@ -76,11 +74,16 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
       >
         <View>
           {title && (
-            <ThemeText
-              style={textStyle}
-            >
-              {title}
-            </ThemeText>
+            <View style={bottomPopupStyles.headingContainer}>
+              <ThemeText style={title22}>{title}</ThemeText>
+              {rightButtonTitle && onRightButtonPress && (
+                <TextButton
+                  title={rightButtonTitle}
+                  color={rightButtonColor}
+                  onPress={onRightButtonPress}
+                />
+              )}
+            </View>
           )}
           {children}
         </View>

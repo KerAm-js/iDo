@@ -16,7 +16,7 @@ import {
   textGrey,
   textRed,
 } from "../../../styles/global/texts";
-import { EXPIRED, FOR_WEEK, TODAY, TOMORROW, YESTERDAY } from "../../../utils/constants/periods";
+import { EXPIRED, FOR_WEEK, LATER, TODAY, TOMORROW, YESTERDAY } from "../../../utils/constants/periods";
 import { getDate, isToday, isTomorrow, isYesterday } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import ListItem from "../../Layouts/ListItem/ListItem";
@@ -94,6 +94,9 @@ const Task: FC<TaskPropTypes> = ({
       timeString = getDate(language, { date: new Date(time) }).date;
     }
     xml = calendarEvent(textColors.red);
+  } else if (sectionType === LATER) {
+    timeString = getDate(language, { date: new Date(time) }).date;
+    xml = calendarEvent(textColors.grey);
   } else {
     xml = clock(isExpired ? textColors.red : textColors.grey);
   }

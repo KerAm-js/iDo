@@ -14,7 +14,8 @@ import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
 
 const initialState: TaskState = {
-  tasks: [],
+  tasks: [
+  ],
   gesturePositions: {},
   taskToEdit: undefined,
   newTaskData: {

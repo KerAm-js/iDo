@@ -20,6 +20,7 @@ import {
   extractReminderState,
   getDate,
   reminderStateList,
+  toLocaleStateString,
 } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
@@ -40,6 +41,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   title,
   handleKeyboard,
   setDefaultsFlag,
+  hasDeleteButton,
   closePopup,
   isReminderChoosing,
 }) => {
@@ -93,20 +95,22 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   }, [translateFormButtonY.value]);
 
   const updateChoosedTitle = (newDate: Date) => {
-    const isCurrYear = currDate.getFullYear() === newDate.getFullYear();
-    const dateText = getDate(language, { date: newDate }).date;
     setChooseItemTitle(
-      isCurrYear ? dateText : dateText + ", " + newDate.getFullYear()
+      toLocaleStateString({
+        dateValue: newDate.valueOf(),
+        timeType: "day",
+        language,
+      })
     );
   };
 
-  const setDefaults = (
-    defaultTaskTime?: Date,
-    defaultTimeType?: TimeType,
-  ) => {
+  const setDefaults = (defaultTaskTime?: Date, defaultTimeType?: TimeType) => {
     if (isReminderChoosing) {
       if (newTaskData.remindTime && defaultTaskTime) {
-        const state = extractReminderState(defaultTaskTime, newTaskData.remindTime);
+        const state = extractReminderState(
+          defaultTaskTime,
+          newTaskData.remindTime
+        );
         setState(state);
         setDate(new Date(newTaskData.remindTime));
         if (state === CHOOSE) {
@@ -117,7 +121,8 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       } else {
         setDate(newTaskData.time ? new Date(newTaskData.time) : new Date());
         setChooseItemTitle(languageTexts[language].words[CHOOSE]);
-        setState('');
+        setState("");
+        setTime("");
       }
     } else {
       const state = defaultTaskTime
@@ -236,7 +241,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   useEffect(() => {
     translateFormButtonY.value = 0;
     if (visible && isReminderChoosing && !newTaskData.remindTime) {
-      setDefaults()
+      setDefaults();
     }
   }, [visible]);
 
@@ -248,11 +253,12 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 
   useEffect(() => {
     if (taskToEdit) {
-      setDefaults(
-        new Date(taskToEdit.time),
-        taskToEdit.timeType,
-      );
-    } else if (!newTaskData.remindTime && !newTaskData.time && !newTaskData.timeType) {
+      setDefaults(new Date(taskToEdit.time), taskToEdit.timeType);
+    } else if (
+      !newTaskData.remindTime &&
+      !newTaskData.time &&
+      !newTaskData.timeType
+    ) {
       setDefaults();
     }
   }, [taskToEdit, newTaskData]);
@@ -267,11 +273,30 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     setDefaults();
   }, [language]);
 
+  const isReminderSetted =
+    state !== "" || time !== "" || !!taskToEdit?.remindTime;
+
+  const deleteButtonHandler = () => {
+    if (taskToEdit?.remindTime) {
+      dispatch(updateNewTaskRemindTimeAction(undefined));
+    }
+    setDefaults();
+  };
+
   return (
     <BottomPopup
       visible={visible}
       title={title}
       handleKeyboard={handleKeyboard}
+      rightButtonTitle={
+        hasDeleteButton &&
+        isReminderSetted &&
+        languageTexts[language].words.delete
+      }
+      rightButtonColor={textColors.red}
+      onRightButtonPress={
+        hasDeleteButton && isReminderSetted && deleteButtonHandler
+      }
     >
       <Animated.View style={[calendarPopupStyles.container, containerStyle]}>
         {isReminderChoosing ? (

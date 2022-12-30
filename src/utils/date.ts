@@ -1,5 +1,6 @@
 import { CalendarMonthItemType } from "../components/UI/Calendar/types";
 import { LanguageType } from "../redux/types/prefs";
+import { TimeType } from "../redux/types/task";
 import { CHOOSE, TODAY, TOMORROW, YESTERDAY } from "./constants/periods";
 import { languageTexts } from "./languageTexts";
 
@@ -87,8 +88,61 @@ export const isTomorrow = (date: Date) => {
   return dateCopy.setHours(0, 0, 0, 0) === tomorrowDate.setHours(0, 0, 0, 0);
 };
 
+export const isWeeklyTime = (date: Date) => {
+  const currDate = new Date();
+  const currWeekDay = currDate.getDay();
+  let timeBound = 7 - currWeekDay;
+
+  if (currWeekDay === 0) {
+    timeBound = 8;
+  } else if (currWeekDay === 6) {
+    timeBound = 9;
+  }
+
+  const result =
+    date.valueOf() < new Date(date.valueOf()).setDate(timeBound) &&
+    date.valueOf() >= new Date().setHours(0, 0, 0, 0);
+
+  return result;
+};
+
+export const toLocaleStateString = ({
+  dateValue,
+  language,
+  timeType,
+  hideStateDays,
+}: {
+  dateValue: number;
+  language: LanguageType;
+  timeType?: TimeType;
+  hideStateDays?: boolean;
+}) => {
+  const { periods } = languageTexts[language];
+  const date = new Date(dateValue);
+  const time = date.toLocaleTimeString().slice(0, 5);
+  const isCurrentYear = date.getFullYear() === new Date().getFullYear();
+  let dayString = "";
+
+  if (isYesterday(date) && !hideStateDays) {
+    dayString = periods.yesterday;
+  } else if (isToday(date) && !hideStateDays) {
+    dayString = periods.today;
+  } else if (isTomorrow(date) && !hideStateDays) {
+    dayString = periods.tomorrow;
+  } else if (isWeeklyTime(date)) {
+    dayString = getDate(language, { date }).weekDay;
+  } else {
+    dayString =
+      getDate(language, { date }).date +
+      " " +
+      (!isCurrentYear ? date.getFullYear() : "");
+  }
+
+  return dayString + (timeType === "time" ? ", " + time : "");
+};
+
 export const extractReminderState = (defaultDate: Date, remindDate: number) => {
-  const defaultState = reminderStateList[0].id
+  const defaultState = reminderStateList[0].id;
   const diff = defaultDate.valueOf() - remindDate;
 
   if (diff <= 0) {
@@ -100,20 +154,31 @@ export const extractReminderState = (defaultDate: Date, remindDate: number) => {
   const minutes = (defaultDate.valueOf() - remindDate) / (1000 * 60);
 
   if (days === 7) {
-    return reminderStateList.find(item => item.weeks === 1)?.id || reminderStateList[0].id;
+    return (
+      reminderStateList.find((item) => item.weeks === 1)?.id ||
+      reminderStateList[0].id
+    );
   } else if (days === 1) {
-    return reminderStateList.find(item => item.days === 1)?.id || reminderStateList[0].id;
+    return (
+      reminderStateList.find((item) => item.days === 1)?.id ||
+      reminderStateList[0].id
+    );
   } else if (hours === 1) {
-    return reminderStateList.find(item => item.hours === 1)?.id || reminderStateList[0].id;
+    return (
+      reminderStateList.find((item) => item.hours === 1)?.id ||
+      reminderStateList[0].id
+    );
   } else if (minutes === 15) {
-    return reminderStateList.find(item => item.minutes === 15)?.id || reminderStateList[0].id;
+    return (
+      reminderStateList.find((item) => item.minutes === 15)?.id ||
+      reminderStateList[0].id
+    );
   } else if (minutes === 0) {
     return reminderStateList[0].id;
   } else {
     return CHOOSE;
   }
-
-}
+};
 
 export const extractCalendarState = (date: Date) => {
   if (isYesterday(date)) {

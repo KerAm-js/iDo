@@ -27,7 +27,6 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const headerOpactiy = useRef(new Animated.Value(0)).current;
-    const [themeToggling, _] = useState(new Animated.Value(1));
 
     const titleScale = scrollY.interpolate({
       inputRange: [-100, 0],
@@ -38,6 +37,18 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
     const translateX = scrollY.interpolate({
       inputRange: [-100, -50, 0],
       outputRange: [23, 13, 0],
+      extrapolate: "clamp",
+    });
+
+    const headerBlurBackgroundOpacity = scrollY.interpolate({
+      inputRange: [46, 56],
+      outputRange: [0, 1],
+      extrapolate: "clamp",
+    });
+
+    const headerBackgroundOpacity = scrollY.interpolate({
+      inputRange: [55.5, 56],
+      outputRange: [1, 0],
       extrapolate: "clamp",
     });
 
@@ -54,7 +65,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
         Animated.timing(headerOpactiy, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 200,
+          duration: 50,
         }).start();
       }
     };
@@ -63,35 +74,39 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
       if (onMount) onMount();
       return () => {
         if (onUnmount) onUnmount();
-      }
-    }, [])
+      };
+    }, []);
 
     useEffect(() => {
-      Animated.timing(themeToggling, {
-        toValue: theme.dark ? 0 : 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
       navigation.setOptions({
         headerStyle: { opacity: headerOpactiy },
         headerTitleStyle: {
           ...headerTitleStyle,
           color: theme.colors.text,
         },
+        title,
         headerRight: () => HeadingRight,
         headerBackground: () => (
-          <Animated.View
-            style={[
-              StyleSheet.absoluteFill,
-              { opacity: headerOpactiy, position: "absolute" },
-            ]}
-          >
-            <BlurView
-              tint={theme.dark ? "dark" : "default"}
-              intensity={80}
-              style={[StyleSheet.absoluteFill]}
+          <View style={[StyleSheet.absoluteFill, { position: "absolute" }]}>
+            <Animated.View
+              style={[
+                StyleSheet.absoluteFill,
+                { opacity: headerBackgroundOpacity, backgroundColor: theme.colors.background, position: "absolute" },
+              ]}
             />
-          </Animated.View>
+            <Animated.View
+              style={[
+                StyleSheet.absoluteFill,
+                { opacity: headerBlurBackgroundOpacity, position: "absolute" },
+              ]}
+            >
+              <BlurView
+                tint={theme.dark ? "dark" : "default"}
+                intensity={80}
+                style={[StyleSheet.absoluteFill]}
+              />
+            </Animated.View>
+          </View>
         ),
       });
     }, [theme]);

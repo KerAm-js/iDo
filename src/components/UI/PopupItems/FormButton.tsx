@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React, { FC, useRef } from "react";
-import { Text, TextInput } from "react-native";
+import { Pressable, Text, TextInput } from "react-native";
 import { SquircleView } from "react-native-figma-squircle";
 import { SvgXml } from "react-native-svg";
 import {
@@ -8,7 +8,6 @@ import {
   smallBorderRadius,
 } from "../../../styles/global/borderRadiuses";
 import { text17Input, text17LineHeight } from "../../../styles/global/texts";
-import AnimatedButton from "../../Layouts/AnimatedButton/AnimatedButton";
 import ThemeInput from "../../Layouts/Theme/Input/ThemeInput";
 import { popupItemStyles } from "./styles";
 import { FormButtonPropType } from "./types";
@@ -29,7 +28,7 @@ const FormButton: FC<FormButtonPropType> = ({
     if (onPress) onPress();
   };
   return (
-    <AnimatedButton
+    <Pressable
       style={[popupItemStyles.buttonContainer, style]}
       onPress={onPressHandler}
     >
@@ -66,7 +65,7 @@ const FormButton: FC<FormButtonPropType> = ({
           </Text>
         )}
       </SquircleView>
-    </AnimatedButton>
+    </Pressable>
   );
 };
 

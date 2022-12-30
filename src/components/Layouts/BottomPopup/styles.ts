@@ -6,13 +6,16 @@ export const bottomPopupStyles = StyleSheet.create({
     paddingTop: 30,
     borderTopRightRadius: bigBorderRadius,
     borderTopLeftRadius: bigBorderRadius,
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
-    width: '100%',
+    width: "100%",
     zIndex: 100,
   },
-  title: {
-    marginBottom: 20,
-    marginLeft: 20,
+  headingContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
-})
+});

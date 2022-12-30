@@ -20,7 +20,7 @@ export interface TaskAction extends Action {
   task: TaskType;
   time: number,
   timeType: TimeType,
-  remindTime: number,
+  remindTime: number | undefined,
   notificationId: number,
   newTaskData: TaskData;
   tasks: Array<TaskType>;

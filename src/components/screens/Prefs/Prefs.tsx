@@ -12,6 +12,7 @@ import { languageTexts } from "../../../utils/languageTexts";
 import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
 import PrefItem from "../../UI/PrefItem/PrefItem";
 import { PrefsPropType } from "./types";
+import appJson from '../../../../app.json';
 
 const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
   const dispatch: AppDispatch = useDispatch();
@@ -41,7 +42,7 @@ const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
         type="info"
         title={languageTexts[language].words.version}
         iconXml={version(themeColors[theme].colors.text)}
-        state={languageTexts[language].words.beta + ' 2.0'}
+        state={languageTexts[language].words.beta + ' ' + appJson.expo.version}
       />
     </ScreenLayout>
   );

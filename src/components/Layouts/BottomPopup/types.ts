@@ -3,4 +3,7 @@ export interface BottomPopupPropType {
   title?: string,
   children?: JSX.Element | null | Array<JSX.Element | null>,
   handleKeyboard?: boolean
+  rightButtonTitle?: string | false,
+  rightButtonColor?: string,
+  onRightButtonPress?: (() => void) | false,
 }

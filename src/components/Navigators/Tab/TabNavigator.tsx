@@ -4,7 +4,6 @@ import { rootTabNavigatorParamList, TabNavigatorPropTypes } from "./types";
 import Home from "../../Screens/Home/Home";
 import Prefs from "../../Screens/Prefs/Prefs";
 import TabBar from "../../UI/TabBar/TabBar";
-import { getDate } from "../../../utils/date";
 import { useSelector } from "react-redux";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { languageTexts } from "../../../utils/languageTexts"; 
@@ -14,7 +13,6 @@ const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
   ({ openAddTaskModal, openLanguageModal }) => {
     const language = useSelector(getLanguage);
-    const { date } = getDate(language);
 
     const RenderPrefs = () => {
       return <Prefs openLanguageModal={openLanguageModal} />;
@@ -36,7 +34,6 @@ const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
           name="Home"
           component={Home}
           options={{
-            title: date,
             tabBarLabel: languageTexts[language].screenTitles.main,
           }}
         />
@@ -53,7 +50,7 @@ const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
         <Tab.Screen
           name="Prefs"
           component={RenderPrefs}
-          options={{ title: languageTexts[language].screenTitles.preferences, }}
+          options={{ tabBarLabel: languageTexts[language].screenTitles.preferences, }}
         />
       </Tab.Navigator>
     );

@@ -9,7 +9,7 @@ import {
   textGrey,
 } from "../../../styles/global/texts";
 import { CHOOSE } from "../../../utils/constants/periods";
-import { extractCalendarState, getDate } from "../../../utils/date";
+import { extractCalendarState, getDate, toLocaleStateString } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import { getReminderItemTitle } from "../../../utils/utils";
 import ListItem from "../../Layouts/ListItem/ListItem";
@@ -29,22 +29,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   const newTaskData = useSelector(getNewTaskData);
   const language = useSelector(getLanguage);
   const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
-  const isCurrentYear = new Date().getFullYear() === date.getFullYear();
-  const calendarState = extractCalendarState(date);
-  const timeString =
-    newTaskData.timeType === "time"
-      ? ", " + date.toLocaleTimeString().slice(0, 5)
-      : "";
-  let titleString = "";
-
-  if (calendarState === CHOOSE) {
-    titleString =
-      getDate(language, { date }).date +
-      (isCurrentYear ? "" : " " + date.getFullYear()) +
-      timeString;
-  } else {
-    titleString = languageTexts[language].periods[calendarState] + timeString;
-  }
+  let titleString = toLocaleStateString({ dateValue: date.valueOf(), timeType: newTaskData.timeType, language });
 
   let remindDate = date;
 

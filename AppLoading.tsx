@@ -38,11 +38,11 @@ export default function AppLoading() {
     async function prepare() {
       try {
         if (!isAppReady) {
+          await loadApp();
           dispatch(getPrefsFromASAction(systemTheme, Localization.locale));
           dispatch(getSectionsVisibilitiesFromASAction());
           dispatch(getTasksFromLocalDB());
           dispatch(getGesturePositionsFromASAction());
-          await loadApp();
         }
       } catch (error) {
         console.log('prepare', error);

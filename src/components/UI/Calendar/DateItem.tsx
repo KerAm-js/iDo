@@ -12,14 +12,12 @@ const DateItem: FC<DateItemPropType> = React.memo(({
   onClick,
   isSelected,
 }) => {
-
   const theme = useTheme();
-
+  const isExpired = new Date().getMonth() === date.getMonth() && (new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24)
   const onClickHandler = () => {
     onClick(date);
   };
 
-  const isExpired = new Date().getMonth() === date.getMonth() && (new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24)
   return (
     <Pressable
       style={[
