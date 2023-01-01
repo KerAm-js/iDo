@@ -89,9 +89,9 @@ export const isTomorrow = (date: Date) => {
 };
 
 export const isWeeklyTime = (date: Date) => {
-  const currDate = new Date();
-  const currWeekDay = currDate.getDay();
-  let timeBound = 7 - currWeekDay;
+  const [currWeekDay, currDate ]= [new Date().getDay(), new Date().getDate()];
+
+  let timeBound = 8 - currWeekDay;
 
   if (currWeekDay === 0) {
     timeBound = 8;
@@ -100,8 +100,8 @@ export const isWeeklyTime = (date: Date) => {
   }
 
   const result =
-    date.valueOf() < new Date(date.valueOf()).setDate(timeBound) &&
-    date.valueOf() >= new Date().setHours(0, 0, 0, 0);
+    date.valueOf() < new Date(date.setHours(0, 0, 0, 0)).setDate(currDate + timeBound) &&
+    date.valueOf() >= new Date().valueOf();
 
   return result;
 };
