@@ -8,6 +8,7 @@ import {
   PanGestureHandlerGestureEvent,
 } from "react-native-gesture-handler";
 import Animated, {
+  interpolate,
   runOnJS,
   SlideInRight,
   useAnimatedGestureHandler,
@@ -26,9 +27,7 @@ import {
 } from "../../../utils/section/positionsObject";
 import { movableItemStyles } from "./style";
 import { ContextType, MovableItemProps } from "./types";
-import {
-  moveGesturePosition,
-} from "../../../utils/section/gesturePostions";
+import { moveGesturePosition } from "../../../utils/section/gesturePostions";
 import { trash } from "../../../../assets/icons/trash";
 import { textColors } from "../../../styles/global/colors";
 import { TaskType } from "../../../redux/types/task";
@@ -64,14 +63,15 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       useRef(null);
 
     const containerStyleR = useAnimatedStyle(() => {
+      const scale = interpolate(shadowOpacity.value, [0, shadowStyle.shadowOpacity || 0.1], [1, 1.04])
       return {
         shadowOpacity: shadowOpacity.value,
         top: translateY.value,
         opacity: opacity.value,
         zIndex: zIndex.value,
-        transform: [{scale: withTiming(isDragged ? 1.04 : 1)}]
+        transform: [{ scale }],
       };
-    }, [positions, translateY, shadowOpacity, opacity, isDragged]);
+    }, [positions, translateY, shadowOpacity, opacity]);
 
     const taskContainerStyleR = useAnimatedStyle(() => {
       return {
@@ -124,6 +124,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     ) => {
       "worklet";
       context.startPositionsObject = positions.value;
+      context.startGesturePositionsObject = gesturePositions.value;
       context.startPosition = positions.value[id].position;
       zIndex.value = 1;
     };
@@ -155,15 +156,13 @@ const MovableItem: FC<MovableItemProps> = React.memo(
             positions?.value[id]?.position,
             newPosition
           );
-          if (
-            positions.value[id].time === positions.value[toId].time
-          ) {
+          if (positions.value[id].time === positions.value[toId].time) {
             const newGesturePositions = moveGesturePosition(
               gesturePositions.value,
               id,
               toId
             );
-            gesturePositions.value = newGesturePositions
+            gesturePositions.value = newGesturePositions;
           }
           positions.value = newPositionsObject;
           context.isMovingDisabled = isTaskMovingDisabled;
@@ -190,20 +189,27 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     ) => {
       "worklet";
       if (isDragged) {
-        zIndex.value = 0;
         const newPosition = positions?.value[id]?.position;
+        let newTranslateY = newPosition * itemHeight;
+        const onAnimationEnd = (isFinished: boolean | undefined) => {
+          if (isFinished) {
+            zIndex.value = 0;
+            runOnJS(setIsDragged)(false);
+          }
+        };
         if (context.isMovingDisabled) {
           positions.value = context.startPositionsObject;
-          translateY.value = withTiming(context.startPosition * itemHeight, {
-            duration: 300,
-          });
-        } else {
-          translateY.value = withTiming(newPosition * itemHeight, {
-            duration: 300,
-          });
+          gesturePositions.value = context.startGesturePositionsObject;
+          newTranslateY = context.startPosition * itemHeight;
         }
+        translateY.value = withTiming(
+          newTranslateY,
+          {
+            duration: 300,
+          },
+          onAnimationEnd
+        );
         shadowOpacity.value = withTiming(0);
-        runOnJS(setIsDragged)(false);
       } else {
         if (translateX.value < translateThreshold && !taskObject.isCompleted) {
           translateX.value = withSpring(-SCREEN_WIDTH);
@@ -307,7 +313,10 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     );
   },
   (prev, curr) => {
-    return JSON.stringify(prev.taskObject) === JSON.stringify(curr.taskObject) && prev.upperBound === curr.upperBound;
+    return (
+      JSON.stringify(prev.taskObject) === JSON.stringify(curr.taskObject) &&
+      prev.upperBound === curr.upperBound
+    );
   }
 );
 

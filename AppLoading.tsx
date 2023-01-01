@@ -49,7 +49,7 @@ export default function AppLoading() {
       } finally {
         setTimeout(() => {
           setIsAppReady(true);
-        }, 500)
+        }, 1400)
       }
     }
     prepare();
@@ -58,9 +58,9 @@ export default function AppLoading() {
   const onAppReady = useCallback(async () => {
     if (isAppReady) {
       try {
-        setTimeout(() => {
-          SplashScreen.hideAsync();
-        }, 1000);
+        setTimeout(async () => {
+          await SplashScreen.hideAsync();
+        }, 100);
       } catch (error) {
         console.log('onAppReady', error);
       }

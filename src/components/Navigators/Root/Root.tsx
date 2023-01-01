@@ -13,6 +13,7 @@ import TabNavigator from "../Tab/TabNavigator";
 import { NavigationContainer } from "@react-navigation/native";
 import { themeColors } from "../../../styles/global/colors";
 import { RootPropType } from "./types";
+import { StatusBar } from "react-native";
 
 const Root: FC<RootPropType> = ({ onAppReady }) => {
   const taskToEdit = useSelector(getTaskToEdit);
@@ -79,6 +80,7 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
 
   return (
     <NavigationContainer onReady={onAppReady} theme={themeColors[theme]}>
+      <StatusBar animated barStyle={theme === 'light' ? "dark-content" : "light-content"} />
       <ModalLayout visible={addTaskModalVisible} close={closeAddTaskModal}>
         <AddTaskPopup
           visible={addTaskModalVisible}

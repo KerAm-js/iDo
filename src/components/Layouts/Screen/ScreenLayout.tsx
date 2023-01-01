@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useNavigation, useTheme } from "@react-navigation/native";
-import { Animated, Text, StyleSheet, View, StatusBar } from "react-native";
+import { Animated, Text, StyleSheet, View } from "react-native";
 import { screenLayoutStyles } from "./styles";
 import { ScreenLayoutProps } from "./types";
 import { subTitle16, textGrey, title30 } from "../../../styles/global/texts";
@@ -134,7 +134,6 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
           },
         ]}
       >
-        <StatusBar barStyle={theme.dark ? "light-content" : "dark-content"} />
         <View style={screenLayoutStyles.headingContainer}>
           <View style={screenLayoutStyles.titleContainer}>
             <Animated.Text

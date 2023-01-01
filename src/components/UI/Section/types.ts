@@ -31,6 +31,7 @@ export type MovableItemProps = {
 
 export type ContextType = {
   startPositionsObject: ListObject;
+  startGesturePositionsObject: GesturePositionsType;
   startPosition: number;
   isMovingDisabled: boolean;
 };
