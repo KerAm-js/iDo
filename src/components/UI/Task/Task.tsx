@@ -16,7 +16,7 @@ import {
   textGrey,
   textRed,
 } from "../../../styles/global/texts";
-import { EXPIRED, FOR_WEEK, LATER, TODAY, TOMORROW, YESTERDAY } from "../../../utils/constants/periods";
+import { CALENDAR_DAY, EXPIRED, FOR_WEEK, LATER, TODAY, TOMORROW, YESTERDAY } from "../../../utils/constants/periods";
 import { getDate, isToday, isTomorrow, isYesterday } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import ListItem from "../../Layouts/ListItem/ListItem";

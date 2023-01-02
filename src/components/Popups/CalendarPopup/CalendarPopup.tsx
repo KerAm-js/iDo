@@ -18,7 +18,6 @@ import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
 import {
   extractCalendarState,
   extractReminderState,
-  getDate,
   reminderStateList,
   toLocaleStateString,
 } from "../../../utils/date";
@@ -139,7 +138,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       setCalendarShown(false);
 
       if (state === CHOOSE) {
-        updateChoosedTitle(date);
+        updateChoosedTitle(defaultTaskTime ? new Date(defaultTaskTime) : date);
       } else {
         setChooseItemTitle(languageTexts[language].words[CHOOSE]);
       }
@@ -242,6 +241,8 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     translateFormButtonY.value = 0;
     if (visible && isReminderChoosing && !newTaskData.remindTime) {
       setDefaults();
+    } else if (visible && !taskToEdit && newTaskData.time && newTaskData.timeType) {
+      setDefaults(new Date(newTaskData.time), newTaskData.timeType)
     }
   }, [visible]);
 
@@ -346,7 +347,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
           {calendarShown && (
             <Animated.View style={[scrollViewsStyle]}>
               <Calendar
-                calendarShown={calendarShown}
+                isCardBackgroundColor={true}
                 date={date}
                 setDate={onDateItemClick}
               />

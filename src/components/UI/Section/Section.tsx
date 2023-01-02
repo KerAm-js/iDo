@@ -21,7 +21,6 @@ import { ListObject } from "../../../types/global/ListObject";
 import { GesturePositionsType } from "../../../types/global/GesturePositions";
 import { languageTexts } from "../../../utils/languageTexts";
 import ClearList from "../ClearList/ClearList";
-import { FOR_TODAY, FOR_TOMORROW } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -36,6 +35,7 @@ import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { TaskType } from "../../../redux/types/task";
 import { saveGesturePositions } from "../../../backend/asyncStorage/gesturePositions";
 import { saveSectionVisibilityToAS } from "../../../backend/asyncStorage/section";
+import { CALENDAR_DAY, LATER } from "../../../utils/constants/periods";
 
 const TaskMargin = 10;
 const TaskHeight = 62 + TaskMargin;
@@ -52,7 +52,7 @@ const Section: FC<SectionProps> = React.memo(
     );
     const [sortedTasks, completedTasksLength] = sortTasks(
       list,
-      gesturePositions,
+      gesturePositions
     );
     const [isDeleting, setIsDeleting] = useState(false);
 
@@ -68,10 +68,10 @@ const Section: FC<SectionProps> = React.memo(
         : emptyListHeight;
 
     const opacity = useSharedValue(
-      typeof visibilities.list === "number" ? visibilities.list : 1
+      typeof visibilities?.list === "number" ? visibilities?.list : 1
     );
     const completedListOpacity = useSharedValue(
-      typeof visibilities.completedList === "number"
+      typeof visibilities?.completedList === "number"
         ? visibilities.completedList
         : 1
     );
@@ -126,30 +126,34 @@ const Section: FC<SectionProps> = React.memo(
     });
 
     const toggleListVisible = () => {
-      saveSectionVisibilityToAS(title, {
-        list: opacity.value === 0 ? 1 : 0,
-        completedList: completedListOpacity.value,
-      });
-      height.value = withTiming(
-        opacity.value === 0
-          ? completedListOpacity.value === 1
-            ? initialHeight
-            : initialHeight - completedTasksLength * TaskHeight
-          : baseHeight,
-        {
-          duration: 300,
-        }
-      );
+      if (title !== CALENDAR_DAY && visibilities) {
+        saveSectionVisibilityToAS(title, {
+          list: opacity.value === 0 ? 1 : 0,
+          completedList: completedListOpacity.value,
+        });
+        height.value = withTiming(
+          opacity.value === 0
+            ? completedListOpacity.value === 1
+              ? initialHeight
+              : initialHeight - completedTasksLength * TaskHeight
+            : baseHeight,
+          {
+            duration: 300,
+          }
+        );
+      }
       opacity.value = withTiming(opacity.value === 0 ? 1 : 0, {
         duration: 250,
       });
     };
 
     const toggleCompletedListVisible = () => {
-      saveSectionVisibilityToAS(title, {
-        list: opacity.value,
-        completedList: completedListOpacity.value === 0 ? 1 : 0,
-      });
+      if (title !== CALENDAR_DAY && visibilities) { 
+        saveSectionVisibilityToAS(title, {
+          list: opacity.value,
+          completedList: completedListOpacity.value === 0 ? 1 : 0,
+        });
+      }
       height.value = withTiming(
         completedListOpacity.value === 0
           ? initialHeight
@@ -230,7 +234,7 @@ const Section: FC<SectionProps> = React.memo(
     useAnimatedReaction(
       () => gesturePositions.value,
       (curr, prev) => {
-        if (JSON.stringify(prev) !== JSON.stringify(curr)) {
+        if (JSON.stringify(prev) !== JSON.stringify(curr) && title !== CALENDAR_DAY) {
           runOnJS(saveGesturePositions)(curr, title);
         }
       },
@@ -242,22 +246,28 @@ const Section: FC<SectionProps> = React.memo(
 
     return (
       <Animated.View style={[sectionStyles.container, containerStyle]}>
-        <Pressable
-          onPress={toggleListVisible}
-          style={sectionStyles.headerContainer}
-        >
-          <View style={sectionStyles.headerTextContainer}>
-            <ThemeText style={title22}>{titleString}</ThemeText>
-            {list.length > 0 && (
-              <Text style={[textGrey, textSemiBold, sectionStyles.counter]}>
-                {`${completedTasksLength}/${sortedTasks.length}`}
-              </Text>
-            )}
-          </View>
-          <Animated.View style={[arrowStyle, sectionStyles.arrowButton]}>
-            <SvgXml xml={arrowBottom(textColors.grey)} width={16} height={16} />
-          </Animated.View>
-        </Pressable>
+        {title !== CALENDAR_DAY && (
+          <Pressable
+            onPress={toggleListVisible}
+            style={sectionStyles.headerContainer}
+          >
+            <View style={sectionStyles.headerTextContainer}>
+              <ThemeText style={title22}>{titleString}</ThemeText>
+              {list.length > 0 && (
+                <Text style={[textGrey, textSemiBold, sectionStyles.counter]}>
+                  {`${completedTasksLength}/${sortedTasks.length}`}
+                </Text>
+              )}
+            </View>
+            <Animated.View style={[arrowStyle, sectionStyles.arrowButton]}>
+              <SvgXml
+                xml={arrowBottom(textColors.grey)}
+                width={16}
+                height={16}
+              />
+            </Animated.View>
+          </Pressable>
+        )}
         <Animated.View
           style={[
             listContainerOpacityStyle,
@@ -279,16 +289,16 @@ const Section: FC<SectionProps> = React.memo(
               return (
                 <MovableItem
                   key={item.id}
+                  tasksLength={sortedTasks.length}
                   index={sortedTasks.findIndex((task) => task.id === item.id)}
                   positions={positions}
                   gesturePositions={gesturePositions}
                   id={item.id}
                   itemHeight={TaskHeight}
-                  component={Task}
                   taskObject={item}
                   completeTask={completeTask}
                   deleteTask={deleteTask}
-                  sectionTitle={title}
+                  sectionTitle={title || LATER}
                   upperBound={upperBound}
                   opacity={item.isCompleted ? completedListOpacity : opacity}
                 />

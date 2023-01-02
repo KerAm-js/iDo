@@ -11,7 +11,7 @@ export type SectionProps = {
   title: HomePeriodsKeys;
   list: Array<TaskType>;
   initialGesturePositions: GesturePositionsType;
-  visibilities: SectionVisibilityValueType;
+  visibilities?: SectionVisibilityValueType;
 };
 
 export type MovableItemProps = {
@@ -22,11 +22,11 @@ export type MovableItemProps = {
   opacity: { value: number };
   gesturePositions: { value: GesturePositionsType };
   itemHeight: number;
-  component: FC<TaskPropTypes>;
   completeTask: (task: TaskType) => void;
   deleteTask: (id: number, notificationId?: string) => void;
   sectionTitle: HomePeriodsKeys;
   upperBound: number;
+  tasksLength: number,
 };
 
 export type ContextType = {

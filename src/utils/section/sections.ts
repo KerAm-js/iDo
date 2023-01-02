@@ -115,7 +115,7 @@ export const getSections = (
     const time = new Date(task.time);
     const position = gesturePositions[task.id];
 
-    const isWeekly = isWeeklyTime(new Date(task.time))
+    const isWeekly = isWeeklyTime(new Date(task.time));
 
     if (time < currDate && task.isExpired && !isWeeklyTime) {
       periodTasks[EXPIRED].list.push(task);

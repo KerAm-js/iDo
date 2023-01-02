@@ -9,14 +9,19 @@ import {
 import { useSelector } from "react-redux";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { text17, textSemiBold, title18 } from "../../../styles/global/texts";
-import { getCalendarArray, getMonthName } from "../../../utils/date";
+import { getCalendarArray, getMonthName, toMonthYearString } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import List from "./List";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, CalendarPropType } from "./types";
 
-const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
+const Calendar: FC<CalendarPropType> = ({
+  date,
+  setDate,
+  setGlobalTitle,
+  isCardBackgroundColor,
+}) => {
   const language = useSelector(getLanguage);
   const { width: WIDTH } = Dimensions.get("screen");
   const currDate = new Date();
@@ -35,13 +40,14 @@ const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
     const newCurrentIndex = Math.round(
       event.nativeEvent.contentOffset.x / WIDTH
     );
+    const newTitle = toMonthYearString({ date: currDate, language })
 
     if (newCurrentIndex === 0) {
-      setTitle(
-        getMonthName(language, currDate.getMonth()) +
-          " " +
-          currDate.getFullYear()
-      );
+      if (setGlobalTitle) {
+        setGlobalTitle(newTitle);
+      } else {
+        setTitle(newTitle);
+      }
     }
 
     if (newCurrentIndex !== currentIndex) {
@@ -53,7 +59,12 @@ const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
         nextSlideDate.getMonth(),
         nextSlideDate.getFullYear(),
       ];
-      setTitle(getMonthName(language, nextMonth) + " " + nextYear);
+      const newTitle = getMonthName(language, nextMonth) + " " + nextYear;
+      if (setGlobalTitle) {
+        setGlobalTitle(newTitle);
+      } else {
+        setTitle(newTitle);
+      }
     }
 
     if (newCurrentIndex === state.length - 1) {
@@ -76,20 +87,27 @@ const Calendar: FC<CalendarPropType> = ({ date, setDate }) => {
         date={date}
         setDate={setDate}
         onScrollEnd={onScroll}
+        isCardBackgroundColor={isCardBackgroundColor}
       />
     ),
     [state, date]
   );
 
   useEffect(() => {
-    setTitle(
-      getMonthName(language, currDate.getMonth()) + " " + currDate.getFullYear()
-    );
+    const newTitle = toMonthYearString({ date: currDate, language })
+
+    if (setGlobalTitle) {
+      setGlobalTitle(newTitle);
+    } else {
+      setTitle(newTitle);
+    }
   }, [language]);
 
   return (
     <View style={[calendarStyles.container]}>
-      <ThemeText style={[calendarStyles.title, title18]}>{title}</ThemeText>
+      {!setGlobalTitle && (
+        <ThemeText style={[calendarStyles.title, title18]}>{title}</ThemeText>
+      )}
       <View style={[calendarStyles.weekDaysContainer]}>
         {weekDays.map((weekDay) => {
           return (

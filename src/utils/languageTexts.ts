@@ -1,5 +1,6 @@
 import { LanguageType } from "../redux/types/prefs";
 import {
+  CALENDAR_DAY,
   EXPIRED,
   FOR_TODAY,
   FOR_TOMORROW,
@@ -33,6 +34,7 @@ export const languageTexts = {
       [FOR_TOMORROW]: "Что планируете на завтра?",
       [EXPIRED]: "Нет просроченных задач",
       [LATER]: 'Нет задач на более позднее время',
+      [CALENDAR_DAY]: 'На этот день задач не запланировано',
     },
     popupTitles: {
       taskCategories: "Категории задач",
@@ -104,6 +106,7 @@ export const languageTexts = {
       [TOMORROW]: "Завтра",
       [FOR_TOMORROW]: "На завтра",
       [LATER]: 'Позже',
+      [CALENDAR_DAY]: 'Календарный день',
       minute: "Минута",
       hour: "Час",
       day: "День",
@@ -125,6 +128,7 @@ export const languageTexts = {
       de: "Немецкий",
     },
     words: {
+      calendar: 'Календарь',
       nightTheme: "Ночной режим",
       version: "Версия",
       beta: "Бета",
@@ -185,6 +189,7 @@ export const languageTexts = {
       [FOR_TOMORROW]: "What are the plans for tomorrow?",
       [EXPIRED]: "No expired tasks",
       [LATER]: 'No tasks for a later time',
+      [CALENDAR_DAY]: 'No tasks scheduled for this day',
     },
     popupTitles: {
       taskCategories: "Task categories",
@@ -193,6 +198,7 @@ export const languageTexts = {
       language: "Language",
     },
     words: {
+      calendar: 'Calendar',
       nightTheme: "Night theme",
       version: "Version",
       beta: "Beta",
@@ -275,6 +281,7 @@ export const languageTexts = {
       [FOR_TODAY]: "For today",
       [FOR_TOMORROW]: "For tomorrow",
       [LATER]: 'later',
+      [CALENDAR_DAY]: 'Calendar day',
       day: "Dat",
       days: "Days",
       week: "Week",
@@ -329,6 +336,7 @@ export const languageTexts = {
       [FOR_TOMORROW]: "Was hast du für morgen vor?",
       [EXPIRED]: "Keine überfälligen Aufgaben",
       [LATER]: 'Keine Aufgaben für später',
+      [CALENDAR_DAY]: 'Für diesen Tag sind keine Aufgaben geplant'
     },
     popupTitles: {
       taskCategories: "Aufgabenkategorie",
@@ -341,6 +349,7 @@ export const languageTexts = {
       preferences: "Einstellungen",
     },
     words: {
+      calendar: 'Kalender',
       nightTheme: "Nachtmodus",
       beta: "Beta",
       version: "Ausführung",
@@ -406,6 +415,7 @@ export const languageTexts = {
       [FOR_TODAY]: "Für heute",
       [FOR_TOMORROW]: "Für morgen",
       [LATER]: 'Später',
+      [CALENDAR_DAY]: 'Kalendertag',
       day: "Tag",
       days: "Tage",
       week: "Woche",
@@ -459,6 +469,7 @@ export const languageTexts = {
       [FOR_TOMORROW]: "Кханаьнна да хIумма дуй?",
       [EXPIRED]: "Тиллина хIумма а дац",
       [LATER]: 'Кхиъ тIаьхьа г1уллакхаш дац',
+      [CALENDAR_DAY]: 'Кху даьнна плане хIоттийна гIуллакхаш дац'
     },
     popupTitles: {
       taskCategories: "ГIуллакхийн категориш",
@@ -471,6 +482,7 @@ export const languageTexts = {
       preferences: "Нисдарш",
     },
     words: {
+      calendar: 'Календарь',
       nightTheme: "Буьйсанан раж",
       beta: "Бета",
       version: "Верси",
@@ -536,6 +548,7 @@ export const languageTexts = {
       [FOR_TODAY]: "Таханаьнна",
       [FOR_TOMORROW]: "Кханаьнна",
       [LATER]: 'ТIаьхьа',
+      [CALENDAR_DAY]: 'Календаран де',
       minute: "Минот",
       hour: "Сахьт",
       day: "Де",

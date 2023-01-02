@@ -29,8 +29,11 @@ import { movableItemStyles } from "./style";
 import { ContextType, MovableItemProps } from "./types";
 import { moveGesturePosition } from "../../../utils/section/gesturePostions";
 import { trash } from "../../../../assets/icons/trash";
-import { textColors } from "../../../styles/global/colors";
+import { shadowColors, textColors } from "../../../styles/global/colors";
 import { TaskType } from "../../../redux/types/task";
+import { useTheme } from "@react-navigation/native";
+import Task from "../Task/Task";
+import { CALENDAR_DAY } from "../../../utils/constants/periods";
 
 const MovableItem: FC<MovableItemProps> = React.memo(
   ({
@@ -40,14 +43,16 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     gesturePositions,
     opacity,
     itemHeight,
-    component: Component,
     sectionTitle,
     completeTask,
     deleteTask,
     taskObject,
+    tasksLength,
     upperBound,
   }) => {
     const [isDragged, setIsDragged] = useState(false);
+    const { dark } = useTheme();
+    const shadowColor = dark ? shadowColors.dark : shadowColors.light;
     const { width: SCREEN_WIDTH } = Dimensions.get("screen");
     const translateThreshold = SCREEN_WIDTH * -0.3;
     const top = positions.value[id]
@@ -63,9 +68,10 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       useRef(null);
 
     const containerStyleR = useAnimatedStyle(() => {
-      const scale = interpolate(shadowOpacity.value, [0, shadowStyle.shadowOpacity || 0.1], [1, 1.04])
+      const scale = interpolate(shadowOpacity.value, [0, 1], [1, 1.04]);
       return {
         shadowOpacity: shadowOpacity.value,
+        shadowColor,
         top: translateY.value,
         opacity: opacity.value,
         zIndex: zIndex.value,
@@ -241,7 +247,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     const onLongPress = () => {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setIsDragged(true);
-      shadowOpacity.value = withTiming(shadowStyle.shadowOpacity || 0.1);
+      shadowOpacity.value = withTiming(1);
     };
 
     const clearCompletingTimeout = () => {
@@ -266,10 +272,13 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       }
     };
 
+    const isAnimated =
+      tasksLength === 0 || (tasksLength > 0 && !positions?.value[id] && sectionTitle !== CALENDAR_DAY);
+
     return (
       <Animated.View
         entering={
-          !positions?.value[id]
+          isAnimated
             ? SlideInRight.springify().damping(12).delay(100)
             : undefined
         }
@@ -303,7 +312,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
           )}
         </Animated.View>
         <Animated.View style={taskContainerStyleR}>
-          <Component
+          <Task
             taskObject={taskObject}
             completeTask={completeTaskHandler}
             sectionType={sectionTitle}

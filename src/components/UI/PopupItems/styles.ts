@@ -36,7 +36,6 @@ export const popupItemStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
-    marginRight: 10,
   },
   calendarIconText: {
     position: 'absolute',

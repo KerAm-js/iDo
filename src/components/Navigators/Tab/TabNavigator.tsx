@@ -1,12 +1,13 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import React, { FC } from "react";
 import { rootTabNavigatorParamList, TabNavigatorPropTypes } from "./types";
-import Home from "../../Screens/Home/Home";
 import Prefs from "../../Screens/Prefs/Prefs";
 import TabBar from "../../UI/TabBar/TabBar";
 import { useSelector } from "react-redux";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { languageTexts } from "../../../utils/languageTexts"; 
+import HomeNavigator from "../Stack/Home/HomeNavigator";
+import PrefsNavigator from "../Stack/Prefs/PrefsNavigator";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
@@ -14,25 +15,22 @@ const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
   ({ openAddTaskModal, openLanguageModal }) => {
     const language = useSelector(getLanguage);
 
-    const RenderPrefs = () => {
-      return <Prefs openLanguageModal={openLanguageModal} />;
+    const RenderPrefsNavigator = () => {
+      return <PrefsNavigator openLanguageModal={openLanguageModal} />;
     }
 
     return (
       <Tab.Navigator
-        detachInactiveScreens={true}
         tabBar={(props) => (
           <TabBar onBigButtonClick={openAddTaskModal} {...props} />
         )}
         screenOptions={{
-          headerRightContainerStyle: { paddingRight: 20 },
-          headerLeftContainerStyle: { paddingLeft: 20 },
-          headerTransparent: true,
+          headerShown: false,
         }}
       >
         <Tab.Screen
           name="Home"
-          component={Home}
+          component={HomeNavigator}
           options={{
             tabBarLabel: languageTexts[language].screenTitles.main,
           }}
@@ -49,7 +47,7 @@ const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
       /> */}
         <Tab.Screen
           name="Prefs"
-          component={RenderPrefs}
+          component={RenderPrefsNavigator}
           options={{ tabBarLabel: languageTexts[language].screenTitles.preferences, }}
         />
       </Tab.Navigator>

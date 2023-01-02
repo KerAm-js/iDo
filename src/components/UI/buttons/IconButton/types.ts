@@ -1,4 +1,5 @@
 import { ViewStyle } from "react-native";
+import { CalendarDateIconPropType } from '../../PopupItems/types';
 
 export type iconButtonProps = {
   xml: string,
@@ -8,4 +9,8 @@ export type iconButtonProps = {
   iconWidth?: number,
   iconHeight?: number,
   onClick?: () => void,
+}
+
+export interface CalendarIconPropType extends CalendarDateIconPropType {
+  onPress?: () => void,
 }

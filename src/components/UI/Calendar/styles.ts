@@ -4,9 +4,9 @@ export const calendarStyles = StyleSheet.create({
   container: {
   },
   calendarItem: {
-    minWidth: 36,
-    minHeight: 36,
-    borderRadius: 18,
+    minWidth: 34,
+    minHeight: 34,
+    borderRadius: 17,
     justifyContent: 'center',
     alignItems: 'center'
   },

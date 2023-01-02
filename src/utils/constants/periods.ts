@@ -6,6 +6,7 @@ export const FOR_WEEK = 'forWeek';
 export const NEXT_WEEK = 'nextWeek';
 export const EXPIRED = 'expired';
 export const LATER = 'later';
+export const CALENDAR_DAY = 'calendarDay';
 
 export const YESTERDAY = 'yesterday';
 export const TODAY = 'today';

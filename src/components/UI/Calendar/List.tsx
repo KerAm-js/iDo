@@ -8,7 +8,7 @@ import DateItem from "./DateItem";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, ListPropType } from "./types";
 
-const List: FC<ListPropType> = ({ state, onScrollEnd, date, reference, setDate }) => {
+const List: FC<ListPropType> = ({ state, onScrollEnd, date, reference, setDate, isCardBackgroundColor }) => {
   const { width: WIDTH } = Dimensions.get("screen");
 
   const renderItem = ({
@@ -34,6 +34,7 @@ const List: FC<ListPropType> = ({ state, onScrollEnd, date, reference, setDate }
                   onClick={setDate}
                   key={object.date.valueOf()}
                   data={object}
+                  isCardBackgroundColor={isCardBackgroundColor}
                 />
               ))}
             </View>

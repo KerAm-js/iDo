@@ -39,3 +39,9 @@ export interface FormButtonPropType extends TextInputProps {
   iconXml?: string,
   isInput?: boolean,
 }
+
+export type CalendarDateIconPropType = {
+  date: Date,
+  color: string,
+  size?: 'small' | 'regular'
+}

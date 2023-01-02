@@ -77,6 +77,13 @@ export const isToday = (date: Date) => {
   return currDate.setHours(0, 0, 0, 0) === dateCopy.setHours(0, 0, 0, 0);
 };
 
+export const isTheSameDate = (first: number, second: number) => {
+  return (
+    new Date(first).setHours(0, 0, 0, 0) ===
+    new Date(second).setHours(0, 0, 0, 0)
+  );
+};
+
 export const isTomorrow = (date: Date) => {
   const currDate = new Date();
   const dateCopy = new Date(date.valueOf());
@@ -89,7 +96,7 @@ export const isTomorrow = (date: Date) => {
 };
 
 export const isWeeklyTime = (date: Date) => {
-  const [currWeekDay, currDate ]= [new Date().getDay(), new Date().getDate()];
+  const [currWeekDay, currDate] = [new Date().getDay(), new Date().getDate()];
 
   let timeBound = 8 - currWeekDay;
 
@@ -100,10 +107,21 @@ export const isWeeklyTime = (date: Date) => {
   }
 
   const result =
-    date.valueOf() < new Date(date.setHours(0, 0, 0, 0)).setDate(currDate + timeBound) &&
-    date.valueOf() >= new Date().valueOf();
+    date.valueOf() <
+      new Date(date.setHours(0, 0, 0, 0)).setDate(currDate + timeBound) &&
+    date.valueOf() >= new Date().setHours(0, 0, 0, 0);
 
   return result;
+};
+
+export const toMonthYearString = ({
+  date,
+  language,
+}: {
+  date: Date;
+  language: LanguageType;
+}) => {
+  return getMonthName(language, date.getMonth()) + " " + date.getFullYear();
 };
 
 export const toLocaleStateString = ({
