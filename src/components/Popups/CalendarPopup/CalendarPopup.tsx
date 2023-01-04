@@ -157,7 +157,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     const hours = time.slice(0, 2);
     const minutes = time.slice(3, 5);
     const timeType: TimeType = time ? "time" : "day";
-    const reminderTime: number = newTaskData.timeType === 'day' && state !== '0' && state !== CHOOSE ? date.valueOf() + 1 : date.valueOf()
+    const reminderTime: number = date.valueOf();
     const timeValue: Date = time
       ? new Date(
           date.getFullYear(),

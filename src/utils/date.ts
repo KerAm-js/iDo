@@ -61,8 +61,19 @@ export const isExpiredDate = (date: Date) => {
 };
 
 export const isDayEnd = (date: Date) => {
-  return date.getHours() === 23 && date.getMinutes() === 59 && date.getSeconds() === 59;
-}
+  return (
+    date.getHours() === 23 &&
+    date.getMinutes() === 59 &&
+    date.getSeconds() === 59
+  );
+};
+
+export const getTimeStringBySecondsConverting = (date: Date) => {
+  if (date.getSeconds() === 59 && date.getMilliseconds() === 999) {
+    return new Date(date.valueOf() + 1).toLocaleTimeString().slice(0, 5);
+  }
+  return new Date(date.valueOf() + 1).toLocaleTimeString().slice(0, 5);
+};
 
 export const isYesterday = (date: Date) => {
   const currDate = new Date();

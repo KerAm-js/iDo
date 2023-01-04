@@ -26,6 +26,7 @@ import {
 } from "../../../utils/constants/periods";
 import {
   getDate,
+  getTimeStringBySecondsConverting,
   isDayEnd,
   isToday,
   isTomorrow,
@@ -114,7 +115,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
         reminderString = getDate(language, { date: reminder }).weekDay;
       }
     } else {
-      reminderString = reminder.toLocaleTimeString().slice(0, 5);
+      reminderString = getTimeStringBySecondsConverting(reminder);
     }
   }
 
