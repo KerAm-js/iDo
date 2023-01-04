@@ -92,7 +92,7 @@ export const scheduleReminder = async (
     const currentDate = new Date().valueOf();
     const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
     const { language } = store.getState().prefs;
-    if (notificationTime < 0) {
+    if (notificationTime > 0) {
       const notificationId = await setNotification(
         "🔔 " + task.task,
         `🕐 ${toLocaleStateString({
