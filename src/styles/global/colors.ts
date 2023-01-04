@@ -34,7 +34,7 @@ export const themeColors: {
       background: 'rgb(11, 11, 12)',
       card: 'rgb(22, 22, 26)',
       text: '#fff',
-      border: '#777',
+      border: '#444',
     }
   },
   light: {

@@ -1,10 +1,12 @@
 import { useFocusEffect, useTheme } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import React, { useState } from "react";
+import { View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { useSelector } from "react-redux";
 import { cancel } from "../../../../../assets/icons/cancel";
 import { getLanguage } from "../../../../redux/selectors/prefsSelectors";
+import { title18 } from "../../../../styles/global/texts";
 import { languageTexts } from "../../../../utils/languageTexts";
 import CalendarScreen from "../../../Screens/Home/Calendar";
 import Home from "../../../Screens/Home/Home";
@@ -46,11 +48,9 @@ const HomeNavigator = () => {
         screenOptions={{
           presentation: "modal",
           headerTransparent: false,
-          headerBackTitleVisible: false,
           headerShadowVisible: false,
-          headerBackImage: () => (
-            <SvgXml xml={cancel(colors.text)} width={14} height={14} />
-          ),
+          headerBackImage: () => (<View />),
+          headerBackTitle: languageTexts[language].words.close,
           headerStyle: {
             backgroundColor: colors.background,
           },
@@ -59,7 +59,7 @@ const HomeNavigator = () => {
         <NativaStack.Screen
           name="Calendar"
           component={CalendarScreen}
-          options={{ title: languageTexts[language].words.calendar }}
+          options={{ title: languageTexts[language].words.calendar, headerTitleStyle: title18 }}
         />
       </NativaStack.Group>
     </NativaStack.Navigator>

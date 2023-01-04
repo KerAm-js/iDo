@@ -141,6 +141,7 @@ export const languageTexts = {
       description: "Описание",
       completed: "Выполнено",
       cancel: "Отмена",
+      close: 'Закрыть',
       ok: "Ок",
     },
     periodsDeclination: {
@@ -211,6 +212,7 @@ export const languageTexts = {
       description: "Description",
       completed: "Completed",
       cancel: "Cancel",
+      close: 'Close',
       ok: "Ok",
     },
     screenTitles: {
@@ -362,6 +364,7 @@ export const languageTexts = {
       description: "Beschreibung",
       completed: "Erledigt",
       cancel: "Abbruch",
+      close: "Schließen",
       ok: "Ok",
     },
     weekDays: {
@@ -495,6 +498,7 @@ export const languageTexts = {
       description: "Хаам",
       completed: "Кхочушдина",
       cancel: "Юхадаккха",
+      close: "ДIакъовла",
       ok: "Дика ду",
     },
     weekDays: {

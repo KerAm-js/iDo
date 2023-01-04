@@ -9,14 +9,27 @@ import {
   COMPLETE_TASK,
   SET_TASK_EXPIRATION,
   SET_DEFAULT_NEW_TASK_DATA,
+  CALENDAR_CHOOSED_DATE,
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
 
 const initialState: TaskState = {
   tasks: [
+    {
+      description: "",
+      folder: "3",
+      id: 1,
+      isCompleted: 0,
+      isExpired: 0,
+      remindTime: undefined,
+      task: "Задача",
+      time: 1669582799999,
+      timeType: "time",
+    },
   ],
   gesturePositions: {},
+  calendarChoosedDate: undefined,
   taskToEdit: undefined,
   newTaskData: {
     time: undefined,
@@ -35,7 +48,18 @@ export const taskReducer = (
       return {
         ...state,
         tasks,
-        newTaskData: { ...initialState.newTaskData },
+        newTaskData: !!state.calendarChoosedDate
+          ? {
+              time: new Date(state.calendarChoosedDate).setHours(
+                23,
+                59,
+                59,
+                999
+              ),
+              timeType: "day",
+              remindTime: undefined,
+            }
+          : { ...initialState.newTaskData },
       };
     }
     case DELETE_TASK: {
@@ -53,7 +77,18 @@ export const taskReducer = (
         ...state,
         tasks,
         taskToEdit: undefined,
-        newTaskData: { ...initialState.newTaskData },
+        newTaskData: !!state.calendarChoosedDate
+          ? {
+              time: new Date(state.calendarChoosedDate).setHours(
+                23,
+                59,
+                59,
+                999
+              ),
+              timeType: "day",
+              remindTime: undefined,
+            }
+          : { ...initialState.newTaskData },
       };
     }
     case COMPLETE_TASK: {
@@ -102,17 +137,29 @@ export const taskReducer = (
           timeType: undefined,
           remindTime: undefined,
         },
-      }
+      };
     }
     case CHOOSE_TASK_TO_EDIT: {
       return {
         ...state,
         taskToEdit: action?.task,
-        newTaskData: {
-          time: action.task?.time,
-          timeType: action.task?.timeType,
-          remindTime: action.task?.remindTime
-        }
+        newTaskData:
+          state.calendarChoosedDate && !action.task
+            ? {
+                time: new Date(state.calendarChoosedDate).setHours(
+                  23,
+                  59,
+                  59,
+                  999
+                ),
+                timeType: "day",
+                remindTime: undefined,
+              }
+            : {
+                time: action.task?.time,
+                timeType: action.task?.timeType,
+                remindTime: action.task?.remindTime,
+              },
       };
     }
     case UPDATE_TASKS: {
@@ -129,8 +176,14 @@ export const taskReducer = (
     }
     case SET_TASK_EXPIRATION: {
       const tasks = state.tasks.map((task) => {
-        const isCompletedInTime = task.completionTime && task.completionTime < task.time;
-        if (task.id === action.id && !task.isExpired && !isCompletedInTime && action.time === task.time) {
+        const isCompletedInTime =
+          task.completionTime && task.completionTime < task.time;
+        if (
+          task.id === action.id &&
+          !task.isExpired &&
+          !isCompletedInTime &&
+          action.time === task.time
+        ) {
           return {
             ...task,
             isExpired: 1,
@@ -144,318 +197,13 @@ export const taskReducer = (
         tasks,
       };
     }
+    case CALENDAR_CHOOSED_DATE: {
+      return {
+        ...state,
+        calendarChoosedDate: action.calendarChoosedDate,
+      };
+    }
     default:
       return state;
   }
 };
-
-// const tasks = [
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:38 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача",
-//     time: 1669582799999,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:39 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669569400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:40 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669578400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:41 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669579400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:42 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669580000000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:43 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669581400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:44 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:45 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669583400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:46 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669583900000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:47 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669584400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:48 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669585400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:49 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669586400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:50 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669587400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:51 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669588400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:52 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669589400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:53 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669590400000,
-//     timeType: "time",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:54 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:55 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:56 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:26:59 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:27:00 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:27:01 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:27:02 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:27:03 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:27:04 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:27:05 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:27:06 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача 1",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-//   {
-//     description: "",
-//     folder: "3",
-//     id: "Sun Nov 27 2022 13:27:07 GMT+0300 (Москва, стандартное время)",
-//     isCompleted: false,
-//     isExpired: false,
-//     remindTime: undefined,
-//     task: "Задача",
-//     time: 1669582799999,
-//     timeType: "day",
-//   },
-// ]

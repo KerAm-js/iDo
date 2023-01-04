@@ -9,6 +9,7 @@ import {
   SET_TASK_EXPIRATION,
   UPDATE_TASKS,
   SET_DEFAULT_NEW_TASK_DATA,
+  CALENDAR_CHOOSED_DATE,
 } from "./../constants/task";
 import { Dispatch } from "@reduxjs/toolkit";
 import { ADD_TASK, UPDATE_GESTURE_POSITIONS } from "../constants/task";
@@ -153,6 +154,10 @@ export const updateNewTaskRemindTimeAction =
 
 export const setDefaultNewTaskDataAction = () => (dispatch: Dispatch) => {
   dispatch({ type: SET_DEFAULT_NEW_TASK_DATA });
+};
+
+export const chooseCalendarDate = (value: number | undefined) => (dispatch: Dispatch) => {
+  dispatch({ type: CALENDAR_CHOOSED_DATE, calendarChoosedDate: value });
 };
 
 export const chooseTaskToEditAction =

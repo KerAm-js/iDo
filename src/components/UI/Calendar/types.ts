@@ -7,6 +7,7 @@ import {
 export type DateItemPropType = {
   data: DateItemType;
   isSelected: boolean;
+  isBusy: boolean,
   isCardBackgroundColor?: boolean,
   onClick: (date: Date) => void;
 };

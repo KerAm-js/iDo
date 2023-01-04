@@ -1,35 +1,37 @@
 import { GesturePositionsType } from "./../../types/global/GesturePositions";
 import { Action } from "@reduxjs/toolkit";
 
-export type TimeType = 'day' | 'time';
+export type TimeType = "day" | "time";
 
 export type TaskData = {
-  time?: number,
-  timeType?: TimeType,
-  remindTime?: number,
-}
+  time?: number;
+  timeType?: TimeType;
+  remindTime?: number;
+};
 
 export type TaskState = {
   tasks: Array<TaskType>;
   gesturePositions: GesturePositionsType;
+  calendarChoosedDate: number | undefined;
   taskToEdit: TaskType | undefined;
   newTaskData: TaskData;
 };
 
 export interface TaskAction extends Action {
   task: TaskType;
-  time: number,
-  timeType: TimeType,
-  remindTime: number | undefined,
-  notificationId: number,
+  time: number;
+  timeType: TimeType;
+  remindTime: number | undefined;
+  notificationId: number;
   newTaskData: TaskData;
   tasks: Array<TaskType>;
   positions: GesturePositionsType;
-  newCompletionStatus: number,
-  completionTime?: number,
-  isCompleted: number,
-  isExpired: number,
+  newCompletionStatus: number;
+  completionTime?: number;
+  isCompleted: number;
+  isExpired: number;
   id: number;
+  calendarChoosedDate: number | undefined,
 }
 
 export interface TaskType {
@@ -37,11 +39,11 @@ export interface TaskType {
   task: string;
   description?: string;
   time: number;
-  timeType: TimeType,
+  timeType: TimeType;
   isCompleted: number;
-  isExpired: number,
-  completionTime?: number,
-  remindTime?: number,
-  notificationId?: string,
-  folder?: string,
-};
+  isExpired: number;
+  completionTime?: number;
+  remindTime?: number;
+  notificationId?: string;
+  folder?: string;
+}

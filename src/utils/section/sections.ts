@@ -1,3 +1,4 @@
+import { isToday } from './../date';
 import { SectionsObjectType } from './../../components/Screens/Home/types';
 import { GesturePositionsType } from "../../types/global/GesturePositions";
 import {
@@ -5,7 +6,6 @@ import {
   FOR_TODAY,
   FOR_TOMORROW,
   FOR_WEEK,
-  LATER,
   TODAY,
 } from "../constants/periods";
 
@@ -60,9 +60,9 @@ export const sortTasks = (
     }
   });
 
-  const gesturesList = Object.keys(gesturePositions.value);
+  const gesturesList = Object.keys(gesturePositions?.value || {});
   const newGesturePositions = taskListToPositionsObject(
-    gesturePositions.value,
+    gesturePositions?.value || {},
     list,
   );
 
@@ -112,16 +112,15 @@ export const getSections = (
   const currDate = new Date();
 
   tasks.forEach((task) => {
-    const time = new Date(task.time);
     const position = gesturePositions[task.id];
 
     const isWeekly = isWeeklyTime(new Date(task.time));
 
-    if (time < currDate && task.isExpired && !isWeeklyTime) {
+    if (task.time < currDate.valueOf() && task.isExpired && !isToday(new Date(task.time))) {
       periodTasks[EXPIRED].list.push(task);
       if (position !== undefined) periodTasks[EXPIRED].gesturePositions[task.id] = position;
     } else if (isWeekly) {
-      const dayDiff = getDaysDiff(currDate, time);
+      const dayDiff = getDaysDiff(currDate, new Date(task.time));
       if (dayDiff < 0) {
         return;
       } else if (dayDiff < 1) {
@@ -134,8 +133,6 @@ export const getSections = (
         periodTasks[FOR_WEEK].list.push(task);
         if (position !== undefined)periodTasks[FOR_WEEK].gesturePositions[task.id] = position;
       }
-    } else {
-      periodTasks[LATER].list.push(task);
     }
   });
 

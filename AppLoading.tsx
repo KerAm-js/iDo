@@ -1,5 +1,5 @@
 import React from "react";
-import { useColorScheme } from "react-native";
+import { AppState, useColorScheme } from "react-native";
 import * as Localization from "expo-localization";
 import { LocalDB } from "./src/backend/sqlite/sqlite";
 import Root from "./src/components/Navigators/Root/Root";

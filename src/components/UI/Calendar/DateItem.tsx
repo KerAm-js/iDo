@@ -1,6 +1,6 @@
 import { useTheme } from "@react-navigation/native";
 import React, { FC } from "react";
-import { Pressable, Text } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import {
   buttonColors,
   textColors,
@@ -16,6 +16,7 @@ const DateItem: FC<DateItemPropType> = React.memo(
     data: { date, isCurrentMonth },
     onClick,
     isSelected,
+    isBusy,
     isCardBackgroundColor,
   }) => {
     const theme = useTheme();
@@ -51,11 +52,26 @@ const DateItem: FC<DateItemPropType> = React.memo(
         >
           {date.getDate()}
         </ThemeText>
+        {isBusy && (
+          <View
+            style={{
+              width: 3,
+              height: 3,
+              borderRadius: 2,
+              backgroundColor: textColors.blue,
+              position: "absolute",
+              bottom: 4,
+            }}
+          />
+        )}
       </Pressable>
     );
   },
   (prevProps, currProps) => {
-    if (prevProps.isSelected === currProps.isSelected) {
+    if (
+      prevProps.isSelected === currProps.isSelected &&
+      !!prevProps.isBusy === !!currProps.isBusy
+    ) {
       return true;
     } else {
       return false;

@@ -1,10 +1,10 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { Alert, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { arrowUp } from "../../../../assets/icons/arrowUp";
 import { bell } from "../../../../assets/icons/bell";
 import { clock } from "../../../../assets/icons/clock";
 import { penFill } from "../../../../assets/icons/penFill";
-import { plus } from "../../../../assets/icons/plus";
 import {
   addTaskAction,
   editTaskAction,
@@ -33,10 +33,11 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   handleKeyboard,
   openCalendar,
   openReminderModal,
-  setDefaultsFlag
+  setDefaultsFlag,
 }) => {
   const language = useSelector(getLanguage);
-  const { taskToEdit, newTaskData } = useSelector(taskStateSelector);
+  const { taskToEdit, newTaskData, calendarChoosedDate } =
+    useSelector(taskStateSelector);
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
   const [choosedFolder, setChoosedFolder] = useState<string>("");
@@ -69,18 +70,21 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     if (task.length > 0) {
       dispatch(
         !!taskToEdit
-          ? editTaskAction({
-              id: taskToEdit.id,
-              isCompleted: taskToEdit.isCompleted,
-              task,
-              description,
-              completionTime: taskToEdit.completionTime,
-              folder: choosedFolder,
-              time,
-              timeType,
-              isExpired: isExpired ? 1 : 0,
-              remindTime,
-            }, taskToEdit.notificationId)
+          ? editTaskAction(
+              {
+                id: taskToEdit.id,
+                isCompleted: taskToEdit.isCompleted,
+                task,
+                description,
+                completionTime: taskToEdit.completionTime,
+                folder: choosedFolder,
+                time,
+                timeType,
+                isExpired: isExpired ? 1 : 0,
+                remindTime,
+              },
+              taskToEdit.notificationId
+            )
           : addTaskAction({
               id: new Date().valueOf(),
               isCompleted: 0,
@@ -124,7 +128,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     }
     if (!visible && setDefaultsFlag.current) {
       setDefaults();
-      dispatch(setDefaultNewTaskDataAction());
+      if (!calendarChoosedDate) dispatch(setDefaultNewTaskDataAction());
     }
   }, [visible]);
 
@@ -144,9 +148,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       const isReminderNotEdited =
         newTaskData?.remindTime === taskToEdit.remindTime;
       if (
-        (isTaskNotEdited &&
-          isTimeNotEdited &&
-          isReminderNotEdited) ||
+        (isTaskNotEdited && isTimeNotEdited && isReminderNotEdited) ||
         task.length === 0
       ) {
         setCircleButtonDisabled(true);
@@ -225,9 +227,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
           /> */}
           <IconButton
             xml={bell(
-              newTaskData.remindTime
-                ? textColors.blue
-                : textColors.grey
+              newTaskData.remindTime ? textColors.blue : textColors.grey
             )}
             iconWidth={20}
             iconHeight={20}
@@ -240,7 +240,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             xml={
               !!taskToEdit
                 ? penFill(themeColors.dark.colors.text)
-                : plus(themeColors.dark.colors.text)
+                : arrowUp(themeColors.dark.colors.text)
             }
             size="small"
             disabled={circleButtonDisabled}

@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
-import { updateNewTaskTimeAction, setDefaultNewTaskDataAction } from "../../../redux/actions/taskActions";
+import { updateNewTaskTimeAction, setDefaultNewTaskDataAction, chooseCalendarDate } from "../../../redux/actions/taskActions";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
-import { getTasks } from "../../../redux/selectors/taskSelector";
+import { getGesturePositions, getTasks } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { isTheSameDate, toMonthYearString } from "../../../utils/date";
@@ -16,6 +16,7 @@ import Section from "../../UI/Section/Section";
 const CalendarScreen = () => {
   const navigation = useNavigation();
   const dispatch: AppDispatch = useDispatch();
+  const gesturePositions = useSelector(getGesturePositions);
   const theme = useTheme();
   const tasks = useSelector(getTasks);
   const language = useSelector(getLanguage);
@@ -34,14 +35,13 @@ const CalendarScreen = () => {
   }, [language]);
 
   useEffect(() => {
-    dispatch(updateNewTaskTimeAction(date.valueOf(), 'day'))
-  }, [date])
-
-  useFocusEffect(() => {
+    dispatch(chooseCalendarDate(date.setHours(23, 59, 59, 999)));
+    dispatch(updateNewTaskTimeAction(date.setHours(23, 59, 59, 999), 'day'));
     return () => {
-      dispatch(setDefaultNewTaskDataAction())
-    };
-  });
+      dispatch(chooseCalendarDate(undefined));
+      dispatch(setDefaultNewTaskDataAction());
+    }
+  }, [date])
 
   return (
     <View>
@@ -65,7 +65,7 @@ const CalendarScreen = () => {
         <Section 
           title={CALENDAR_DAY}
           list={tasks.filter(task => isTheSameDate(task.time, date.valueOf()))}
-          initialGesturePositions={{}}
+          initialGesturePositions={gesturePositions}
         />
         <View style={{ height: tabBarHeight + 275 }} />
       </ScrollView>

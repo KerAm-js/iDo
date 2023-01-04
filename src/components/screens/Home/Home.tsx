@@ -12,7 +12,7 @@ import {
 import { getSections } from "../../../utils/section/sections";
 import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { useNavigation } from "@react-navigation/native";
-import { EXPIRED, LATER, PERIODS_LIST } from "../../../utils/constants/periods";
+import { EXPIRED, PERIODS_LIST } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { getGesturePositionsFromASAction } from "../../../redux/actions/taskActions";
 import { getSectionsVisibilities } from "../../../redux/selectors/interfaceSelectors";
@@ -57,8 +57,7 @@ const Home: FC<HomePropType> = () => {
       <View>
         {PERIODS_LIST.map((period) => {
           if (
-            (period === EXPIRED && sections[EXPIRED].list.length === 0) ||
-            (period === LATER && sections[LATER].list.length === 0)
+            (period === EXPIRED && sections[EXPIRED].list.length === 0)
           ) {
             return null;
           }

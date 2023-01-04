@@ -47,7 +47,8 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   const language = useSelector(getLanguage);
   const theme = useTheme();
   const dispatch: AppDispatch = useDispatch();
-  const { taskToEdit, newTaskData } = useSelector(taskStateSelector);
+  const { taskToEdit, newTaskData, calendarChoosedDate } =
+    useSelector(taskStateSelector);
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime, onTimeChange, isTimeValid, isTimeExpired] =
     useTimeValidation(date);
@@ -241,8 +242,15 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     translateFormButtonY.value = 0;
     if (visible && isReminderChoosing && !newTaskData.remindTime) {
       setDefaults();
-    } else if (visible && !taskToEdit && newTaskData.time && newTaskData.timeType) {
-      setDefaults(new Date(newTaskData.time), newTaskData.timeType)
+    } else if (
+      visible &&
+      !isReminderChoosing &&
+      !taskToEdit &&
+      newTaskData.time &&
+      newTaskData.timeType &&
+      calendarChoosedDate
+    ) {
+      setDefaults(new Date(newTaskData.time), newTaskData.timeType);
     }
   }, [visible]);
 
@@ -253,16 +261,19 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   }, [setDefaultsFlag.current]);
 
   useEffect(() => {
-    if (taskToEdit) {
-      setDefaults(new Date(taskToEdit.time), taskToEdit.timeType);
-    } else if (
-      !newTaskData.remindTime &&
-      !newTaskData.time &&
-      !newTaskData.timeType
+    if (
+      (isReminderChoosing && !newTaskData.remindTime) ||
+      (!newTaskData.time && !newTaskData.timeType)
     ) {
       setDefaults();
+    } 
+  }, [newTaskData]);
+
+  useEffect(() => {
+    if (taskToEdit) {
+      setDefaults(new Date(taskToEdit.time), taskToEdit.timeType);
     }
-  }, [taskToEdit, newTaskData]);
+  }, [taskToEdit]);
 
   useEffect(() => {
     translateX.value = withTiming(calendarShown ? -SCREEN_WIDTH : 0, {

@@ -1,15 +1,32 @@
-import React, { FC, useEffect, useRef, useState } from "react";
-import {
-  Dimensions,
-  FlatList,
-  View,
-} from "react-native";
+import React, { FC, useEffect, useReducer, useRef } from "react";
+import { Dimensions, FlatList, View } from "react-native";
+import { useSelector } from "react-redux";
+import { getTasks } from "../../../redux/selectors/taskSelector";
 import DateItem from "./DateItem";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, ListPropType } from "./types";
 
-const List: FC<ListPropType> = ({ state, onScrollEnd, date, reference, setDate, isCardBackgroundColor }) => {
+const List: FC<ListPropType> = ({
+  state,
+  onScrollEnd,
+  date,
+  reference,
+  setDate,
+  isCardBackgroundColor,
+}) => {
   const { width: WIDTH } = Dimensions.get("screen");
+  const tasks = useSelector(getTasks);
+
+  const datesObject = useRef<{ [key: string]: boolean }>({});
+
+  useEffect(() => {
+    datesObject.current = {};
+    tasks.forEach(
+      (task) => {
+        datesObject.current[new Date(task.time).toLocaleDateString()] = true
+      }
+    );
+  }, [tasks]);
 
   const renderItem = ({
     item,
@@ -31,6 +48,7 @@ const List: FC<ListPropType> = ({ state, onScrollEnd, date, reference, setDate, 
                     object.date.toLocaleDateString() ===
                     date.toLocaleDateString()
                   }
+                  isBusy={datesObject.current[object.date.toLocaleDateString()]}
                   onClick={setDate}
                   key={object.date.valueOf()}
                   data={object}
@@ -42,13 +60,15 @@ const List: FC<ListPropType> = ({ state, onScrollEnd, date, reference, setDate, 
         })}
       </View>
     );
-  }
+  };
 
   return (
     <FlatList
-      getItemLayout={(_, index) => (
-        {length: WIDTH, offset: WIDTH * index, index}
-      )}
+      getItemLayout={(_, index) => ({
+        length: WIDTH,
+        offset: WIDTH * index,
+        index,
+      })}
       ref={reference}
       data={state}
       keyExtractor={(_, index) => index.toString()}

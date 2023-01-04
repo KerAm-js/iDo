@@ -4,7 +4,6 @@ import { arrowBottom } from "../../../../assets/icons/arrowBottom";
 import { textGrey, textSemiBold, title22 } from "../../../styles/global/texts";
 import { sectionStyles } from "./style";
 import { SectionProps } from "./types";
-import Task from "../Task/Task";
 import Animated, {
   interpolate,
   useAnimatedStyle,
@@ -35,7 +34,7 @@ import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { TaskType } from "../../../redux/types/task";
 import { saveGesturePositions } from "../../../backend/asyncStorage/gesturePositions";
 import { saveSectionVisibilityToAS } from "../../../backend/asyncStorage/section";
-import { CALENDAR_DAY, LATER } from "../../../utils/constants/periods";
+import { CALENDAR_DAY } from "../../../utils/constants/periods";
 
 const TaskMargin = 10;
 const TaskHeight = 62 + TaskMargin;
@@ -298,7 +297,7 @@ const Section: FC<SectionProps> = React.memo(
                   taskObject={item}
                   completeTask={completeTask}
                   deleteTask={deleteTask}
-                  sectionTitle={title || LATER}
+                  sectionTitle={title}
                   upperBound={upperBound}
                   opacity={item.isCompleted ? completedListOpacity : opacity}
                 />
