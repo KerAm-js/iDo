@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
+import * as Haptics from "expo-haptics";
 import { Alert, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { arrowUp } from "../../../../assets/icons/arrowUp";
@@ -98,6 +99,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             })
       );
       setDefaults();
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
   };
 

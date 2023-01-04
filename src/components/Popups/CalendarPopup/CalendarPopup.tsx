@@ -157,6 +157,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     const hours = time.slice(0, 2);
     const minutes = time.slice(3, 5);
     const timeType: TimeType = time ? "time" : "day";
+    const reminderTime: number = newTaskData.timeType === 'day' && state !== '0' && state !== CHOOSE ? date.valueOf() + 1 : date.valueOf()
     const timeValue: Date = time
       ? new Date(
           date.getFullYear(),
@@ -165,8 +166,6 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
           Number(hours),
           Number(minutes)
         )
-      : isReminderChoosing
-      ? date
       : new Date(
           date.getFullYear(),
           date.getMonth(),
@@ -178,7 +177,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         );
     if (isReminderChoosing) {
       if (state) {
-        dispatch(updateNewTaskRemindTimeAction(timeValue.valueOf()));
+        dispatch(updateNewTaskRemindTimeAction(reminderTime));
       }
     } else if (timeValue.valueOf() !== newTaskData.time) {
       dispatch(updateNewTaskTimeAction(timeValue.valueOf(), timeType));

@@ -60,6 +60,10 @@ export const isExpiredDate = (date: Date) => {
   return dateCopy.setHours(0, 0, 0, 0) < currDate.setHours(0, 0, 0, 0);
 };
 
+export const isDayEnd = (date: Date) => {
+  return date.getHours() === 23 && date.getMinutes() === 59 && date.getSeconds() === 59;
+}
+
 export const isYesterday = (date: Date) => {
   const currDate = new Date();
   const dateCopy = new Date(date.valueOf());
