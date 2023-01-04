@@ -35,8 +35,9 @@ const CalendarScreen = () => {
   }, [language]);
 
   useEffect(() => {
-    dispatch(chooseCalendarDate(date.setHours(23, 59, 59, 999)));
-    dispatch(updateNewTaskTimeAction(date.setHours(23, 59, 59, 999), 'day'));
+    const newDate = new Date(date.valueOf()).setHours(23, 59, 59, 999)
+    dispatch(chooseCalendarDate(newDate));
+    dispatch(updateNewTaskTimeAction(newDate, 'day'));
     return () => {
       dispatch(chooseCalendarDate(undefined));
       dispatch(setDefaultNewTaskDataAction());

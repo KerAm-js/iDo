@@ -10,6 +10,7 @@ import {
   SET_TASK_EXPIRATION,
   SET_DEFAULT_NEW_TASK_DATA,
   CALENDAR_CHOOSED_DATE,
+  CLEAR_REMINDER,
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
@@ -118,6 +119,22 @@ export const taskReducer = (
           timeType: action.timeType,
           remindTime: undefined,
         },
+      };
+    }
+    case CLEAR_REMINDER: {
+      const tasks = state.tasks.map((el) => {
+        if (el.id === action.id && el.remindTime === action.remindTime) {
+          return {
+            ...el,
+            remindTime: undefined,
+          };
+        } else {
+          return el;
+        }
+      });
+      return {
+        ...state,
+        tasks,
       };
     }
     case UPDATE_TASK_REMIND_TIME: {

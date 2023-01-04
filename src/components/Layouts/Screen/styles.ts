@@ -8,7 +8,6 @@ export const screenLayoutStyles = StyleSheet.create({
   },
   title: {
     width: 280,
-    marginBottom: 10,
     color: textColors.blue,
   },
   headingContainer: {
@@ -17,6 +16,7 @@ export const screenLayoutStyles = StyleSheet.create({
   titleContainer: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    marginBottom: 10,
   }
 });

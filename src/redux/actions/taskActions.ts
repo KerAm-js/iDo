@@ -10,6 +10,7 @@ import {
   UPDATE_TASKS,
   SET_DEFAULT_NEW_TASK_DATA,
   CALENDAR_CHOOSED_DATE,
+  CLEAR_REMINDER,
 } from "./../constants/task";
 import { Dispatch } from "@reduxjs/toolkit";
 import { ADD_TASK, UPDATE_GESTURE_POSITIONS } from "../constants/task";
@@ -18,7 +19,6 @@ import { getGesturePositionsFromAS } from "../../backend/asyncStorage/gesturePos
 import {
   deleteAllNotifications,
   deleteNotification,
-  presentNotification,
   setNotification,
 } from "../../native/notifications";
 import { store } from "../store";
@@ -61,6 +61,7 @@ export const getTasksFromLocalDB = () => async (dispatch: Dispatch) => {
         await scheduleTaskExpiration(task, dispatch);
         const notificationId = await scheduleReminder(
           task,
+          dispatch,
           task.notificationId
         );
         return {
@@ -81,6 +82,7 @@ export const getTasksFromLocalDB = () => async (dispatch: Dispatch) => {
 
 export const scheduleReminder = async (
   task: TaskType,
+  dispatch: Dispatch,
   oldNotificationId?: string
 ): Promise<string | undefined> => {
   if (oldNotificationId) {
@@ -90,16 +92,33 @@ export const scheduleReminder = async (
     const currentDate = new Date().valueOf();
     const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
     const { language } = store.getState().prefs;
-    const notificationId = await setNotification(
-      "🔔 " + task.task,
-      `🕐 ${toLocaleStateString({
-        dateValue: task.time,
-        timeType: task.timeType,
-        language,
-      })}`,
-      notificationTime
-    );
-    return notificationId;
+    if (notificationTime < 0) {
+      const notificationId = await setNotification(
+        "🔔 " + task.task,
+        `🕐 ${toLocaleStateString({
+          dateValue: task.time,
+          timeType: task.timeType,
+          language,
+        })}`,
+        notificationTime
+      );
+      setTimeout(() => {
+        dispatch({
+          type: CLEAR_REMINDER,
+          id: task.id,
+          remindTime: task.remindTime,
+        });
+      }, notificationTime * 1000);
+      return notificationId;
+    } else {
+      await LocalDB.clearTaskReminder(task.id);
+      dispatch({
+        type: CLEAR_REMINDER,
+        id: task.id,
+        remindTime: task.remindTime,
+      });
+      return undefined;
+    }
   }
 };
 
@@ -108,7 +127,7 @@ export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
     const taskId = await LocalDB.addTask(task);
     const addedTask: TaskType = { ...task, id: taskId };
     await scheduleTaskExpiration(addedTask, dispath);
-    const notificationId = await scheduleReminder(task);
+    const notificationId = await scheduleReminder(task, dispath);
     addedTask.notificationId = notificationId;
     dispath({ type: ADD_TASK, task: addedTask });
   } catch (error) {
@@ -122,7 +141,11 @@ export const editTaskAction =
     try {
       await LocalDB.editTask(task);
       await scheduleTaskExpiration(task, dispatch);
-      const notificationId = await scheduleReminder(task, oldNotificationId);
+      const notificationId = await scheduleReminder(
+        task,
+        dispatch,
+        oldNotificationId
+      );
       dispatch({ type: EDIT_TASK, task: { ...task, notificationId } });
     } catch (error) {
       console.log("editTaskAction", error);
@@ -156,9 +179,10 @@ export const setDefaultNewTaskDataAction = () => (dispatch: Dispatch) => {
   dispatch({ type: SET_DEFAULT_NEW_TASK_DATA });
 };
 
-export const chooseCalendarDate = (value: number | undefined) => (dispatch: Dispatch) => {
-  dispatch({ type: CALENDAR_CHOOSED_DATE, calendarChoosedDate: value });
-};
+export const chooseCalendarDate =
+  (value: number | undefined) => (dispatch: Dispatch) => {
+    dispatch({ type: CALENDAR_CHOOSED_DATE, calendarChoosedDate: value });
+  };
 
 export const chooseTaskToEditAction =
   (task: TaskType | undefined) => (dispatch: Dispatch) => {

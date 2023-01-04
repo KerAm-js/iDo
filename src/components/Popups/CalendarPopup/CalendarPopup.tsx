@@ -115,6 +115,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         setDate(new Date(newTaskData.remindTime));
         if (state === CHOOSE) {
           updateChoosedTitle(date);
+          setTime(new Date(newTaskData.remindTime).toTimeString().slice(0, 5));
         } else {
           setChooseItemTitle(languageTexts[language].words[CHOOSE]);
         }
@@ -154,33 +155,27 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     if (!state) {
       return;
     }
-    const hours = time.slice(0, 2);
-    const minutes = time.slice(3, 5);
+    const dateCopy = new Date(date.valueOf());
+    const hours = Number(time.slice(0, 2));
+    const minutes = Number(time.slice(3, 5));
+    const isTimeCorrect =
+      !(isNaN(hours) && isNaN(minutes)) && time.length === 5;
+
     const timeType: TimeType = time ? "time" : "day";
-    const reminderTime: number = date.valueOf();
-    const timeValue: Date = time
-      ? new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          Number(hours),
-          Number(minutes)
-        )
-      : new Date(
-          date.getFullYear(),
-          date.getMonth(),
-          date.getDate(),
-          23,
-          59,
-          59,
-          999
-        );
+    const reminderTime: number =
+      state === CHOOSE && isTimeCorrect
+        ? dateCopy.setHours(hours, minutes, 0, 0)
+        : dateCopy.valueOf();
+    const timeValue: number = isTimeCorrect
+      ? dateCopy.setHours(hours, minutes, 0, 0)
+      : dateCopy.setHours(23, 59, 59, 999);
+
     if (isReminderChoosing) {
       if (state) {
         dispatch(updateNewTaskRemindTimeAction(reminderTime));
       }
     } else if (timeValue.valueOf() !== newTaskData.time) {
-      dispatch(updateNewTaskTimeAction(timeValue.valueOf(), timeType));
+      dispatch(updateNewTaskTimeAction(timeValue, timeType));
     }
   };
 
@@ -265,7 +260,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       (!newTaskData.time && !newTaskData.timeType)
     ) {
       setDefaults();
-    } 
+    }
   }, [newTaskData]);
 
   useEffect(() => {

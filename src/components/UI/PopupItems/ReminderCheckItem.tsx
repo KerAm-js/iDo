@@ -5,11 +5,11 @@ import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { getNewTaskData } from "../../../redux/selectors/taskSelector";
 import { buttonColors } from "../../../styles/global/colors";
 import {
+  text14LineHeight,
   text17LineHeight,
   textGrey,
 } from "../../../styles/global/texts";
-import { CHOOSE } from "../../../utils/constants/periods";
-import { extractCalendarState, getDate, toLocaleStateString } from "../../../utils/date";
+import { toLocaleStateString } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import { getReminderItemTitle } from "../../../utils/utils";
 import ListItem from "../../Layouts/ListItem/ListItem";
@@ -47,7 +47,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
     remindDate = new Date(date.valueOf() - (1000 * 60 * 60 * 24 * 7 * weeks));
   }
 
-  const disabled = new Date() > remindDate;
+  const disabled = new Date().valueOf() >= remindDate.valueOf();
 
   const onPressHandler = useCallback(() => {
     onPress(id, remindDate);
@@ -65,11 +65,11 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
         >
           {titleString}
         </ThemeText>
-        {/* <Text style={[text14LineHeight, textGrey]}>
-          {minutes || hours || days || weeks
-            ? "до даты выполнения"
-            : "дата выполнения"}
-        </Text> */}
+        {
+          id === '0' && <Text style={[text14LineHeight, textGrey]}>
+          {languageTexts[language].popupTitles.dateOfCompletion}
+        </Text>
+        }
       </ListItem>
     </Pressable>
   );

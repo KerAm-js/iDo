@@ -6,6 +6,7 @@ export const popupItemStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: "center",
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
     paddingHorizontal: 15,
     paddingVertical: 8,
     marginHorizontal: 20,

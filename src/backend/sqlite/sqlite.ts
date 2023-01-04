@@ -201,6 +201,22 @@ export class LocalDB {
     });
   }
 
+  static clearTaskReminder(id: number) {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `UPDATE tasks SET ${REMIND_TIME} = null WHERE id = ?`,
+          [id],
+          resolve,
+          (_: SQLTransaction, error: SQLError) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+  }
+
   static completeTask(
     id: number,
     isCompleted: number,
