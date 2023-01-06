@@ -4,10 +4,16 @@ import {
   NativeSyntheticEvent,
 } from "react-native";
 
+export type DateBusynessType = {
+  hasCompleted: boolean,
+  hasUncompleted: boolean,
+  hasExpired: boolean,
+}
+
 export type DateItemPropType = {
   data: DateItemType;
   isSelected: boolean;
-  isBusy: boolean,
+  busyness?: DateBusynessType,
   isCardBackgroundColor?: boolean,
   onClick: (date: Date) => void;
 };

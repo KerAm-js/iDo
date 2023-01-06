@@ -1,7 +1,5 @@
 import { GesturePositionsType } from "../../../types/global/GesturePositions";
 import { ListObject } from "./../../../types/global/ListObject";
-import { TaskPropTypes } from "../Task/types";
-import { FC } from "react";
 
 import { TaskType } from "../../../redux/types/task";
 import { HomePeriodsKeys } from "../../../types/global/Periods";
@@ -11,6 +9,7 @@ export type SectionProps = {
   title: HomePeriodsKeys;
   list: Array<TaskType>;
   initialGesturePositions: GesturePositionsType;
+  disableAnimationsTrigger?: any,
   visibilities?: SectionVisibilityValueType;
 };
 

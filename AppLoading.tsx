@@ -6,7 +6,7 @@ import Root from "./src/components/Navigators/Root/Root";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
 import { AppDispatch } from "./src/redux/types/appDispatch";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getPrefsFromASAction } from "./src/redux/actions/prefsActions";
 import {
   getGesturePositionsFromASAction,
@@ -54,6 +54,18 @@ export default function AppLoading() {
     }
     prepare();
   }, []);
+
+  // useEffect(() => {
+  //   const subscription = AppState.addEventListener('change', (nextState) => {
+  //     if (nextState === 'background') {
+  //       console.log(tasks.map(task => task.task));
+  //     }
+  //   })
+  //   return () => {
+  //     console.log('ok')
+  //     subscription.remove();
+  //   }
+  // }, [tasks])
 
   const onAppReady = useCallback(async () => {
     if (isAppReady) {

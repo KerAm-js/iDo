@@ -111,6 +111,10 @@ export const textRed: TextStyle = {
   color: textColors.red
 }
 
+export const textGreen: TextStyle = {
+  color: textColors.green
+}
+
 export const textBold: TextStyle = {
   fontWeight: 'bold',
 }

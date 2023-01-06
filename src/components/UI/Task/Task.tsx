@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { useDispatch, useSelector } from "react-redux";
@@ -124,6 +124,10 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
       (timeString.length > 0 ? ", " : "") +
       new Date(time)?.toTimeString().slice(0, 5);
   }
+
+  useEffect(() => {
+    setIsChecked(!!taskObject.isCompleted);
+  }, [taskObject.isCompleted])
 
   return (
     <ListItem

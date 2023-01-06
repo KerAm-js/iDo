@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { getTasks } from "../../../redux/selectors/taskSelector";
 import DateItem from "./DateItem";
 import { calendarStyles } from "./styles";
-import { CalendarMonthItemType, ListPropType } from "./types";
+import { CalendarMonthItemType, DateBusynessType, ListPropType } from "./types";
 
 const List: FC<ListPropType> = ({
   state,
@@ -17,15 +17,39 @@ const List: FC<ListPropType> = ({
   const { width: WIDTH } = Dimensions.get("screen");
   const tasks = useSelector(getTasks);
 
-  const datesObject = useRef<{ [key: string]: boolean }>({});
+  const datesObject = useRef<{
+    [key: string]: DateBusynessType | undefined;
+  }>({});
 
   useEffect(() => {
     datesObject.current = {};
-    tasks.forEach(
-      (task) => {
-        datesObject.current[new Date(task.time).toLocaleDateString()] = true
+    tasks.forEach((task) => {
+      const key = new Date(task.time).toLocaleDateString();
+      const currObj = datesObject.current[key] || {
+        hasCompleted: false,
+        hasExpired: false,
+        hasUncompleted: false,
+      };
+
+      if (task.isExpired) {
+        datesObject.current[key] = {
+          hasUncompleted: false,
+          hasCompleted: false,
+          hasExpired: true,
+        };
+      } else if (!task.isCompleted && !currObj.hasExpired) {
+        datesObject.current[key] = {
+          hasUncompleted: true,
+          hasCompleted: false,
+          hasExpired: false,
+        };
+      } else if (task.isCompleted && !currObj.hasExpired && !currObj.hasUncompleted) {
+        datesObject.current[key] = {
+          ...currObj,
+          hasCompleted: true,
+        };
       }
-    );
+    });
   }, [tasks]);
 
   const renderItem = ({
@@ -48,7 +72,7 @@ const List: FC<ListPropType> = ({
                     object.date.toLocaleDateString() ===
                     date.toLocaleDateString()
                   }
-                  isBusy={datesObject.current[object.date.toLocaleDateString()]}
+                  busyness={datesObject.current[object.date.toLocaleDateString()]}
                   onClick={setDate}
                   key={object.date.valueOf()}
                   data={object}

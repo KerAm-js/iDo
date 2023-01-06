@@ -3,7 +3,8 @@ import { Theme } from '@react-navigation/native';
 export const textColors = {
   grey: '#999',
   blue: '#007AFF',
-  red: '#FF3B30'
+  red: '#FF3B30',
+  green: '#34C759',
 }
 
 export const buttonColors = {
@@ -19,7 +20,7 @@ export const backdropColor = {
 
 export const shadowColors = {
   light: 'rgba(0, 0, 0, 0.15)',
-  dark: 'rgba(0, 0, 0, 1)',
+  dark: 'rgba(0, 0, 0, 0.5)',
 }
 
 export const themeColors: {
@@ -31,8 +32,8 @@ export const themeColors: {
     colors: {
       primary: buttonColors.blue,
       notification: buttonColors.red,
-      background: 'rgb(11, 11, 12)',
-      card: 'rgb(22, 22, 26)',
+      background: 'rgb(23, 23, 28)',
+      card: 'rgb(34, 34, 40)',
       text: '#fff',
       border: '#444',
     }

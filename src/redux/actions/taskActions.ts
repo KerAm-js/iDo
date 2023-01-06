@@ -95,7 +95,7 @@ export const scheduleReminder = async (
     if (notificationTime > 0) {
       const notificationId = await setNotification(
         "🔔 " + task.task,
-        `🕐 ${toLocaleStateString({
+        `⏰ ${toLocaleStateString({
           dateValue: task.time,
           timeType: task.timeType,
           language,

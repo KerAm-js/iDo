@@ -1,5 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { FC } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import {
   buttonColors,
@@ -16,7 +16,7 @@ const DateItem: FC<DateItemPropType> = React.memo(
     data: { date, isCurrentMonth },
     onClick,
     isSelected,
-    isBusy,
+    busyness,
     isCardBackgroundColor,
   }) => {
     const theme = useTheme();
@@ -26,6 +26,16 @@ const DateItem: FC<DateItemPropType> = React.memo(
     const onClickHandler = () => {
       onClick(date);
     };
+
+    let circleColor = "";
+
+    if (busyness?.hasExpired) {
+      circleColor = textColors.red;
+    } else if (busyness?.hasCompleted) {
+      circleColor = textColors.green;
+    } else if (busyness?.hasUncompleted) {
+      circleColor = textColors.blue;
+    }
 
     return (
       <Pressable
@@ -52,15 +62,15 @@ const DateItem: FC<DateItemPropType> = React.memo(
         >
           {date.getDate()}
         </ThemeText>
-        {isBusy && (
+        {busyness && !isSelected && (
           <View
             style={{
-              width: 3,
-              height: 3,
+              width: 4,
+              height: 4,
               borderRadius: 2,
-              backgroundColor: textColors.blue,
+              backgroundColor: circleColor,
               position: "absolute",
-              bottom: 4,
+              bottom: 2,
             }}
           />
         )}
@@ -70,7 +80,7 @@ const DateItem: FC<DateItemPropType> = React.memo(
   (prevProps, currProps) => {
     if (
       prevProps.isSelected === currProps.isSelected &&
-      !!prevProps.isBusy === !!currProps.isBusy
+      JSON.stringify(prevProps.busyness) === JSON.stringify(currProps.busyness)
     ) {
       return true;
     } else {

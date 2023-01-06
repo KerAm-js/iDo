@@ -65,6 +65,7 @@ const CalendarScreen = () => {
       >
         <Section 
           title={CALENDAR_DAY}
+          disableAnimationsTrigger={date}
           list={tasks.filter(task => isTheSameDate(task.time, date.valueOf()))}
           initialGesturePositions={gesturePositions}
         />

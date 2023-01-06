@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
 import { textGrey, textSemiBold, title22 } from "../../../styles/global/texts";
@@ -43,7 +43,7 @@ const emptyListHeight = 220;
 const baseHeight = 50;
 
 const Section: FC<SectionProps> = React.memo(
-  ({ title, list, initialGesturePositions, visibilities }) => {
+  ({ title, list, initialGesturePositions, visibilities, disableAnimationsTrigger }) => {
     const dispatch: AppDispatch = useDispatch();
     const language = useSelector(getLanguage);
     const gesturePositions = useSharedValue<GesturePositionsType>(
@@ -54,6 +54,7 @@ const Section: FC<SectionProps> = React.memo(
       gesturePositions
     );
     const [isDeleting, setIsDeleting] = useState(false);
+    const areAnimationsDisabled = useRef(false);
 
     const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
 
@@ -147,7 +148,7 @@ const Section: FC<SectionProps> = React.memo(
     };
 
     const toggleCompletedListVisible = () => {
-      if (title !== CALENDAR_DAY && visibilities) { 
+      if (title !== CALENDAR_DAY && visibilities) {
         saveSectionVisibilityToAS(title, {
           list: opacity.value,
           completedList: completedListOpacity.value === 0 ? 1 : 0,
@@ -167,11 +168,14 @@ const Section: FC<SectionProps> = React.memo(
       );
     };
 
-    const updateCompletedMarkerTop = () => {
-      if (completedTasksLength === 0) {
-        return upperBound * TaskHeight;
+    const updateCompletedMarkerTop = (
+      completedLength: number,
+      bound: number
+    ) => {
+      if (completedLength === 0) {
+        return bound * TaskHeight;
       } else {
-        return (upperBound + 1) * TaskHeight;
+        return (bound + 1) * TaskHeight;
       }
     };
 
@@ -190,7 +194,32 @@ const Section: FC<SectionProps> = React.memo(
       [dispatch]
     );
 
-    const runEffectAnimations = () => {
+    const runEffectAnimations = (areAnimationsDisabled?: boolean) => {
+      if (areAnimationsDisabled && title === CALENDAR_DAY) {
+        opacity.value = 0;
+        emptyListImageOpacity.value =
+          sortedTasks.length === 0 ? withTiming(1) : 0;
+        completedMarkerOpacity.value = withTiming(
+          completedTasksLength > 0 ? 1 : 0,
+          { duration: 100 }
+        );
+        completedMarkerTop.value = withTiming(
+          updateCompletedMarkerTop(completedTasksLength, upperBound),
+          {
+            duration: 100,
+          }
+        );
+        if (opacity.value === 1) {
+          height.value = withTiming(
+            completedListOpacity.value === 1
+              ? initialHeight
+              : initialHeight - completedTasksLength * TaskHeight,
+            { duration: 100 }
+          );
+        }
+        opacity.value = withTiming(1, {duration: 300});
+        return;
+      }
       emptyListImageOpacity.value =
         sortedTasks.length === 0
           ? withDelay(200, withTiming(1, { duration: 300 }))
@@ -201,7 +230,9 @@ const Section: FC<SectionProps> = React.memo(
       );
       completedMarkerTop.value = withDelay(
         1,
-        withTiming(updateCompletedMarkerTop(), { duration: 300 })
+        withTiming(updateCompletedMarkerTop(completedTasksLength, upperBound), {
+          duration: 300,
+        })
       );
       if (opacity.value === 1) {
         height.value = withDelay(
@@ -217,8 +248,13 @@ const Section: FC<SectionProps> = React.memo(
     };
 
     useEffect(() => {
+      areAnimationsDisabled.current = true;
+    }, [disableAnimationsTrigger])
+
+    useEffect(() => {
       positions.value = taskListToObject(sortedTasks);
-      runEffectAnimations();
+      runEffectAnimations(areAnimationsDisabled.current);
+      areAnimationsDisabled.current = false;
     }, [list]);
 
     useEffect(() => {
@@ -233,7 +269,10 @@ const Section: FC<SectionProps> = React.memo(
     useAnimatedReaction(
       () => gesturePositions.value,
       (curr, prev) => {
-        if (JSON.stringify(prev) !== JSON.stringify(curr) && title !== CALENDAR_DAY) {
+        if (
+          JSON.stringify(prev) !== JSON.stringify(curr) &&
+          title !== CALENDAR_DAY
+        ) {
           runOnJS(saveGesturePositions)(curr, title);
         }
       },
@@ -313,7 +352,7 @@ const Section: FC<SectionProps> = React.memo(
     );
   },
   (prev, curr) => {
-    const result = JSON.stringify(prev.list) === JSON.stringify(curr.list);
+    let result = JSON.stringify(prev.list) === JSON.stringify(curr.list);
     return result;
   }
 );

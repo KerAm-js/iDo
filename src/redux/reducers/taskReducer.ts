@@ -16,19 +16,7 @@ import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
 
 const initialState: TaskState = {
-  tasks: [
-    {
-      description: "",
-      folder: "3",
-      id: 1,
-      isCompleted: 0,
-      isExpired: 0,
-      remindTime: undefined,
-      task: "Задача",
-      time: 1669582799999,
-      timeType: "time",
-    },
-  ],
+  tasks: [],
   gesturePositions: {},
   calendarChoosedDate: undefined,
   taskToEdit: undefined,
