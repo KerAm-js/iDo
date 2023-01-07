@@ -261,7 +261,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       }
     };
 
-    const isAnimated = index === 0 && !positions.value[id] && sectionTitle !== CALENDAR_DAY
+    const isAnimated = !positions.value[id] && sectionTitle !== CALENDAR_DAY
 
     return (
       <Animated.View
