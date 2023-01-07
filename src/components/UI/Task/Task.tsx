@@ -103,6 +103,12 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
   } else {
     xml = clock(isExpired ? textColors.red : textColors.grey);
   }
+  
+  if (timeType === "time") {
+    timeString +=
+      (timeString.length > 0 ? ", " : "") +
+      new Date(time)?.toTimeString().slice(0, 5);
+  }
 
   if (
     remindTime &&
@@ -120,12 +126,6 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     } else {
       reminderString = getTimeStringBySecondsConverting(reminder);
     }
-  }
-
-  if (timeType === "time") {
-    timeString +=
-      (timeString.length > 0 ? ", " : "") +
-      new Date(time)?.toTimeString().slice(0, 5);
   }
 
   useEffect(() => {
