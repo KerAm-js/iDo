@@ -71,12 +71,12 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
         Animated.timing(headerOpactiy, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 100,
+          duration: 150,
         }).start();
         Animated.timing(titleTranslationY, {
-          toValue: 5,
+          toValue: 10,
           useNativeDriver: true,
-          duration: 100,
+          duration: 150,
         }).start();
       }
     };
@@ -99,7 +99,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
           ]
         },
         title,
-        headerRight: () => HeadingRight,
+        // headerRight: () => HeadingRight,
         headerBackground: () => (
           <View style={[StyleSheet.absoluteFill, { position: "absolute", overflow: 'hidden' }]}>
             <Animated.View

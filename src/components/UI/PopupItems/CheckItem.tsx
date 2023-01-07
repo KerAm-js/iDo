@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { Pressable } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { text17 } from "../../../styles/global/texts";
+import { text17LineHeight } from "../../../styles/global/texts";
 import { CheckItemPropType } from "./types";
 import ListItem from "../../Layouts/ListItem/ListItem";
 import { popupItemStyles } from "./styles";
@@ -13,7 +13,7 @@ const CheckItem: FC<CheckItemPropType> = ({ title, isChecked, onPress }) => {
   return (
     <Pressable onPress={onPress}>
       <ListItem style={popupItemStyles.listItem}>
-        <ThemeText style={[text17]}>
+        <ThemeText style={text17LineHeight}>
           {title}
         </ThemeText>
         {isChecked && (
