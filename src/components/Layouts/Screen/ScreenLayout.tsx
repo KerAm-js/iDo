@@ -27,6 +27,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const headerOpactiy = useRef(new Animated.Value(0)).current;
+    const titleTranslationY = useRef(new Animated.Value(10)).current;
 
     const titleScale = scrollY.interpolate({
       inputRange: [-100, 0],
@@ -41,13 +42,13 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
     });
 
     const headerBlurBackgroundOpacity = scrollY.interpolate({
-      inputRange: [46, 56],
+      inputRange: [66, 76],
       outputRange: [0, 1],
       extrapolate: "clamp",
     });
 
     const headerBackgroundOpacity = scrollY.interpolate({
-      inputRange: [55.5, 56],
+      inputRange: [75.5, 76],
       outputRange: [1, 0],
       extrapolate: "clamp",
     });
@@ -60,12 +61,22 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
           useNativeDriver: true,
           duration: 200,
         }).start();
+        Animated.timing(titleTranslationY, {
+          toValue: 0,
+          useNativeDriver: true,
+          duration: 200,
+        }).start();
       } else if (event.nativeEvent.contentOffset.y <= 30 && headerShown) {
         setHeaderShown(false);
         Animated.timing(headerOpactiy, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 50,
+          duration: 100,
+        }).start();
+        Animated.timing(titleTranslationY, {
+          toValue: 5,
+          useNativeDriver: true,
+          duration: 100,
         }).start();
       }
     };
@@ -83,11 +94,14 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
         headerTitleStyle: {
           ...headerTitleStyle,
           color: theme.colors.text,
+          transform: [
+            {translateY: titleTranslationY}
+          ]
         },
         title,
         headerRight: () => HeadingRight,
         headerBackground: () => (
-          <View style={[StyleSheet.absoluteFill, { position: "absolute" }]}>
+          <View style={[StyleSheet.absoluteFill, { position: "absolute", overflow: 'hidden' }]}>
             <Animated.View
               style={[
                 StyleSheet.absoluteFill,
