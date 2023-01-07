@@ -21,7 +21,7 @@
       "supportsTablet": true,
       "icon": "./assets/ios-icon.png",
       "bundleIdentifier": "com.amirkerimov.productive-plus",
-      "buildNumber": "2.0.5.1"
+      "buildNumber": "2.0.5.3"
     },
     "android": {
       "adaptiveIcon": {

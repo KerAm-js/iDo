@@ -1,6 +1,6 @@
 import React from "react";
 import { AppState, useColorScheme } from "react-native";
-import { setStatusBarStyle, StatusBarStyle } from "expo-status-bar";
+import { setStatusBarHidden, setStatusBarStyle, StatusBarStyle } from "expo-status-bar";
 import * as Localization from "expo-localization";
 import { LocalDB } from "./src/backend/sqlite/sqlite";
 import Root from "./src/components/Navigators/Root/Root";
@@ -40,6 +40,7 @@ export default function AppLoading() {
     async function prepare() {
       try {
         if (!isAppReady) {
+          setStatusBarStyle('light');
           await loadApp();
           dispatch(loadPrefsFromASAction(systemTheme, Localization.locale));
           dispatch(loadSectionsVisibilitiesFromASAction());
@@ -51,7 +52,7 @@ export default function AppLoading() {
       } finally {
         setTimeout(() => {
           setIsAppReady(true);
-        }, 500)
+        }, 200)
       }
     }
     prepare();
@@ -71,8 +72,8 @@ export default function AppLoading() {
       try {
         setTimeout(async () => {
           await SplashScreen.hideAsync();
-          setStatusBarStyle(statusBarStyle)
-        }, 1000);
+          setStatusBarStyle(statusBarStyle);
+        }, 500);
       } catch (error) {
         console.log('onAppReady', error);
       }

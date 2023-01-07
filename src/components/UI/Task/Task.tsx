@@ -106,8 +106,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
 
   if (
     remindTime &&
-    (remindTime !== time || !timeString) &&
-    remindTime < new Date().valueOf()
+    (remindTime !== time || !timeString)
   ) {
     const reminder = new Date(remindTime);
     if (isDayEnd(reminder)) {
@@ -161,7 +160,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
               </Text>
             </View>
           )}
-          {remindTime && (
+          {remindTime && remindTime > new Date().valueOf() && (
             <View style={[taskStyles.infoBlock]}>
               {timeString && <Text style={[textGrey]}>・</Text>}
               <SvgXml
