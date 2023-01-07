@@ -70,9 +70,9 @@ export const isDayEnd = (date: Date) => {
 
 export const getTimeStringBySecondsConverting = (date: Date) => {
   if (date.getSeconds() === 59 && date.getMilliseconds() === 999) {
-    return new Date(date.valueOf() + 1).toLocaleTimeString().slice(0, 5);
+    return new Date(date.valueOf() + 1).toTimeString().slice(0, 5);
   }
-  return new Date(date.valueOf() + 1).toLocaleTimeString().slice(0, 5);
+  return new Date(date.valueOf()).toTimeString().slice(0, 5);
 };
 
 export const isYesterday = (date: Date) => {
@@ -152,7 +152,7 @@ export const toLocaleStateString = ({
 }) => {
   const { periods } = languageTexts[language];
   const date = new Date(dateValue);
-  const time = date.toLocaleTimeString().slice(0, 5);
+  const time = date.toTimeString().slice(0, 5);
   const isCurrentYear = date.getFullYear() === new Date().getFullYear();
   let dayString = "";
 
