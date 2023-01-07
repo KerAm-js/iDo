@@ -1,5 +1,5 @@
-import { GesturePositionsType } from "./../../types/global/GesturePositions";
 import { Action } from "@reduxjs/toolkit";
+import { ListObject } from "../../types/global/ListObject";
 
 export type TimeType = "day" | "time";
 
@@ -11,7 +11,7 @@ export type TaskData = {
 
 export type TaskState = {
   tasks: Array<TaskType>;
-  gesturePositions: GesturePositionsType;
+  positions: ListObject;
   calendarChoosedDate: number | undefined;
   taskToEdit: TaskType | undefined;
   newTaskData: TaskData;
@@ -25,7 +25,7 @@ export interface TaskAction extends Action {
   notificationId: number;
   newTaskData: TaskData;
   tasks: Array<TaskType>;
-  positions: GesturePositionsType;
+  positions: ListObject;
   newCompletionStatus: number;
   completionTime?: number;
   isCompleted: number;

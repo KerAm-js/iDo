@@ -1,12 +1,13 @@
 import { useTheme } from "@react-navigation/native";
-import React, { FC, useEffect, useState } from "react";
-import { Pressable, Text, View } from "react-native";
+import React, { FC } from "react";
+import { Pressable, View } from "react-native";
 import {
   buttonColors,
   textColors,
   themeColors,
 } from "../../../styles/global/colors";
 import { text17, textGrey } from "../../../styles/global/texts";
+import { isToday } from "../../../utils/date";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { calendarStyles } from "./styles";
 import { DateItemPropType } from "./types";
@@ -42,6 +43,7 @@ const DateItem: FC<DateItemPropType> = React.memo(
         style={[
           calendarStyles.calendarItem,
           {
+            borderWidth: isToday(date) ? 1 : 0,
             backgroundColor:
               isSelected && isCurrentMonth
                 ? buttonColors.blue

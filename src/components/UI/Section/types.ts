@@ -1,4 +1,3 @@
-import { GesturePositionsType } from "../../../types/global/GesturePositions";
 import { ListObject } from "./../../../types/global/ListObject";
 
 import { TaskType } from "../../../redux/types/task";
@@ -8,8 +7,8 @@ import { SectionVisibilityValueType } from "../../../redux/types/interface";
 export type SectionProps = {
   title: HomePeriodsKeys;
   list: Array<TaskType>;
-  initialGesturePositions: GesturePositionsType;
-  disableAnimationsTrigger?: any,
+  initPositions: ListObject;
+  disableAnimationsTrigger?: any;
   visibilities?: SectionVisibilityValueType;
 };
 
@@ -18,19 +17,17 @@ export type MovableItemProps = {
   id: number;
   index: number;
   positions: { value: ListObject };
+  updatePositions: (positions: ListObject) => void;
   opacity: { value: number };
-  gesturePositions: { value: GesturePositionsType };
   itemHeight: number;
   completeTask: (task: TaskType) => void;
   deleteTask: (id: number, notificationId?: string) => void;
   sectionTitle: HomePeriodsKeys;
   upperBound: number;
-  tasksLength: number,
 };
 
 export type ContextType = {
   startPositionsObject: ListObject;
-  startGesturePositionsObject: GesturePositionsType;
   startPosition: number;
   isMovingDisabled: boolean;
 };

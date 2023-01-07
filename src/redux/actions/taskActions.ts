@@ -11,11 +11,11 @@ import {
   SET_DEFAULT_NEW_TASK_DATA,
   CALENDAR_CHOOSED_DATE,
   CLEAR_REMINDER,
+  UPDATE_POSITIONS,
 } from "./../constants/task";
 import { Dispatch } from "@reduxjs/toolkit";
-import { ADD_TASK, UPDATE_GESTURE_POSITIONS } from "../constants/task";
+import { ADD_TASK } from "../constants/task";
 import { LocalDB } from "../../backend/sqlite/sqlite";
-import { getGesturePositionsFromAS } from "../../backend/asyncStorage/gesturePositions";
 import {
   deleteAllNotifications,
   deleteNotification,
@@ -23,6 +23,8 @@ import {
 } from "../../native/notifications";
 import { store } from "../store";
 import { toLocaleStateString } from "../../utils/date";
+import { ListObject } from "../../types/global/ListObject";
+import { getPositionsFromAS } from "../../backend/asyncStorage/positions";
 
 export const scheduleTaskExpiration = async (
   task: TaskType,
@@ -51,7 +53,7 @@ export const scheduleTaskExpiration = async (
   }
 };
 
-export const getTasksFromLocalDB = () => async (dispatch: Dispatch) => {
+export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
   try {
     const currDate = new Date().setHours(0, 0, 0, 0);
     const tasks = await LocalDB.getTasks();
@@ -217,12 +219,14 @@ export const completeTaskAction =
     }
   };
 
-export const getGesturePositionsFromASAction =
-  () => async (dispatch: Dispatch) => {
-    try {
-      const positions = await getGesturePositionsFromAS();
-      dispatch({ type: UPDATE_GESTURE_POSITIONS, positions });
-    } catch (error) {
-      console.log("getGesturePositionsFromASAction", error);
-    }
+export const updatePositionsAction =
+  (positions: ListObject) => (dispatch: Dispatch) => {
+    dispatch({ type: UPDATE_POSITIONS, positions });
   };
+
+export const loadPositionsFromASAction = () => async (dispatch: Dispatch) => {
+  const positions = await getPositionsFromAS();
+  if (positions) {
+    dispatch({ type: UPDATE_POSITIONS, positions });
+  }
+};

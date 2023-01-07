@@ -16,7 +16,7 @@ export const updateLanguageAction =
     dispatch({ type: UPDATE_LANGUAGE, language });
   };
 
-export const getPrefsFromASAction =
+export const loadPrefsFromASAction =
   (colorScheme: ColorSchemeName, locale: string) =>
   async (dispatch: Dispatch) => {
     try {

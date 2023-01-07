@@ -14,10 +14,8 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
-import { taskListToObject } from "../../../utils/section/positionsObject";
 import CompletedMarker from "../Task/CompletedMarker";
 import { ListObject } from "../../../types/global/ListObject";
-import { GesturePositionsType } from "../../../types/global/GesturePositions";
 import { languageTexts } from "../../../utils/languageTexts";
 import ClearList from "../ClearList/ClearList";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -25,51 +23,51 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   completeTaskAction,
   deleteTaskAction,
+  updatePositionsAction,
 } from "../../../redux/actions/taskActions";
-import { getSectionTitle, sortTasks } from "../../../utils/section/sections";
+import {
+  getSectionTitle,
+  sortTasksAndUpdatePositions,
+} from "../../../utils/section/sections";
 import { SvgXml } from "react-native-svg";
 import { textColors } from "../../../styles/global/colors";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { TaskType } from "../../../redux/types/task";
-import { saveGesturePositions } from "../../../backend/asyncStorage/gesturePositions";
 import { saveSectionVisibilityToAS } from "../../../backend/asyncStorage/section";
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
+import { taskListToObject } from "../../../utils/section/positionsObject";
 
-const TaskMargin = 10;
-const TaskHeight = 62 + TaskMargin;
+const TaskMargin = 8;
+const TaskHeight = 58 + TaskMargin;
 
 const emptyListHeight = 220;
-const baseHeight = 50;
+const baseHeight = 46;
 
 const Section: FC<SectionProps> = React.memo(
-  ({ title, list, initialGesturePositions, visibilities, disableAnimationsTrigger }) => {
+  ({ title, list, initPositions, visibilities, disableAnimationsTrigger }) => {
     const dispatch: AppDispatch = useDispatch();
     const language = useSelector(getLanguage);
-    const gesturePositions = useSharedValue<GesturePositionsType>(
-      initialGesturePositions
-    );
-    const [sortedTasks, completedTasksLength] = sortTasks(
+    const [sortedTasks, completedTasksLength] = sortTasksAndUpdatePositions(
       list,
-      gesturePositions
+      initPositions
     );
+    const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
     const [isDeleting, setIsDeleting] = useState(false);
     const areAnimationsDisabled = useRef(false);
-
-    const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
-
     const upperBound = sortedTasks.length - 1 - completedTasksLength;
-    const initialHeight =
-      sortedTasks.length > 0
-        ? sortedTasks.length * TaskHeight +
-          (completedTasksLength > 0 ? 36 : 0) +
-          baseHeight +
-          30
-        : emptyListHeight;
 
     const opacity = useSharedValue(
       typeof visibilities?.list === "number" ? visibilities?.list : 1
     );
+
+    const initialHeight =
+      sortedTasks.length > 0
+        ? sortedTasks.length * TaskHeight +
+          (completedTasksLength > 0 ? 36 : 0) +
+          baseHeight + 10
+        : emptyListHeight;
+
     const completedListOpacity = useSharedValue(
       typeof visibilities?.completedList === "number"
         ? visibilities.completedList
@@ -194,6 +192,10 @@ const Section: FC<SectionProps> = React.memo(
       [dispatch]
     );
 
+    const updatePositions = (positions: ListObject) => {
+      dispatch(updatePositionsAction(positions));
+    };
+
     const runEffectAnimations = (areAnimationsDisabled?: boolean) => {
       if (areAnimationsDisabled && title === CALENDAR_DAY) {
         opacity.value = 0;
@@ -217,7 +219,7 @@ const Section: FC<SectionProps> = React.memo(
             { duration: 100 }
           );
         }
-        opacity.value = withTiming(1, {duration: 300});
+        opacity.value = withTiming(1, { duration: 300 });
         return;
       }
       emptyListImageOpacity.value =
@@ -249,7 +251,7 @@ const Section: FC<SectionProps> = React.memo(
 
     useEffect(() => {
       areAnimationsDisabled.current = true;
-    }, [disableAnimationsTrigger])
+    }, [disableAnimationsTrigger]);
 
     useEffect(() => {
       positions.value = taskListToObject(sortedTasks);
@@ -265,19 +267,6 @@ const Section: FC<SectionProps> = React.memo(
         setIsDeleting(false);
       }
     }, [list.length]);
-
-    useAnimatedReaction(
-      () => gesturePositions.value,
-      (curr, prev) => {
-        if (
-          JSON.stringify(prev) !== JSON.stringify(curr) &&
-          title !== CALENDAR_DAY
-        ) {
-          runOnJS(saveGesturePositions)(curr, title);
-        }
-      },
-      [gesturePositions.value]
-    );
 
     const titleString = languageTexts[language].periods[getSectionTitle(title)];
     const clearListMessage = languageTexts[language].sectionEmptyList[title];
@@ -327,10 +316,9 @@ const Section: FC<SectionProps> = React.memo(
               return (
                 <MovableItem
                   key={item.id}
-                  tasksLength={sortedTasks.length}
                   index={sortedTasks.findIndex((task) => task.id === item.id)}
                   positions={positions}
-                  gesturePositions={gesturePositions}
+                  updatePositions={updatePositions}
                   id={item.id}
                   itemHeight={TaskHeight}
                   taskObject={item}
@@ -352,7 +340,9 @@ const Section: FC<SectionProps> = React.memo(
     );
   },
   (prev, curr) => {
-    let result = JSON.stringify(prev.list) === JSON.stringify(curr.list);
+    let result =
+      JSON.stringify(prev.list) === JSON.stringify(curr.list) &&
+      JSON.stringify(prev.initPositions) === JSON.stringify(curr.initPositions);
     return result;
   }
 );

@@ -10,7 +10,7 @@ import {
 } from "../constants/interface";
 import { SectionVisibilityValueType } from "../types/interface";
 
-export const getSectionsVisibilitiesFromASAction =
+export const loadSectionsVisibilitiesFromASAction =
   () => async (dispatch: Dispatch) => {
     try {
       const sectionsVisibilities = await getSectionsVisibilitiesFromAS();

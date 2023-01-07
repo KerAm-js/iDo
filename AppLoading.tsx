@@ -1,18 +1,20 @@
 import React from "react";
 import { AppState, useColorScheme } from "react-native";
+import { setStatusBarStyle, StatusBarStyle } from "expo-status-bar";
 import * as Localization from "expo-localization";
 import { LocalDB } from "./src/backend/sqlite/sqlite";
 import Root from "./src/components/Navigators/Root/Root";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback, useEffect, useState } from "react";
 import { AppDispatch } from "./src/redux/types/appDispatch";
-import { useDispatch, useSelector } from "react-redux";
-import { getPrefsFromASAction } from "./src/redux/actions/prefsActions";
+import { useDispatch } from "react-redux";
+import { loadPrefsFromASAction } from "./src/redux/actions/prefsActions";
 import {
-  getGesturePositionsFromASAction,
-  getTasksFromLocalDB,
+  loadTasksFromLocalDB, loadPositionsFromASAction,
 } from "./src/redux/actions/taskActions";
-import { getSectionsVisibilitiesFromASAction } from "./src/redux/actions/interfaceActions";
+import { loadSectionsVisibilitiesFromASAction } from "./src/redux/actions/interfaceActions";
+import { store } from "./src/redux/store";
+import { savePositions } from "./src/backend/asyncStorage/positions";
 
 const loadApp = async () => {
   try {
@@ -39,40 +41,38 @@ export default function AppLoading() {
       try {
         if (!isAppReady) {
           await loadApp();
-          dispatch(getPrefsFromASAction(systemTheme, Localization.locale));
-          dispatch(getSectionsVisibilitiesFromASAction());
-          dispatch(getTasksFromLocalDB());
-          dispatch(getGesturePositionsFromASAction());
+          dispatch(loadPrefsFromASAction(systemTheme, Localization.locale));
+          dispatch(loadSectionsVisibilitiesFromASAction());
+          dispatch(loadPositionsFromASAction());
+          dispatch(loadTasksFromLocalDB());
         }
       } catch (error) {
         console.log('prepare', error);
       } finally {
         setTimeout(() => {
           setIsAppReady(true);
-        }, 1400)
+        }, 500)
       }
     }
     prepare();
+    const subscription = AppState.addEventListener('change', (nextState) => {
+      const positions = store.getState().tasks.positions;
+      if (nextState === 'background' || nextState === 'inactive') {
+        savePositions(positions)
+      }
+    })
+    return () => {
+      subscription.remove();
+    }
   }, []);
 
-  // useEffect(() => {
-  //   const subscription = AppState.addEventListener('change', (nextState) => {
-  //     if (nextState === 'background') {
-  //       console.log(tasks.map(task => task.task));
-  //     }
-  //   })
-  //   return () => {
-  //     console.log('ok')
-  //     subscription.remove();
-  //   }
-  // }, [tasks])
-
-  const onAppReady = useCallback(async () => {
+  const onAppReady = useCallback(async (statusBarStyle: StatusBarStyle) => {
     if (isAppReady) {
       try {
         setTimeout(async () => {
           await SplashScreen.hideAsync();
-        }, 100);
+          setStatusBarStyle(statusBarStyle)
+        }, 1000);
       } catch (error) {
         console.log('onAppReady', error);
       }
@@ -83,5 +83,5 @@ export default function AppLoading() {
     return null;
   }
 
-  return <Root onAppReady={onAppReady} />;
+  return <Root onAppReady={onAppReady} />
 }

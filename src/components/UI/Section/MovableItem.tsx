@@ -27,7 +27,6 @@ import {
 } from "../../../utils/section/positionsObject";
 import { movableItemStyles } from "./style";
 import { ContextType, MovableItemProps } from "./types";
-import { moveGesturePosition } from "../../../utils/section/gesturePostions";
 import { trash } from "../../../../assets/icons/trash";
 import { shadowColors, textColors } from "../../../styles/global/colors";
 import { TaskType } from "../../../redux/types/task";
@@ -40,14 +39,13 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     id,
     index,
     positions,
-    gesturePositions,
+    updatePositions,
     opacity,
     itemHeight,
     sectionTitle,
     completeTask,
     deleteTask,
     taskObject,
-    tasksLength,
     upperBound,
   }) => {
     const [isDragged, setIsDragged] = useState(false);
@@ -130,7 +128,6 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     ) => {
       "worklet";
       context.startPositionsObject = positions.value;
-      context.startGesturePositionsObject = gesturePositions.value;
       context.startPosition = positions.value[id].position;
       zIndex.value = 1;
     };
@@ -162,14 +159,6 @@ const MovableItem: FC<MovableItemProps> = React.memo(
             positions?.value[id]?.position,
             newPosition
           );
-          if (positions.value[id].time === positions.value[toId].time) {
-            const newGesturePositions = moveGesturePosition(
-              gesturePositions.value,
-              id,
-              toId
-            );
-            gesturePositions.value = newGesturePositions;
-          }
           positions.value = newPositionsObject;
           context.isMovingDisabled = isTaskMovingDisabled;
         }
@@ -201,11 +190,11 @@ const MovableItem: FC<MovableItemProps> = React.memo(
           if (isFinished) {
             zIndex.value = 0;
             runOnJS(setIsDragged)(false);
+            runOnJS(updatePositions)(positions.value);
           }
         };
         if (context.isMovingDisabled) {
           positions.value = context.startPositionsObject;
-          gesturePositions.value = context.startGesturePositionsObject;
           newTranslateY = context.startPosition * itemHeight;
         }
         translateY.value = withTiming(
@@ -272,8 +261,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       }
     };
 
-    const isAnimated =
-      tasksLength === 0 || (tasksLength > 0 && !positions?.value[id] && sectionTitle !== CALENDAR_DAY);
+    const isAnimated = index === 0 && !positions.value[id] && sectionTitle !== CALENDAR_DAY
 
     return (
       <Animated.View

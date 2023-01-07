@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const taskStyles = StyleSheet.create({
   container: {
-    height: 62,
+    height: 58,
     flexDirection: "row",
     alignItems: "center",
     paddingRight: 15,

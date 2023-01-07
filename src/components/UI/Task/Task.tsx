@@ -104,7 +104,11 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     xml = clock(isExpired ? textColors.red : textColors.grey);
   }
 
-  if (remindTime && (remindTime !== time || !timeString)) {
+  if (
+    remindTime &&
+    (remindTime !== time || !timeString) &&
+    remindTime < new Date().valueOf()
+  ) {
     const reminder = new Date(remindTime);
     if (isDayEnd(reminder)) {
       if (isToday(reminder)) {
@@ -127,7 +131,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
 
   useEffect(() => {
     setIsChecked(!!taskObject.isCompleted);
-  }, [taskObject.isCompleted])
+  }, [taskObject.isCompleted]);
 
   return (
     <ListItem
@@ -137,7 +141,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     >
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
       <Pressable
-        style={[taskStyles.textContainer, { marginTop: timeString ? 6 : 0 }]}
+        style={[taskStyles.textContainer]}
         onPress={openEditTaskPopup}
       >
         <ThemeText style={text16LineHeight} numberOfLines={1}>
@@ -167,9 +171,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
                 style={{ marginRight: 5 }}
               />
               {reminderString && (
-                <Text
-                  style={[text12LineHeight, isExpired ? textRed : textGrey]}
-                >
+                <Text style={[text12LineHeight, textGrey]}>
                   {reminderString}
                 </Text>
               )}

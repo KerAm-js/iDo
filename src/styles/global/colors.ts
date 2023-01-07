@@ -33,7 +33,7 @@ export const themeColors: {
       primary: buttonColors.blue,
       notification: buttonColors.red,
       background: 'rgb(23, 23, 28)',
-      card: 'rgb(34, 34, 40)',
+      card: 'rgb(32, 32, 38)',
       text: '#fff',
       border: '#444',
     }

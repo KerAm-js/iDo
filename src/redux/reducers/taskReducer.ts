@@ -1,5 +1,5 @@
+import { TaskType } from './../types/task';
 import {
-  UPDATE_GESTURE_POSITIONS,
   CHOOSE_TASK_TO_EDIT,
   DELETE_TASK,
   EDIT_TASK,
@@ -11,13 +11,15 @@ import {
   SET_DEFAULT_NEW_TASK_DATA,
   CALENDAR_CHOOSED_DATE,
   CLEAR_REMINDER,
+  UPDATE_POSITIONS,
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
+import { ListObject } from '../../types/global/ListObject';
 
 const initialState: TaskState = {
   tasks: [],
-  gesturePositions: {},
+  positions: {},
   calendarChoosedDate: undefined,
   taskToEdit: undefined,
   newTaskData: {
@@ -52,10 +54,20 @@ export const taskReducer = (
       };
     }
     case DELETE_TASK: {
-      const tasks = state.tasks.filter((task) => task.id !== action.id);
+      let tasks: Array<TaskType> = [];
+      let positions: ListObject = {};
+
+      state.tasks.forEach((task) => {
+        if (task.id !== action.id) {
+          tasks.push(task);
+          positions[task.id] = state.positions[task.id];
+        }
+      });
+      
       return {
         ...state,
         tasks,
+        positions,
       };
     }
     case EDIT_TASK: {
@@ -173,11 +185,14 @@ export const taskReducer = (
         tasks: [...action.tasks],
       };
     }
-    case UPDATE_GESTURE_POSITIONS: {
+    case UPDATE_POSITIONS: {
       return {
         ...state,
-        gesturePositions: { ...action.positions },
-      };
+        positions: {
+          ...state.positions,
+          ...action.positions
+        }
+      }
     }
     case SET_TASK_EXPIRATION: {
       const tasks = state.tasks.map((task) => {

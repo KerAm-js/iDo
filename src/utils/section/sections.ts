@@ -1,6 +1,5 @@
 import { isToday } from './../date';
 import { SectionsObjectType } from './../../components/Screens/Home/types';
-import { GesturePositionsType } from "../../types/global/GesturePositions";
 import {
   EXPIRED,
   FOR_TODAY,
@@ -9,12 +8,12 @@ import {
   TODAY,
 } from "../constants/periods";
 
-import { taskListToPositionsObject } from "./gesturePostions";
 import { TaskType } from "../../redux/types/task";
 import { languageTexts } from "../languageTexts";
 import { getDaysDiff, isWeeklyTime } from "../date";
 import { LanguageType } from "../../redux/types/prefs";
 import { HomePeriodsKeys, PeriodsListType } from '../../types/global/Periods';
+import { ListObject } from '../../types/global/ListObject';
 
 export const getSectionListEmptyMessage = (title: HomePeriodsKeys, lang: LanguageType) => {
   let clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_TODAY]} ${languageTexts[lang].periods[
@@ -45,13 +44,12 @@ export const getSectionTitle = (title: HomePeriodsKeys) => {
   }
 };
 
-export const sortTasks = (
+export const sortTasksAndUpdatePositions = (
   list: Array<TaskType>,
-  gesturePositions: { value: GesturePositionsType },
+  initPositions: ListObject,
 ): [Array<TaskType>, number] => {
   const uncompletedList: Array<TaskType> = [];
   const completedList: Array<TaskType> = [];
-
   list.forEach((task) => {
     if (task.isCompleted) {
       completedList.push(task);
@@ -60,20 +58,16 @@ export const sortTasks = (
     }
   });
 
-  const gesturesList = Object.keys(gesturePositions?.value || {});
-  const newGesturePositions = taskListToPositionsObject(
-    gesturePositions?.value || {},
-    list,
-  );
+  const positionsList = Object.keys(initPositions);
 
   uncompletedList.sort((prev, curr) => {
     const prevTime = new Date(prev.time).valueOf();
     const currTime = new Date(curr.time).valueOf();
     if (
-      gesturesList.length > 0 &&
+      positionsList.length > 0 &&
       prevTime === currTime
     ) {
-      return newGesturePositions[prev.id] - newGesturePositions[curr.id];
+      return initPositions[prev.id]?.position - initPositions[curr.id]?.position;
     }
     return prevTime - currTime;
   });
@@ -83,8 +77,6 @@ export const sortTasks = (
     const currCompletedTime = new Date(curr.completionTime || "").valueOf();
     return currCompletedTime - prevCompletedTime;
   });
-  
-  gesturePositions.value = newGesturePositions;
 
   return [
     uncompletedList.concat(completedList),
@@ -95,7 +87,7 @@ export const sortTasks = (
 export const getSections = (
   periodsList: PeriodsListType,
   tasks: Array<TaskType>,
-  gesturePositions: GesturePositionsType,
+  positions: ListObject,
 ): SectionsObjectType => {
 
   const periodTasks: SectionsObjectType = {};
@@ -105,33 +97,33 @@ export const getSections = (
       (periodTasks[period] = {
         title: period,
         list: [],
-        gesturePositions: {},
+        positions: {},
       })
   );
 
   const currDate = new Date();
 
   tasks.forEach((task) => {
-    const position = gesturePositions[task.id];
+    const positionObject = positions[task.id];
 
     const isWeekly = isWeeklyTime(new Date(task.time));
 
     if (task.time < currDate.valueOf() && task.isExpired && !task.isCompleted && !isToday(new Date(task.time))) {
       periodTasks[EXPIRED].list.push(task);
-      if (position !== undefined) periodTasks[EXPIRED].gesturePositions[task.id] = position;
+      if (positionObject !== undefined) periodTasks[EXPIRED].positions[task.id] = positionObject;
     } else if (isWeekly) {
       const dayDiff = getDaysDiff(currDate, new Date(task.time));
       if (dayDiff < 0) {
         return;
       } else if (dayDiff < 1) {
         periodTasks[FOR_TODAY].list.push(task);
-        if (position !== undefined)periodTasks[FOR_TODAY].gesturePositions[task.id] = position;
+        if (positionObject !== undefined)periodTasks[FOR_TODAY].positions[task.id] = positionObject;
       } else if (dayDiff >= 1 && dayDiff < 2) {
         periodTasks[FOR_TOMORROW].list.push(task);
-        if (position !== undefined)periodTasks[FOR_TOMORROW].gesturePositions[task.id] = position;
+        if (positionObject !== undefined)periodTasks[FOR_TOMORROW].positions[task.id] = positionObject;
       } else if (dayDiff >= 2) {
         periodTasks[FOR_WEEK].list.push(task);
-        if (position !== undefined)periodTasks[FOR_WEEK].gesturePositions[task.id] = position;
+        if (positionObject !== undefined)periodTasks[FOR_WEEK].positions[task.id] = positionObject;
       }
     }
   });

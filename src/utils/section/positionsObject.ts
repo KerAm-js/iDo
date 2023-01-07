@@ -1,10 +1,10 @@
 import { ListObject } from "../../types/global/ListObject";
-import { GesturePositionsType } from "../../types/global/GesturePositions";
 import { TaskType } from "../../redux/types/task";
 
 export const taskListToObject = (list: Array<TaskType>): ListObject => {
   "worklet";
   const object: ListObject = {};
+
   list.forEach((task: TaskType, index: number) => {
     object[task.id.toString()] = {
       position: index,
@@ -13,18 +13,8 @@ export const taskListToObject = (list: Array<TaskType>): ListObject => {
       timeType: task.timeType,
     };
   });
-  return object;
-};
 
-export const listObjectToPositionsObject = (
-  list: ListObject
-): GesturePositionsType => {
-  "worklet";
-  const newPositionState: GesturePositionsType = {};
-  for (let id in list) {
-    newPositionState[id] = list[id].position;
-  }
-  return newPositionState;
+  return object;
 };
 
 export const getNewTaskPosition = (

@@ -13,6 +13,7 @@ import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
 import PrefItem from "../../UI/PrefItem/PrefItem";
 import { PrefsPropType } from "./types";
 import appJson from '../../../../app.json';
+import { setStatusBarStyle } from "expo-status-bar";
 
 const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
   const dispatch: AppDispatch = useDispatch();
@@ -20,6 +21,7 @@ const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
 
   const toggleTheme = () => {
     dispatch(setThemeAction( theme === 'dark' ? 'light' : 'dark' ));
+    setStatusBarStyle(theme);
   };
 
   return (

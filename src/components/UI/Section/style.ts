@@ -14,7 +14,7 @@ export const sectionStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    minHeight: 44,
+    minHeight: 36,
   },  
   headerTextContainer: {
     flexDirection: "row",

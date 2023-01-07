@@ -78,9 +78,12 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
     }
   }, [taskToEdit]);
 
+  const onReady = useCallback(() => {
+    onAppReady(theme === 'light' ? "dark" : "light")
+  }, [])
+
   return (
-    <NavigationContainer onReady={onAppReady} theme={themeColors[theme]}>
-      <StatusBar animated barStyle={theme === 'light' ? "dark-content" : "light-content"} />
+    <NavigationContainer onReady={onReady} theme={themeColors[theme]}>
       <ModalLayout visible={addTaskModalVisible} close={closeAddTaskModal}>
         <AddTaskPopup
           visible={addTaskModalVisible}

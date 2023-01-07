@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { textColors } from "../../../styles/global/colors";
 
 export const calendarStyles = StyleSheet.create({
   container: {
@@ -7,6 +8,7 @@ export const calendarStyles = StyleSheet.create({
     minWidth: 34,
     minHeight: 34,
     borderRadius: 17,
+    borderColor: textColors.blue,
     justifyContent: 'center',
     alignItems: 'center'
   },

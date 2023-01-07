@@ -6,7 +6,7 @@ import Section from "../../UI/Section/Section";
 import { HomePropType, SectionsObjectType } from "./types";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  getGesturePositions,
+  getPositions,
   getTasks,
 } from "../../../redux/selectors/taskSelector";
 import { getSections } from "../../../utils/section/sections";
@@ -14,9 +14,8 @@ import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { useNavigation } from "@react-navigation/native";
 import { EXPIRED, PERIODS_LIST } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { getGesturePositionsFromASAction } from "../../../redux/actions/taskActions";
 import { getSectionsVisibilities } from "../../../redux/selectors/interfaceSelectors";
-import { getSectionsVisibilitiesFromASAction } from "../../../redux/actions/interfaceActions";
+import { loadSectionsVisibilitiesFromASAction } from "../../../redux/actions/interfaceActions";
 import CalendarIconButton from "../../UI/buttons/IconButton/CalendarIconButton";
 import { textColors } from "../../../styles/global/colors";
 import { StackNavigationProp } from "@react-navigation/stack";
@@ -26,14 +25,14 @@ const Home: FC<HomePropType> = () => {
   const { language } = useSelector(getPrefs);
   const navigator = useNavigation<StackNavigationProp<HomeStackNavigatorParamsList>>();
   const dispatch: AppDispatch = useDispatch();
-  const gesturePositions = useSelector(getGesturePositions);
+  const positions = useSelector(getPositions);
   const sectionsVisibilities = useSelector(getSectionsVisibilities);
   const { date, weekDay } = getDate(language);
   const tasks = useSelector(getTasks);
   const sections: SectionsObjectType = getSections(
     PERIODS_LIST,
     tasks,
-    gesturePositions
+    positions
   );
 
   const HeadingRight = (
@@ -50,8 +49,7 @@ const Home: FC<HomePropType> = () => {
       subtitle={weekDay}
       headingRight={HeadingRight}
       onUnmount={() => {
-        dispatch(getSectionsVisibilitiesFromASAction());
-        dispatch(getGesturePositionsFromASAction());
+        dispatch(loadSectionsVisibilitiesFromASAction());
       }}
     >
       <View>
@@ -66,7 +64,7 @@ const Home: FC<HomePropType> = () => {
               key={period}
               title={sections[period].title}
               list={sections[period].list}
-              initialGesturePositions={sections[period].gesturePositions}
+              initPositions={sections[period].positions}
               visibilities={sectionsVisibilities[period]}
             />
           );
