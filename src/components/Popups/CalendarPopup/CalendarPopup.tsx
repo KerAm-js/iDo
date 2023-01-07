@@ -114,7 +114,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         setState(state);
         setDate(new Date(newTaskData.remindTime));
         if (state === CHOOSE) {
-          updateChoosedTitle(date);
+          updateChoosedTitle(new Date(newTaskData.remindTime));
           setTime(new Date(newTaskData.remindTime).toTimeString().slice(0, 5));
         } else {
           setChooseItemTitle(languageTexts[language].words[CHOOSE]);

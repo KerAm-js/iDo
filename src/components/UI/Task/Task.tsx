@@ -26,10 +26,11 @@ import {
 } from "../../../utils/constants/periods";
 import {
   getDate,
-  getTimeStringBySecondsConverting,
+  getTimeStringWithSecondsConverting,
   isDayEnd,
   isToday,
   isTomorrow,
+  isWeeklyTime,
   isYesterday,
 } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -103,7 +104,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
   } else {
     xml = clock(isExpired ? textColors.red : textColors.grey);
   }
-
+  
   if (timeType === "time") {
     timeString +=
       (timeString.length > 0 ? ", " : "") +
@@ -115,16 +116,18 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     (remindTime !== time || !timeString)
   ) {
     const reminder = new Date(remindTime);
-    if (isDayEnd(reminder)) {
-      if (isToday(reminder)) {
-        reminderString = languageTexts[language].periods[TODAY];
-      } else if (isTomorrow(reminder)) {
-        reminderString = languageTexts[language].periods[TOMORROW];
-      } else {
-        reminderString = getDate(language, { date: reminder }).weekDay;
-      }
+    console.log(reminder.toLocaleString())
+    if (isToday(reminder)) {
+      reminderString = languageTexts[language].periods[TODAY];
+    } else if (isTomorrow(reminder)) {
+      reminderString = languageTexts[language].periods[TOMORROW];
+    } else if (isWeeklyTime(reminder)) {
+      reminderString = getDate(language, { date: reminder, isShort: true }).weekDay;
     } else {
-      reminderString = getTimeStringBySecondsConverting(reminder);
+      reminderString = getDate(language, { date: reminder, isShort: true }).date;
+    }
+    if (!isDayEnd(reminder)) {
+      reminderString = reminderString + ', ' + getTimeStringWithSecondsConverting(reminder);
     }
   }
 
@@ -155,14 +158,14 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
                 xml={xml}
                 style={{ marginRight: 5 }}
               />
-              <Text style={[text12LineHeight, isExpired ? textRed : textGrey]}>
+              <Text numberOfLines={1} style={[text12LineHeight, isExpired ? textRed : textGrey]}>
                 {timeString}
               </Text>
             </View>
           )}
           {remindTime && remindTime > new Date().valueOf() && (
             <View style={[taskStyles.infoBlock]}>
-              {timeString && <Text style={[textGrey]}>・</Text>}
+              {timeString && <Text numberOfLines={1} style={[textGrey]}>・</Text>}
               <SvgXml
                 xml={bell(textColors.grey)}
                 width={12}
@@ -170,7 +173,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
                 style={{ marginRight: 5 }}
               />
               {reminderString && (
-                <Text style={[text12LineHeight, textGrey]}>
+                <Text numberOfLines={1} style={[text12LineHeight, textGrey]}>
                   {reminderString}
                 </Text>
               )}
@@ -179,7 +182,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
           {folderIconXml && (
             <View style={[taskStyles.infoBlock]}>
               {timeString && <Text style={[textGrey]}>・</Text>}
-              <Text style={[text12LineHeight, textGrey]}>{folderIconXml}</Text>
+              <Text numberOfLines={1} style={[text12LineHeight, textGrey]}>{folderIconXml}</Text>
             </View>
           )}
         </View>

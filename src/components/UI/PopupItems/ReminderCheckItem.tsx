@@ -61,6 +61,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
             text17LineHeight,
             isChecked && { color: buttonColors.blue },
             disabled && textGrey,
+            { marginRight: 10 }
           ]}
         >
           {titleString}

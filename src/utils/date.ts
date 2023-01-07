@@ -68,7 +68,7 @@ export const isDayEnd = (date: Date) => {
   );
 };
 
-export const getTimeStringBySecondsConverting = (date: Date) => {
+export const getTimeStringWithSecondsConverting = (date: Date) => {
   if (date.getSeconds() === 59 && date.getMilliseconds() === 999) {
     return new Date(date.valueOf() + 1).toTimeString().slice(0, 5);
   }
@@ -111,6 +111,7 @@ export const isTomorrow = (date: Date) => {
 };
 
 export const isWeeklyTime = (date: Date) => {
+  const dateCopy = new Date(date.valueOf());
   const [currWeekDay, currDate] = [new Date().getDay(), new Date().getDate()];
 
   let timeBound = 8 - currWeekDay;
@@ -123,7 +124,7 @@ export const isWeeklyTime = (date: Date) => {
 
   const result =
     date.valueOf() <
-      new Date(date.setHours(0, 0, 0, 0)).setDate(currDate + timeBound) &&
+      new Date(dateCopy.setHours(0, 0, 0, 0)).setDate(currDate + timeBound) &&
     date.valueOf() >= new Date().setHours(0, 0, 0, 0);
 
   return result;

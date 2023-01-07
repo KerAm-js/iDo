@@ -59,24 +59,24 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
         Animated.timing(headerOpactiy, {
           toValue: 1,
           useNativeDriver: true,
-          duration: 200,
+          duration: 150,
         }).start();
         Animated.timing(titleTranslationY, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 200,
+          duration: 150,
         }).start();
       } else if (event.nativeEvent.contentOffset.y <= 30 && headerShown) {
         setHeaderShown(false);
         Animated.timing(headerOpactiy, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 150,
+          duration: 100,
         }).start();
         Animated.timing(titleTranslationY, {
           toValue: 10,
           useNativeDriver: true,
-          duration: 150,
+          duration: 100,
         }).start();
       }
     };
@@ -94,18 +94,25 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
         headerTitleStyle: {
           ...headerTitleStyle,
           color: theme.colors.text,
-          transform: [
-            {translateY: titleTranslationY}
-          ]
+          transform: [{ translateY: titleTranslationY }],
         },
         title,
         // headerRight: () => HeadingRight,
         headerBackground: () => (
-          <View style={[StyleSheet.absoluteFill, { position: "absolute", overflow: 'hidden' }]}>
+          <View
+            style={[
+              StyleSheet.absoluteFill,
+              { position: "absolute", overflow: "hidden" },
+            ]}
+          >
             <Animated.View
               style={[
                 StyleSheet.absoluteFill,
-                { opacity: headerBackgroundOpacity, backgroundColor: theme.colors.background, position: "absolute" },
+                {
+                  opacity: headerBackgroundOpacity,
+                  backgroundColor: theme.colors.background,
+                  position: "absolute",
+                },
               ]}
             />
             <Animated.View
