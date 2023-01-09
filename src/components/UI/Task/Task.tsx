@@ -18,6 +18,7 @@ import {
   textRed,
 } from "../../../styles/global/texts";
 import {
+  CALENDAR_DAY,
   EXPIRED,
   FOR_WEEK,
   TODAY,
@@ -26,6 +27,7 @@ import {
 } from "../../../utils/constants/periods";
 import {
   getDate,
+  getDaysDiff,
   getTimeStringWithSecondsConverting,
   isDayEnd,
   isToday,
@@ -104,30 +106,37 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
   } else {
     xml = clock(isExpired ? textColors.red : textColors.grey);
   }
-  
+
   if (timeType === "time") {
     timeString +=
       (timeString.length > 0 ? ", " : "") +
       new Date(time)?.toTimeString().slice(0, 5);
   }
 
-  if (
-    remindTime &&
-    (remindTime !== time || !timeString)
-  ) {
+  if (remindTime && (remindTime !== time || !timeString)) {
     const reminder = new Date(remindTime);
-    console.log(reminder.toLocaleString())
-    if (isToday(reminder)) {
-      reminderString = languageTexts[language].periods[TODAY];
-    } else if (isTomorrow(reminder)) {
-      reminderString = languageTexts[language].periods[TOMORROW];
-    } else if (isWeeklyTime(reminder)) {
-      reminderString = getDate(language, { date: reminder, isShort: true }).weekDay;
-    } else {
-      reminderString = getDate(language, { date: reminder, isShort: true }).date;
+    if (isDayEnd(reminder) || getDaysDiff(reminder, taskTime) !== 0) {
+      if (sectionType === CALENDAR_DAY && getDaysDiff(reminder, taskTime) !== 0) {
+        reminderString = getDate(language, {
+          date: reminder,
+        }).date;
+      } else if (isToday(reminder) || isTomorrow(reminder) || sectionType === CALENDAR_DAY) {
+        reminderString = languageTexts[language].periods.midnight;
+      } else if (isWeeklyTime(reminder)) {
+        reminderString = getDate(language, {
+          date: reminder,
+          isShort: true,
+        }).weekDay;
+      } else {
+        reminderString = getDate(language, {
+          date: reminder,
+          isShort: true,
+        }).date;
+      }
     }
     if (!isDayEnd(reminder)) {
-      reminderString = reminderString + ', ' + getTimeStringWithSecondsConverting(reminder);
+      reminderString =
+        reminderString + (reminderString.length > 0 ? ', ' : '') + getTimeStringWithSecondsConverting(reminder);
     }
   }
 
@@ -142,10 +151,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
       style={taskStyles.container}
     >
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
-      <Pressable
-        style={[taskStyles.textContainer]}
-        onPress={openEditTaskPopup}
-      >
+      <Pressable style={[taskStyles.textContainer]} onPress={openEditTaskPopup}>
         <ThemeText style={text16LineHeight} numberOfLines={1}>
           {task}
         </ThemeText>
@@ -158,14 +164,21 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
                 xml={xml}
                 style={{ marginRight: 5 }}
               />
-              <Text numberOfLines={1} style={[text12LineHeight, isExpired ? textRed : textGrey]}>
+              <Text
+                numberOfLines={1}
+                style={[text12LineHeight, isExpired ? textRed : textGrey]}
+              >
                 {timeString}
               </Text>
             </View>
           )}
           {remindTime && remindTime > new Date().valueOf() && (
             <View style={[taskStyles.infoBlock]}>
-              {timeString && <Text numberOfLines={1} style={[textGrey]}>・</Text>}
+              {timeString && (
+                <Text numberOfLines={1} style={[textGrey]}>
+                  ・
+                </Text>
+              )}
               <SvgXml
                 xml={bell(textColors.grey)}
                 width={12}
@@ -182,7 +195,9 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
           {folderIconXml && (
             <View style={[taskStyles.infoBlock]}>
               {timeString && <Text style={[textGrey]}>・</Text>}
-              <Text numberOfLines={1} style={[text12LineHeight, textGrey]}>{folderIconXml}</Text>
+              <Text numberOfLines={1} style={[text12LineHeight, textGrey]}>
+                {folderIconXml}
+              </Text>
             </View>
           )}
         </View>

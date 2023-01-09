@@ -11,6 +11,12 @@ async function requestPermissionsAsync() {
           allowSound: true,
           allowAnnouncements: true,
         },
+        android: {
+          allowAlert: true,
+          allowBadge: true,
+          allowSound: true,
+          allowAnnouncements: true,
+        }
       });
       if (result.status === "granted") {
         return true;

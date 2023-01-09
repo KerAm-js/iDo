@@ -120,6 +120,7 @@ export const languageTexts = {
       months: "Месяцы",
       year: "Год",
       years: "Года",
+      midnight: 'Полночь'
     },
     languages: {
       en: "Английский",
@@ -178,7 +179,7 @@ export const languageTexts = {
     alerts: {
       taskUncompleting: {
         title: "Attention!",
-        subTitle: "Die Aufgabe wird in der Statistik als überfällig gezählt",
+        subTitle: "The task will be counted in the statistics as overdue",
       },
       taskTimeIsNotChoosen: {
         title: "Please, select a due date for the task"
@@ -295,6 +296,7 @@ export const languageTexts = {
       months: "Months",
       year: "Year",
       years: "Years",
+      midnight: 'Midnight'
     },
     languages: {
       en: "English",
@@ -325,8 +327,8 @@ export const languageTexts = {
     },
     alerts: {
       taskUncompleting: {
-        title: "Attention!",
-        subTitle: "Задача будет засчитана в статистике, как просроченная",
+        title: "Aufmerksamkeit!",
+        subTitle: "Die Aufgabe wird in der Statistik als überfällig gezählt",
       },
       taskTimeIsNotChoosen: {
         title: "Bitte wählen Sie ein Fälligkeitsdatum für die Aufgabe aus"
@@ -429,6 +431,7 @@ export const languageTexts = {
       months: "Monate",
       year: "Jahr",
       years: "Jahre",
+      midnight: "Mitternacht",
     },
     languages: {
       en: "Englisch",
@@ -460,7 +463,7 @@ export const languageTexts = {
     alerts: {
       taskUncompleting: {
         title: "Тидам белахь!",
-        subTitle: "Х1окху гIуллакхийн ханн тиллина лорур ю хьуна",
+        subTitle: "ХIокху гIуллакхийн хан тиллина лорур ю хьуна",
       },
       taskTimeIsNotChoosen: {
         title: "Цкъа хьалха гIуллакх кхочушдаран хан харжа еза"
@@ -471,7 +474,7 @@ export const languageTexts = {
       [FOR_WEEK]: "Кху кIиранахь хIун дича бакъахь хира дара те?",
       [FOR_TOMORROW]: "Кханаьнна да хIумма дуй?",
       [EXPIRED]: "Тиллина хIумма а дац",
-      [LATER]: 'Кхиъ тIаьхьа г1уллакхаш дац',
+      [LATER]: 'Кхиъ тIаьхьа гIуллакхаш дац',
       [CALENDAR_DAY]: 'Кху даьнна плане хIоттийна гIуллакхаш дац'
     },
     popupTitles: {
@@ -560,11 +563,12 @@ export const languageTexts = {
       week: "КIира",
       weeks: "КIиранаш",
       [FOR_WEEK]: "КIиранна",
-      [NEXT_WEEK]: "ТIедог1у кIиранна",
+      [NEXT_WEEK]: "ТIедогIу кIиранна",
       month: "Бутт",
       months: "Беттанаш",
       year: "Шо",
       years: "Шеранаш",
+      midnight: 'Ахбуьйса'
     },
     periodsDeclination: {
       minute: "Минот",

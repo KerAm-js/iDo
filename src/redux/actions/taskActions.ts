@@ -43,8 +43,23 @@ export const scheduleTaskExpiration = async (
         dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
       } else {
         const timeDiff = task.time - currTime;
-        setTimeout(() => {
-          dispatch({ type: SET_TASK_EXPIRATION, id: task.id, time: task.time });
+        setTimeout(async () => {
+          console.log("time is outed");
+          const expiredTask = store.getState().tasks.tasks.find((item) => {
+            const isItemCompletedInTime =
+              item.completionTime && item.completionTime < item.time;
+            return (
+              item.id === task.id &&
+              !item.isExpired &&
+              !isItemCompletedInTime &&
+              task.time === item.time
+            );
+          });
+          if (expiredTask) {
+            console.log("expired");
+            await LocalDB.setTaskExpiration(expiredTask?.id);
+            dispatch({ type: SET_TASK_EXPIRATION, id: expiredTask.id });
+          }
         }, timeDiff);
       }
     }
@@ -57,6 +72,7 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
   try {
     const currDate = new Date().setHours(0, 0, 0, 0);
     const tasks = await LocalDB.getTasks();
+    console.log(tasks.map((task) => [task.task, task.isExpired]));
     await deleteAllNotifications();
     const notificationsUpdatedTasks = await Promise.all(
       tasks.map(async (task) => {

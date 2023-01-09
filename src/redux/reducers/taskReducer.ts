@@ -1,4 +1,4 @@
-import { TaskType } from './../types/task';
+import { TaskType } from "./../types/task";
 import {
   CHOOSE_TASK_TO_EDIT,
   DELETE_TASK,
@@ -15,7 +15,7 @@ import {
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
-import { ListObject } from '../../types/global/ListObject';
+import { ListObject } from "../../types/global/ListObject";
 
 const initialState: TaskState = {
   tasks: [],
@@ -63,7 +63,7 @@ export const taskReducer = (
           positions[task.id] = state.positions[task.id];
         }
       });
-      
+
       return {
         ...state,
         tasks,
@@ -190,20 +190,13 @@ export const taskReducer = (
         ...state,
         positions: {
           ...state.positions,
-          ...action.positions
-        }
-      }
+          ...action.positions,
+        },
+      };
     }
     case SET_TASK_EXPIRATION: {
       const tasks = state.tasks.map((task) => {
-        const isCompletedInTime =
-          task.completionTime && task.completionTime < task.time;
-        if (
-          task.id === action.id &&
-          !task.isExpired &&
-          !isCompletedInTime &&
-          action.time === task.time
-        ) {
+        if (task.id === action.id) {
           return {
             ...task,
             isExpired: 1,
