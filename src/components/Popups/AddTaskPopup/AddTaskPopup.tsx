@@ -27,6 +27,7 @@ import CircleButton from "../../UI/buttons/CircleButton/CircleButton";
 import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { addTaskPopupStyles } from "./styles";
 import { AddTaskPopupPropType } from "./types";
+import { repeat } from "../../../../assets/icons/repeat";
 
 const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   visible,
@@ -220,13 +221,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             style={addTaskPopupStyles.iconButton}
             onClick={openCalendar}
           />
-          {/* <IconButton
-            xml={choosedFolder === "2" ? repeatActive : repeat}
-            iconWidth={20}
-            iconHeight={20}
-            style={addTaskPopupStyles.iconButton}
-            onClick={() => updateFolder("2")}
-          /> */}
           <IconButton
             xml={bell(
               newTaskData.remindTime ? textColors.blue : textColors.grey
@@ -236,6 +230,13 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             style={addTaskPopupStyles.iconButton}
             onClick={openReminderHandler}
           />
+          {/* <IconButton
+            xml={repeat(choosedFolder === '2' ? textColors.blue : textColors.grey)}
+            iconWidth={20}
+            iconHeight={20}
+            style={addTaskPopupStyles.iconButton}
+            onClick={() => updateFolder("2")}
+          /> */}
         </View>
         <View style={[addTaskPopupStyles.buttonsGroup]}>
           <CircleButton

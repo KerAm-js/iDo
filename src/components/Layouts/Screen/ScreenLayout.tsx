@@ -27,7 +27,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const headerOpactiy = useRef(new Animated.Value(0)).current;
-    const titleTranslationY = useRef(new Animated.Value(10)).current;
+    const titleTranslationY = useRef(new Animated.Value(14)).current;
 
     const titleScale = scrollY.interpolate({
       inputRange: [-100, 0],
@@ -59,24 +59,24 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
         Animated.timing(headerOpactiy, {
           toValue: 1,
           useNativeDriver: true,
-          duration: 150,
+          duration: 200,
         }).start();
         Animated.timing(titleTranslationY, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 150,
+          duration: 200,
         }).start();
       } else if (event.nativeEvent.contentOffset.y <= 30 && headerShown) {
         setHeaderShown(false);
         Animated.timing(headerOpactiy, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 100,
+          duration: 150,
         }).start();
         Animated.timing(titleTranslationY, {
-          toValue: 10,
+          toValue: 14,
           useNativeDriver: true,
-          duration: 100,
+          duration: 150,
         }).start();
       }
     };

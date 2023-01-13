@@ -10,8 +10,6 @@ import Animated, {
   useSharedValue,
   withTiming,
   withDelay,
-  useAnimatedReaction,
-  runOnJS,
 } from "react-native-reanimated";
 import MovableItem from "./MovableItem";
 import CompletedMarker from "../Task/CompletedMarker";
@@ -64,7 +62,7 @@ const Section: FC<SectionProps> = React.memo(
     const initialHeight =
       sortedTasks.length > 0
         ? sortedTasks.length * TaskHeight +
-          (completedTasksLength > 0 ? 36 : 0) +
+          (completedTasksLength > 0 ? 28 : 0) +
           baseHeight + 10
         : emptyListHeight;
 

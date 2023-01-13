@@ -99,7 +99,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         if (isPositionChanged || isCompletedChanged) {
           if (!isDragged) {
             const newTop = isCompleted
-              ? 31 + current?.position * itemHeight
+              ? 28 + current?.position * itemHeight
               : current?.position * itemHeight;
 
             if (isCompletedChanged) {

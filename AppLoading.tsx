@@ -1,6 +1,9 @@
 import React from "react";
 import { AppState, useColorScheme } from "react-native";
-import { setStatusBarHidden, setStatusBarStyle, StatusBarStyle } from "expo-status-bar";
+import {
+  setStatusBarStyle,
+  StatusBarStyle,
+} from "expo-status-bar";
 import * as Localization from "expo-localization";
 import { LocalDB } from "./src/backend/sqlite/sqlite";
 import Root from "./src/components/Navigators/Root/Root";
@@ -10,24 +13,44 @@ import { AppDispatch } from "./src/redux/types/appDispatch";
 import { useDispatch } from "react-redux";
 import { loadPrefsFromASAction } from "./src/redux/actions/prefsActions";
 import {
-  loadTasksFromLocalDB, loadPositionsFromASAction,
+  loadTasksFromLocalDB,
+  loadPositionsFromASAction,
 } from "./src/redux/actions/taskActions";
 import { loadSectionsVisibilitiesFromASAction } from "./src/redux/actions/interfaceActions";
 import { store } from "./src/redux/store";
 import { savePositions } from "./src/backend/asyncStorage/positions";
+import { FOLDER, NOTIFICATION_ID } from "./src/backend/sqlite/constants/taskProps";
 
 const loadApp = async () => {
   try {
-    await LocalDB.initTasks();
+    await LocalDB.initTasksTable();
+    await LocalDB.initFolders();
     const result = await LocalDB.getTasksTableColumns();
     if (result) {
-      const hasNotificationId = result.find(column => column.name === 'notificationId');
+      const hasNotificationId = result.find(
+        (column) => column.name === "notificationId"
+      );
+      const hasFolderColumn = result.find((column) => column.name === "folder");
       if (!hasNotificationId) {
-        await LocalDB.addColumn('tasks', 'notificationId', false)
+        await LocalDB.addColumn({
+          table: 'tasks',
+          columnName: NOTIFICATION_ID,
+          columnType: 'TEXT',
+          defaultValue: 'NULL',
+        })
+      }
+      if (!hasFolderColumn || !hasNotificationId) {
+        await LocalDB.addColumn({
+          table: 'tasks',
+          columnName: FOLDER,
+          columnType: 'INTEGER',
+          defaultValue: 'NULL',
+        })
+        await LocalDB.updateTasksTable();
       }
     }
   } catch (err) {
-    console.log('loadApp', err);
+    console.log("loadApp", err);
   }
 };
 
@@ -40,7 +63,7 @@ export default function AppLoading() {
     async function prepare() {
       try {
         if (!isAppReady) {
-          setStatusBarStyle('light');
+          setStatusBarStyle("light");
           await loadApp();
           dispatch(loadPrefsFromASAction(systemTheme, Localization.locale));
           dispatch(loadSectionsVisibilitiesFromASAction());
@@ -48,41 +71,44 @@ export default function AppLoading() {
           dispatch(loadTasksFromLocalDB());
         }
       } catch (error) {
-        console.log('prepare', error);
+        console.log("prepare", error);
       } finally {
         setTimeout(() => {
           setIsAppReady(true);
-        }, 200)
+        }, 200);
       }
     }
     prepare();
-    const subscription = AppState.addEventListener('change', (nextState) => {
+    const subscription = AppState.addEventListener("change", (nextState) => {
       const positions = store.getState().tasks.positions;
-      if (nextState === 'background' || nextState === 'inactive') {
-        savePositions(positions)
+      if (nextState === "background" || nextState === "inactive") {
+        savePositions(positions);
       }
-    })
+    });
     return () => {
       subscription.remove();
-    }
+    };
   }, []);
 
-  const onAppReady = useCallback(async (statusBarStyle: StatusBarStyle) => {
-    if (isAppReady) {
-      try {
-        setTimeout(async () => {
-          await SplashScreen.hideAsync();
-          setStatusBarStyle(statusBarStyle);
-        }, 500);
-      } catch (error) {
-        console.log('onAppReady', error);
+  const onAppReady = useCallback(
+    async (statusBarStyle: StatusBarStyle) => {
+      if (isAppReady) {
+        try {
+          setTimeout(async () => {
+            await SplashScreen.hideAsync();
+            setStatusBarStyle(statusBarStyle);
+          }, 500);
+        } catch (error) {
+          console.log("onAppReady", error);
+        }
       }
-    }
-  }, [isAppReady]);
+    },
+    [isAppReady]
+  );
 
   if (!isAppReady) {
     return null;
   }
 
-  return <Root onAppReady={onAppReady} />
+  return <Root onAppReady={onAppReady} />;
 }

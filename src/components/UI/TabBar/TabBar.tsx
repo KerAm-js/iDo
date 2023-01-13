@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CircleButton from "../buttons/CircleButton/CircleButton";
 import { plus } from "../../../../assets/icons/plus";
 import TabsRender from "./TabsRender";
-import { FC } from "react";
+import { FC, useEffect, useReducer, useRef } from "react";
 import { TabBarPropTypes } from "./types";
 import { BlurView } from "expo-blur";
 import { themeColors } from "../../../styles/global/colors";
@@ -22,6 +22,7 @@ const TabBar: FC<TabBarPropTypes> = ({
     setTimeout(onBigButtonClick, 200);
   };
   const middleIndex = Math.round(state.routes.length / 2);
+
   return (
     <BlurView
       tint={dark ? "dark" : "default"}

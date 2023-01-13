@@ -72,7 +72,6 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
   try {
     const currDate = new Date().setHours(0, 0, 0, 0);
     const tasks = await LocalDB.getTasks();
-    console.log(tasks.map((task) => [task.task, task.isExpired]));
     await deleteAllNotifications();
     const notificationsUpdatedTasks = await Promise.all(
       tasks.map(async (task) => {
@@ -112,8 +111,8 @@ export const scheduleReminder = async (
     const { language } = store.getState().prefs;
     if (notificationTime > 0) {
       const notificationId = await setNotification(
-        "🔔 " + task.task,
-        `⏰ ${toLocaleStateString({
+        task.task,
+        `${toLocaleStateString({
           dateValue: task.time,
           timeType: task.timeType,
           language,
