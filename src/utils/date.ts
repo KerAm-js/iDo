@@ -112,7 +112,8 @@ export const isTomorrow = (date: Date) => {
 
 export const isWeeklyTime = (date: Date) => {
   const dateCopy = new Date(date.valueOf());
-  const [currWeekDay, currDate] = [new Date().getDay(), new Date().getDate()];
+
+  const [currWeekDay, currDay] = [new Date().getDay(), new Date().getDate()];
 
   let timeBound = 8 - currWeekDay;
 
@@ -122,9 +123,15 @@ export const isWeeklyTime = (date: Date) => {
     timeBound = 9;
   }
 
+  const daysDiff = getDaysDiff(new Date(), dateCopy);
+
+  if (daysDiff < 0 || daysDiff > timeBound) {
+    return false;
+  }
+
   const result =
     date.valueOf() <
-      new Date(dateCopy.setHours(0, 0, 0, 0)).setDate(currDate + timeBound) &&
+      new Date(dateCopy.setHours(0, 0, 0, 0)).setDate(currDay + timeBound) &&
     date.valueOf() >= new Date().setHours(0, 0, 0, 0);
 
   return result;

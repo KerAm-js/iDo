@@ -107,6 +107,7 @@ export const getSections = (
     const positionObject = positions[task.id];
 
     const isWeekly = isWeeklyTime(new Date(task.time));
+    console.log(task.task, isWeekly, new Date(task.time).toLocaleString())
 
     if (task.time < currDate.valueOf() && task.isExpired && !task.isCompleted && !isToday(new Date(task.time))) {
       periodTasks[EXPIRED].list.push(task);
