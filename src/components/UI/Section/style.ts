@@ -1,45 +1,53 @@
 import { StyleSheet } from "react-native";
 
 export const sectionStyles = StyleSheet.create({
-  container: {
-  },
+  container: {},
   counter: {
     marginRight: 10,
   },
   arrowButton: {
     height: 22,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   headerContainer: {
     flexDirection: "row",
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     minHeight: 36,
-  },  
+  },
   headerTextContainer: {
     flexDirection: "row",
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
     flex: 1,
-    alignItems: 'center',
-  }
-})
+    alignItems: "center",
+  },
+});
 
 export const movableItemStyles = StyleSheet.create({
   container: {
-    position: "absolute", 
-    width: '100%',
-    justifyContent: 'center',
+    position: "absolute",
+    width: "100%",
+    justifyContent: "center",
   },
   pressable: {
     width: "100%",
     height: "100%",
+    alignItems: "center",
+    flexDirection: "row"
   },
   panGestureContainer: {
     position: "absolute",
-    right: 0,
-    width: "25%",
+    left: 50,
+    flexDirection: "row",
+    width: "100%",
     height: "100%",
-    zIndex: 100,
+    zIndex: 50,
+    alignItems: "center",
+  },
+  panGestureItem: {
+    height: '100%',
+    flex: 1,
+    // backgroundColor: "rgba(0, 0, 0, 0.2)",
   },
   trashIcon: {
     width: 24,
@@ -50,5 +58,5 @@ export const movableItemStyles = StyleSheet.create({
     right: 20,
     width: 24,
     height: 24,
-  }
-})
+  },
+});

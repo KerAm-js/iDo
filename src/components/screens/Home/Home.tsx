@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useEffect } from "react";
 import { View } from "react-native";
 import { getDate } from "../../../utils/date";
 import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
@@ -6,6 +6,7 @@ import Section from "../../UI/Section/Section";
 import { HomePropType, SectionsObjectType } from "./types";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getHabits,
   getPositions,
   getTasks,
 } from "../../../redux/selectors/taskSelector";
@@ -29,6 +30,7 @@ const Home: FC<HomePropType> = () => {
   const sectionsVisibilities = useSelector(getSectionsVisibilities);
   const { date, weekDay } = getDate(language);
   const tasks = useSelector(getTasks);
+  const habits = useSelector(getHabits);
   const sections: SectionsObjectType = getSections(
     PERIODS_LIST,
     tasks,
@@ -42,6 +44,10 @@ const Home: FC<HomePropType> = () => {
       onPress={() => navigator.navigate('Calendar')}
     />
   );
+
+  useEffect(() => {
+    console.log(tasks.map(task => [task.task, task.id, task.habitId, task.folderId]));
+  }, [tasks, habits])
 
   return (
     <ScreenLayout

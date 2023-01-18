@@ -1,16 +1,17 @@
-import { Action } from "@reduxjs/toolkit"
+import { Action } from "@reduxjs/toolkit";
 
 export type Folder = {
-  id: string,
-  title: string,
-  iconXml: string,
-}
+  id: number;
+  title: string;
+  iconXml: string;
+};
 
 export type FolderState = {
-  folders: Array<Folder>
-}
+  folders: Array<Folder>;
+};
 
 export interface FolderAction extends Action {
-  folder: Folder
-  taskId: string
+  folder: Folder;
+  folders: Array<Folder>;
+  taskId: string;
 }

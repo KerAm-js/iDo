@@ -19,7 +19,7 @@ export const backdropColor = {
 }
 
 export const shadowColors = {
-  light: 'rgba(0, 0, 0, 0.15)',
+  light: 'rgba(0, 0, 0, 0.2)',
   dark: 'rgba(0, 0, 0, 0.5)',
 }
 

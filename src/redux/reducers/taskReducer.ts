@@ -12,6 +12,7 @@ import {
   CALENDAR_CHOOSED_DATE,
   CLEAR_REMINDER,
   UPDATE_POSITIONS,
+  SET_IS_NEW_TASK_HABIT,
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
@@ -20,12 +21,14 @@ import { ListObject } from "../../types/global/ListObject";
 const initialState: TaskState = {
   tasks: [],
   positions: {},
+  habits: {},
   calendarChoosedDate: undefined,
   taskToEdit: undefined,
   newTaskData: {
     time: undefined,
     timeType: undefined,
     remindTime: undefined,
+    isHabit: undefined,
   },
 };
 
@@ -39,6 +42,12 @@ export const taskReducer = (
       return {
         ...state,
         tasks,
+        habits: action.habit
+          ? {
+              ...state.habits,
+              [action.habit.id]: action.habit,
+            }
+          : state.habits,
         newTaskData: !!state.calendarChoosedDate
           ? {
               time: new Date(state.calendarChoosedDate).setHours(
@@ -50,15 +59,20 @@ export const taskReducer = (
               timeType: "day",
               remindTime: undefined,
             }
-          : { ...initialState.newTaskData },
+          : {
+              ...initialState.newTaskData,
+              time: new Date().setHours(23, 59, 59, 999),
+              timeType: "day",
+            },
       };
     }
     case DELETE_TASK: {
+      const habitId = action.task.habitId;
       let tasks: Array<TaskType> = [];
       let positions: ListObject = {};
 
       state.tasks.forEach((task) => {
-        if (task.id !== action.id) {
+        if (task.id !== action.task.id) {
           tasks.push(task);
           positions[task.id] = state.positions[task.id];
         }
@@ -68,9 +82,16 @@ export const taskReducer = (
         ...state,
         tasks,
         positions,
+        habits: habitId
+          ? {
+              ...state.habits,
+              [habitId]: undefined,
+            }
+          : state.habits,
       };
     }
     case EDIT_TASK: {
+      const habitId = action.task?.habitId || action.habit?.id || action.oldHabitId;
       const tasks = state.tasks.map((task) =>
         task.id === action.task.id ? action.task : task
       );
@@ -78,6 +99,10 @@ export const taskReducer = (
         ...state,
         tasks,
         taskToEdit: undefined,
+        habits: habitId ? {
+          ...state.habits,
+          [habitId]: action.habit,
+        } : state.habits,
         newTaskData: !!state.calendarChoosedDate
           ? {
               time: new Date(state.calendarChoosedDate).setHours(
@@ -121,6 +146,28 @@ export const taskReducer = (
         },
       };
     }
+    case SET_IS_NEW_TASK_HABIT: {
+      let { remindTime } = state.newTaskData;
+      let { time } = state.newTaskData;
+      if (
+        action.isHabit &&
+        remindTime &&
+        time &&
+        new Date(remindTime).setHours(0, 0, 0, 0) !==
+          new Date(time).setHours(0, 0, 0, 0)
+      ) {
+        remindTime = undefined;
+      }
+
+      return {
+        ...state,
+        newTaskData: {
+          ...state.newTaskData,
+          isHabit: action.isHabit,
+          remindTime,
+        },
+      };
+    }
     case CLEAR_REMINDER: {
       const tasks = state.tasks.map((el) => {
         if (el.id === action.id && el.remindTime === action.remindTime) {
@@ -161,7 +208,7 @@ export const taskReducer = (
         ...state,
         taskToEdit: action?.task,
         newTaskData:
-          state.calendarChoosedDate && !action.task
+          state.calendarChoosedDate && !action?.task
             ? {
                 time: new Date(state.calendarChoosedDate).setHours(
                   23,
@@ -176,6 +223,7 @@ export const taskReducer = (
                 time: action.task?.time,
                 timeType: action.task?.timeType,
                 remindTime: action.task?.remindTime,
+                isHabit: Boolean(action.task?.habitId),
               },
       };
     }
@@ -183,6 +231,7 @@ export const taskReducer = (
       return {
         ...state,
         tasks: [...action.tasks],
+        habits: action.habitsObj
       };
     }
     case UPDATE_POSITIONS: {
@@ -195,6 +244,7 @@ export const taskReducer = (
       };
     }
     case SET_TASK_EXPIRATION: {
+      const habit = action.task
       const tasks = state.tasks.map((task) => {
         if (task.id === action.id) {
           return {

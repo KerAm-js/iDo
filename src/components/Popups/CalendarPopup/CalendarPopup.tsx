@@ -152,9 +152,6 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   };
 
   const addTime = () => {
-    if (!state) {
-      return;
-    }
     const dateCopy = new Date(date.valueOf());
     const hours = Number(time.slice(0, 2));
     const minutes = Number(time.slice(3, 5));
@@ -163,7 +160,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 
     const timeType: TimeType = time ? "time" : "day";
     const reminderTime: number =
-      state === CHOOSE && isTimeCorrect
+      state === CHOOSE || (newTaskData.isHabit) && isTimeCorrect
         ? dateCopy.setHours(hours, minutes, 0, 0)
         : dateCopy.valueOf();
     const timeValue: number = isTimeCorrect
@@ -171,10 +168,8 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       : dateCopy.setHours(23, 59, 59, 999);
 
     if (isReminderChoosing) {
-      if (state) {
-        dispatch(updateNewTaskRemindTimeAction(reminderTime));
-      }
-    } else if (timeValue.valueOf() !== newTaskData.time) {
+      dispatch(updateNewTaskRemindTimeAction(state ? reminderTime : undefined));
+    } else if (timeValue.valueOf() !== newTaskData.time && state) {
       dispatch(updateNewTaskTimeAction(timeValue, timeType));
     }
   };
@@ -196,12 +191,12 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         updateChoosedTitle(date);
       }
     } else if (newDate) {
-      setChooseItemTitle(languageTexts[language].words[CHOOSE]);
-      setCalendarShown(false);
-      setDate(newDate);
       if (isReminderChoosing) {
         setTime("");
       }
+      setChooseItemTitle(languageTexts[language].words[CHOOSE]);
+      setCalendarShown(false);
+      setDate(newDate);
     }
     setState(newState);
   };
@@ -279,6 +274,18 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     setDefaults();
   }, [language]);
 
+  useEffect(() => {
+    if (state !== CHOOSE && isReminderChoosing && time) {
+      if (newTaskData.isHabit) {
+        setState("");
+        return;
+      }
+      setState(CHOOSE);
+      setDate(new Date());
+      updateChoosedTitle(new Date());
+    }
+  }, [time])
+
   const isReminderSetted =
     state !== "" || time !== "" || !!taskToEdit?.remindTime;
 
@@ -315,13 +322,15 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
                 {...item}
               />
             ))}
-            <DateCheckItem
-              title={chooseItemTitle}
-              isChecked={state === CHOOSE}
-              state={CHOOSE}
-              isToggleCalendarShownComponent
-              onPress={onItemClick}
-            />
+            {!newTaskData.isHabit && (
+              <DateCheckItem
+                title={chooseItemTitle}
+                isChecked={state === CHOOSE}
+                state={CHOOSE}
+                isToggleCalendarShownComponent
+                onPress={onItemClick}
+              />
+            )}
           </Animated.View>
         ) : (
           <Animated.View style={[calendarPopupStyles.screen, scrollViewsStyle]}>
@@ -366,7 +375,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         <FormButton
           title={timeInputPlaceholder}
           iconXml={clock(
-            isTimeExpired && time.length > 0
+            isTimeExpired && !newTaskData.isHabit && time.length > 0
               ? textColors.red
               : isTimeValid
               ? textColors.blue
@@ -376,7 +385,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
           onBlur={onTimeInputBlur}
           style={{ marginRight: 10 }}
           textColor={
-            isTimeExpired
+            isTimeExpired && !newTaskData.isHabit && time.length > 0
               ? textColors.red
               : time.length === 5
               ? textColors.blue

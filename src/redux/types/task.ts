@@ -1,5 +1,6 @@
 import { Action } from "@reduxjs/toolkit";
 import { ListObject } from "../../types/global/ListObject";
+import { RepeatingPeriodTypes } from "../../types/global/Periods";
 
 export type TimeType = "day" | "time";
 
@@ -7,6 +8,19 @@ export type TaskData = {
   time?: number;
   timeType?: TimeType;
   remindTime?: number;
+  isHabit?: boolean;
+};
+
+export type HabitType = {
+  id: number;
+  task: string;
+  description?: string;
+  time: string;
+  timeType: TimeType;
+  remindTime?: string;
+  repeatingPeriod?: RepeatingPeriodTypes;
+  repeatingFrequency?: number;
+  repeatingWeekDays?: Array<number>;
 };
 
 export type TaskState = {
@@ -15,6 +29,9 @@ export type TaskState = {
   calendarChoosedDate: number | undefined;
   taskToEdit: TaskType | undefined;
   newTaskData: TaskData;
+  habits: {
+    [key: number]: HabitType | undefined;
+  };
 };
 
 export interface TaskAction extends Action {
@@ -31,7 +48,12 @@ export interface TaskAction extends Action {
   isCompleted: number;
   isExpired: number;
   id: number;
-  calendarChoosedDate: number | undefined,
+  calendarChoosedDate: number | undefined;
+  isHabit: boolean;
+  habitId: number;
+  habit?: HabitType;
+  oldHabitId?: number;
+  habitsObj: {[key: number]: HabitType}
 }
 
 export interface TaskType {
@@ -45,5 +67,6 @@ export interface TaskType {
   completionTime?: number;
   remindTime?: number;
   notificationId?: string;
-  folder?: string;
+  folderId?: number;
+  habitId?: number;
 }

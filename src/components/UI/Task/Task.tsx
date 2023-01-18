@@ -1,14 +1,14 @@
 import React, { FC, useEffect, useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { bell } from "../../../../assets/icons/bell";
 import { calendarEvent } from "../../../../assets/icons/calendar";
 import { clock } from "../../../../assets/icons/clock";
+import { repeat } from "../../../../assets/icons/repeat";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import { folderSelector } from "../../../redux/selectors/folderSelector";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
-import { AppDispatch } from "../../../redux/types/appDispatch";
 import { regularBorderRadius } from "../../../styles/global/borderRadiuses";
 import { textColors } from "../../../styles/global/colors";
 import {
@@ -43,15 +43,20 @@ import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
 
 const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
-  const dispatch: AppDispatch = useDispatch();
   const { folders } = useSelector(folderSelector);
   const language = useSelector(getLanguage);
 
-  const { task, time, isCompleted, timeType, folder, isExpired, remindTime } =
-    taskObject;
+  const {
+    task,
+    time,
+    isCompleted,
+    timeType,
+    folderId,
+    isExpired,
+    remindTime,
+    habitId,
+  } = taskObject;
 
-  const openEditTaskPopup = () =>
-    dispatch(chooseTaskToEditAction({ ...taskObject }));
   const [isChecked, setIsChecked] = useState(isCompleted ? true : false);
 
   const toggleChecked = () => {
@@ -78,8 +83,8 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     }
   };
 
-  const folderIconXml: string = folder
-    ? folders.find((item) => item.id === folder)?.title || ""
+  const folderIconXml: string = folderId
+    ? folders.find((item) => item.id === folderId)?.title || ""
     : "";
   let timeString = "";
   let reminderString = "";
@@ -116,11 +121,18 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
   if (remindTime && (remindTime !== time || !timeString)) {
     const reminder = new Date(remindTime);
     if (isDayEnd(reminder) || getDaysDiff(reminder, taskTime) !== 0) {
-      if (sectionType === CALENDAR_DAY && getDaysDiff(reminder, taskTime) !== 0) {
+      if (
+        sectionType === CALENDAR_DAY &&
+        getDaysDiff(reminder, taskTime) !== 0
+      ) {
         reminderString = getDate(language, {
           date: reminder,
         }).date;
-      } else if (isToday(reminder) || isTomorrow(reminder) || sectionType === CALENDAR_DAY) {
+      } else if (
+        isToday(reminder) ||
+        isTomorrow(reminder) ||
+        sectionType === CALENDAR_DAY
+      ) {
         reminderString = languageTexts[language].periods.midnight;
       } else if (isWeeklyTime(reminder)) {
         reminderString = getDate(language, {
@@ -136,7 +148,9 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     }
     if (!isDayEnd(reminder)) {
       reminderString =
-        reminderString + (reminderString.length > 0 ? ', ' : '') + getTimeStringWithSecondsConverting(reminder);
+        reminderString +
+        (reminderString.length > 0 ? ", " : "") +
+        getTimeStringWithSecondsConverting(reminder);
     }
   }
 
@@ -151,7 +165,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
       style={taskStyles.container}
     >
       <CheckButton isCompleted={isChecked} onClick={toggleChecked} />
-      <Pressable style={[taskStyles.textContainer]} onPress={openEditTaskPopup}>
+      <View style={[taskStyles.textContainer]}>
         <ThemeText style={text16LineHeight} numberOfLines={1}>
           {task}
         </ThemeText>
@@ -192,16 +206,28 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
               )}
             </View>
           )}
-          {folderIconXml && (
+          {Boolean(habitId) && (
+            <View style={[taskStyles.infoContainer]}>
+              {timeString || reminderString ? (
+                <Text style={[textGrey]}>・</Text>
+              ) : (
+                <Text style={[textGrey]}>
+                  {languageTexts[language].habitsPeriods.daily + " "}
+                </Text>
+              )}
+              <SvgXml xml={repeat(textColors.grey)} width={12} height={12} />
+            </View>
+          )}
+          {/* {folderIconXml && (
             <View style={[taskStyles.infoBlock]}>
               {timeString && <Text style={[textGrey]}>・</Text>}
               <Text numberOfLines={1} style={[text12LineHeight, textGrey]}>
                 {folderIconXml}
               </Text>
             </View>
-          )}
+          )} */}
         </View>
-      </Pressable>
+      </View>
     </ListItem>
   );
 };

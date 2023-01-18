@@ -183,9 +183,9 @@ const Section: FC<SectionProps> = React.memo(
     );
 
     const deleteTask = useCallback(
-      (id: number, notificationId?: string) => {
+      (task: TaskType) => {
         setIsDeleting(true);
-        dispatch(deleteTaskAction(id, notificationId));
+        dispatch(deleteTaskAction(task));
       },
       [dispatch]
     );

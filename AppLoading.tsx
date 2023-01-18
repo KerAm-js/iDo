@@ -1,9 +1,6 @@
 import React from "react";
 import { AppState, useColorScheme } from "react-native";
-import {
-  setStatusBarStyle,
-  StatusBarStyle,
-} from "expo-status-bar";
+import { setStatusBarStyle, StatusBarStyle } from "expo-status-bar";
 import * as Localization from "expo-localization";
 import { LocalDB } from "./src/backend/sqlite/sqlite";
 import Root from "./src/components/Navigators/Root/Root";
@@ -19,33 +16,65 @@ import {
 import { loadSectionsVisibilitiesFromASAction } from "./src/redux/actions/interfaceActions";
 import { store } from "./src/redux/store";
 import { savePositions } from "./src/backend/asyncStorage/positions";
-import { FOLDER, NOTIFICATION_ID } from "./src/backend/sqlite/constants/taskProps";
+import {
+  FOLDER_ID,
+  HABIT_ID,
+  NOTIFICATION_ID,
+} from "./src/backend/sqlite/constants/taskProps";
+import { loadFoldersFromDBAction } from "./src/redux/actions/folderActions";
 
 const loadApp = async () => {
   try {
     await LocalDB.initTasksTable();
-    await LocalDB.initFolders();
-    const result = await LocalDB.getTasksTableColumns();
+    await LocalDB.initFoldersTable();
+    await LocalDB.initHabitsBetaTable();
+    const result = await LocalDB.getTableColumns("tasks");
+
     if (result) {
-      const hasNotificationId = result.find(
-        (column) => column.name === "notificationId"
-      );
-      const hasFolderColumn = result.find((column) => column.name === "folder");
+      let hasNotificationId = false;
+      let hasFolderColumn = false;
+      let hasHabitId = false;
+
+      result.forEach((columnData) => {
+        switch (columnData.name) {
+          case NOTIFICATION_ID: {
+            hasNotificationId = true;
+            break;
+          }
+          case FOLDER_ID: {
+            hasFolderColumn = true;
+            break;
+          }
+          case HABIT_ID: {
+            hasHabitId = true;
+            break;
+          }
+        }
+      });
+
       if (!hasNotificationId) {
         await LocalDB.addColumn({
-          table: 'tasks',
+          table: "tasks",
           columnName: NOTIFICATION_ID,
-          columnType: 'TEXT',
-          defaultValue: 'NULL',
-        })
+          columnType: "TEXT",
+          defaultValue: "NULL",
+        });
       }
-      if (!hasFolderColumn || !hasNotificationId) {
+      if (!hasFolderColumn) {
         await LocalDB.addColumn({
-          table: 'tasks',
-          columnName: FOLDER,
-          columnType: 'INTEGER',
-          defaultValue: 'NULL',
-        })
+          table: "tasks",
+          columnName: FOLDER_ID,
+          columnType: "INTEGER",
+          defaultValue: "NULL",
+        });
+      }
+      if (!hasHabitId) {
+        await LocalDB.addColumn({
+          table: "tasks",
+          columnName: HABIT_ID,
+          columnType: "INTEGER",
+          defaultValue: "NULL",
+        });
         await LocalDB.updateTasksTable();
       }
     }
@@ -67,6 +96,7 @@ export default function AppLoading() {
           await loadApp();
           dispatch(loadPrefsFromASAction(systemTheme, Localization.locale));
           dispatch(loadSectionsVisibilitiesFromASAction());
+          dispatch(loadFoldersFromDBAction());
           dispatch(loadPositionsFromASAction());
           dispatch(loadTasksFromLocalDB());
         }

@@ -169,6 +169,9 @@ export const languageTexts = {
       main: "Главная",
       preferences: "Настройки",
     },
+    habitsPeriods: {
+      daily: 'Ежедневно',
+    }
   },
   en: {
     notifications: {
@@ -318,6 +321,9 @@ export const languageTexts = {
         week: "Weeks",
       },
     },
+    habitsPeriods: {
+      daily: 'Daily',
+    }
   },
   de: {
     notifications: {
@@ -453,6 +459,9 @@ export const languageTexts = {
         week: "Wochen",
       },
     },
+    habitsPeriods: {
+      daily: 'Tagli',
+    }
   },
   ch: {
     notifications: {
@@ -519,32 +528,32 @@ export const languageTexts = {
     months: {
       names: [],
       fulls: [
-        "Январь",
-        "Февраль",
-        "Март",
-        "Апрель",
-        "Май",
-        "Июнь",
-        "Июль",
-        "Август",
-        "Сентябрь",
-        "Октябрь",
-        "Ноябрь",
-        "Декабрь",
+        "Кхолламан",
+        "Чиллин",
+        "Бекарг",
+        "Оханан",
+        "ХIутосург",
+        "Асаран",
+        "Мангалан",
+        "Хьаьттан",
+        "Тов-бецан",
+        "Эсаран",
+        "Лахьанан",
+        "ГIуран",
       ],
       shorts: [
-        "Янв",
-        "Фев",
-        "Мар",
-        "Апр",
-        "Май",
-        "Июн",
-        "Июл",
-        "Авг",
-        "Сен",
-        "Окт",
-        "Ноя",
-        "Дек",
+        "Кхл",
+        "Члн",
+        "Бкг",
+        "Охн",
+        "ХIт",
+        "Аср",
+        "Мнг",
+        "Хьт",
+        "Твб",
+        "Эср",
+        "Лхь",
+        "ГIр",
       ],
     },
     periods: {
@@ -582,6 +591,9 @@ export const languageTexts = {
       ch: "Нохчийн",
       de: "Немцойн",
     },
+    habitsPeriods: {
+      daily: 'ХIор дийнахь',
+    }
   },
 };
 

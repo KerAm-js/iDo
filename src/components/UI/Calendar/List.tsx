@@ -31,7 +31,7 @@ const List: FC<ListPropType> = ({
         hasUncompleted: false,
       };
 
-      if (task.isExpired) {
+      if (task.isExpired && !task.isCompleted) {
         datesObject.current[key] = {
           hasUncompleted: false,
           hasCompleted: false,

@@ -11,7 +11,7 @@ export const reminderStateList = [
   },
   {
     id: "1",
-    minutes: 15,
+    minutes: 30,
   },
   {
     id: "2",
@@ -19,10 +19,14 @@ export const reminderStateList = [
   },
   {
     id: "3",
-    days: 1,
+    hours: 3,
   },
   {
     id: "4",
+    days: 1,
+  },
+  {
+    id: "5",
     weeks: 1,
   },
 ];
@@ -52,6 +56,10 @@ export const getDaysDiff = (first: Date, second: Date): number => {
       new Date(first).setHours(0, 0, 0, 0)) /
     (1000 * 3600 * 24)
   );
+};
+
+export const toFullTimeString = (date: Date) => {
+  return date.toTimeString().slice(0, 8) + ":" + date.getMilliseconds();
 };
 
 export const isExpiredDate = (date: Date) => {
@@ -108,6 +116,16 @@ export const isTomorrow = (date: Date) => {
     currDate.getDate() + 1
   );
   return dateCopy.setHours(0, 0, 0, 0) === tomorrowDate.setHours(0, 0, 0, 0);
+};
+
+export const getNextDate = (date?: number) => {
+  const dateCopy = date ? new Date(date) : new Date();
+  const tomorrowDate = new Date(
+    dateCopy.getFullYear(),
+    dateCopy.getMonth(),
+    dateCopy.getDate() + 1
+  );
+  return tomorrowDate;
 };
 
 export const isWeeklyTime = (date: Date) => {
@@ -190,9 +208,10 @@ export const extractReminderState = (defaultDate: Date, remindDate: number) => {
     return defaultState;
   }
 
+  const weeks = diff / (1000 * 3600 * 24 * 7);
   const days = diff / (1000 * 3600 * 24);
-  const hours = (defaultDate.valueOf() - remindDate) / (1000 * 3600);
-  const minutes = (defaultDate.valueOf() - remindDate) / (1000 * 60);
+  const hours = diff / (1000 * 3600);
+  const minutes = diff / (1000 * 60);
 
   if (days === 7) {
     return (
@@ -209,9 +228,14 @@ export const extractReminderState = (defaultDate: Date, remindDate: number) => {
       reminderStateList.find((item) => item.hours === 1)?.id ||
       reminderStateList[0].id
     );
-  } else if (minutes === 15) {
+  } else if (hours === 3) {
     return (
-      reminderStateList.find((item) => item.minutes === 15)?.id ||
+      reminderStateList.find((item) => item.hours === 3)?.id ||
+      reminderStateList[0].id
+    );
+  } else if (minutes === 30) {
+    return (
+      reminderStateList.find((item) => item.minutes === 30)?.id ||
       reminderStateList[0].id
     );
   } else if (minutes === 0) {
@@ -245,10 +269,6 @@ export const isLeapYear = (year: number) => {
 export const getLastDateOfCurrentMonth = () => {
   const currDate = new Date();
   return new Date(currDate.getFullYear(), currDate.getMonth() + 1, 0).getDate();
-};
-
-export const geDaysToWeekEnd = () => {
-  return 6 - new Date().getDay();
 };
 
 export const getMothCalendarArray = (

@@ -29,25 +29,33 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   const newTaskData = useSelector(getNewTaskData);
   const language = useSelector(getLanguage);
   const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
-  let titleString = toLocaleStateString({ dateValue: date.valueOf(), timeType: newTaskData.timeType, language });
+  let titleString = newTaskData.isHabit || newTaskData.timeType === 'day'
+    ? languageTexts[language].periods.midnight
+    : toLocaleStateString({
+        dateValue: date.valueOf(),
+        timeType: newTaskData.timeType,
+        language,
+      });
 
   let remindDate = date;
 
   if (minutes) {
-    titleString = getReminderItemTitle(language, minutes, 'minute');
-    remindDate = new Date(date.valueOf() - (1000 * 60 * minutes));
+    titleString = getReminderItemTitle(language, minutes, "minute");
+    remindDate = new Date(date.valueOf() - 1000 * 60 * minutes);
   } else if (hours) {
-    titleString = getReminderItemTitle(language, hours, 'hour');
-    remindDate = new Date(date.valueOf() - (1000 * 60 * 60 * hours));
+    titleString = getReminderItemTitle(language, hours, "hour");
+    remindDate = new Date(date.valueOf() - 1000 * 60 * 60 * hours);
   } else if (days) {
-    titleString = getReminderItemTitle(language, days, 'day');
-    remindDate = new Date(date.valueOf() - (1000 * 60 * 60 * 24 * days));
+    titleString = getReminderItemTitle(language, days, "day");
+    remindDate = new Date(date.valueOf() - 1000 * 60 * 60 * 24 * days);
   } else if (weeks) {
-    titleString = getReminderItemTitle(language, weeks, 'week');
-    remindDate = new Date(date.valueOf() - (1000 * 60 * 60 * 24 * 7 * weeks));
+    titleString = getReminderItemTitle(language, weeks, "week");
+    remindDate = new Date(date.valueOf() - 1000 * 60 * 60 * 24 * 7 * weeks);
   }
 
-  const disabled = new Date().valueOf() >= remindDate.valueOf();
+  const disabled =
+    (newTaskData.isHabit && Boolean(days || weeks)) ||
+    (!newTaskData.isHabit && new Date().valueOf() >= remindDate.valueOf());
 
   const onPressHandler = useCallback(() => {
     onPress(id, remindDate);
@@ -61,16 +69,16 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
             text17LineHeight,
             isChecked && { color: buttonColors.blue },
             disabled && textGrey,
-            { marginRight: 10 }
+            { marginRight: 10 },
           ]}
         >
           {titleString}
         </ThemeText>
-        {
-          id === '0' && <Text style={[text14LineHeight, textGrey]}>
-          {languageTexts[language].popupTitles.dateOfCompletion}
-        </Text>
-        }
+        {id === "0" && !newTaskData.isHabit && (
+          <Text style={[text14LineHeight, textGrey]}>
+            {languageTexts[language].popupTitles.dateOfCompletion}
+          </Text>
+        )}
       </ListItem>
     </Pressable>
   );

@@ -1,14 +1,15 @@
 import { View } from "react-native";
-import { tabBarStyles } from "./styles";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { FC } from "react";
+import { BlurView } from "expo-blur";
+import { useTheme } from "@react-navigation/native";
+import * as Haptics from "expo-haptics";
+import { themeColors } from "../../../styles/global/colors";
+import { TabBarPropTypes } from "./types";
 import CircleButton from "../buttons/CircleButton/CircleButton";
 import { plus } from "../../../../assets/icons/plus";
 import TabsRender from "./TabsRender";
-import { FC, useEffect, useReducer, useRef } from "react";
-import { TabBarPropTypes } from "./types";
-import { BlurView } from "expo-blur";
-import { themeColors } from "../../../styles/global/colors";
-import { useTheme } from "@react-navigation/native";
+import { tabBarStyles } from "./styles";
 
 const TabBar: FC<TabBarPropTypes> = ({
   state,
@@ -20,6 +21,7 @@ const TabBar: FC<TabBarPropTypes> = ({
   const { bottom } = useSafeAreaInsets();
   const onCircleButtonClick = () => {
     setTimeout(onBigButtonClick, 200);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
   const middleIndex = Math.round(state.routes.length / 2);
 

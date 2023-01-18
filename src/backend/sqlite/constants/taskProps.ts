@@ -8,8 +8,17 @@ export const IS_EXPIRED = 'isExpired';
 export const COMPLETION_TIME = 'completionTime';
 export const REMIND_TIME = 'remindTime';
 export const NOTIFICATION_ID = 'notificationId';
-export const FOLDER = 'folder';
+export const FOLDER_ID = 'folderId';
 
 export const TITLE = 'title';
 export const TASKS = 'tasks';
 export const ICON_XML = 'iconXml';
+
+export const HABIT_ID = 'habitId';
+export const MINUTES = 'time';
+export const HOURS = 'hours';
+export const REMIND_MINUTES = 'remindMinutes';
+export const REMIND_HOURS = 'remindHours';
+export const REPEATING_PERIOD = 'repeatingPeriod';
+export const REPEATING_WEEK_DAYS = 'repeatingWeekDays';
+export const REPEATING_FREQUENCY = 'repeatingFrequency';

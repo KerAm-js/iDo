@@ -1,5 +1,5 @@
 import React, { FC, useRef, useState } from "react";
-import { Dimensions, Pressable } from "react-native";
+import { Dimensions, Pressable, View } from "react-native";
 import * as Haptics from "expo-haptics";
 import {
   GestureEventPayload,
@@ -33,6 +33,9 @@ import { TaskType } from "../../../redux/types/task";
 import { useTheme } from "@react-navigation/native";
 import Task from "../Task/Task";
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
+import { AppDispatch } from "../../../redux/types/appDispatch";
+import { useDispatch } from "react-redux";
+import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 
 const MovableItem: FC<MovableItemProps> = React.memo(
   ({
@@ -50,6 +53,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
   }) => {
     const [isDragged, setIsDragged] = useState(false);
     const { dark } = useTheme();
+    const dispatch: AppDispatch = useDispatch();
     const shadowColor = dark ? shadowColors.dark : shadowColors.light;
     const { width: SCREEN_WIDTH } = Dimensions.get("screen");
     const translateThreshold = SCREEN_WIDTH * -0.3;
@@ -102,9 +106,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
               ? 28 + current?.position * itemHeight
               : current?.position * itemHeight;
 
-            if (isCompletedChanged) {
-              zIndex.value = -1;
-            }
+            zIndex.value = -1;
 
             translateY.value = withTiming(
               newTop,
@@ -129,7 +131,6 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       "worklet";
       context.startPositionsObject = positions.value;
       context.startPosition = positions.value[id].position;
-      zIndex.value = 1;
     };
 
     const onActiveGestureEvent = (
@@ -137,7 +138,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       context: ContextType
     ) => {
       "worklet";
-      const { translationY, translationX } = event;
+      const { translationY } = event;
       if (isDragged) {
         const newPosition = getNewTaskPosition(
           translationY + top,
@@ -154,7 +155,8 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         );
 
         if (newPosition !== positions?.value[id]?.position) {
-          const [newPositionsObject, isTaskMovingDisabled, toId] = moveTask(
+          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+          const [newPositionsObject, isTaskMovingDisabled] = moveTask(
             positions?.value,
             positions?.value[id]?.position,
             newPosition
@@ -162,20 +164,33 @@ const MovableItem: FC<MovableItemProps> = React.memo(
           positions.value = newPositionsObject;
           context.isMovingDisabled = isTaskMovingDisabled;
         }
-      } else {
-        translateX.value = translationX;
-        if (
-          translationX < translateThreshold &&
-          trashIconOpacity.value === 0 &&
-          !taskObject.isCompleted
-        ) {
-          runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Medium);
-        }
-        trashIconOpacity.value = withTiming(
-          translationX < translateThreshold ? 1 : 0,
-          { duration: 150 }
-        );
       }
+    };
+
+    const onActiveDeleteGestureEvent = (
+      event: Readonly<GestureEventPayload & PanGestureHandlerEventPayload>,
+      context: ContextType
+    ) => {
+      "worklet";
+      const { translationX } = event;
+
+      if (isDragged) {
+        onActiveGestureEvent(event, context);
+        return;
+      }
+
+      translateX.value = translationX;
+      if (
+        translationX < translateThreshold &&
+        trashIconOpacity.value === 0 &&
+        !taskObject.isCompleted
+      ) {
+        runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
+      }
+      trashIconOpacity.value = withTiming(
+        translationX < translateThreshold ? 1 : 0,
+        { duration: 150 }
+      );
     };
 
     const onFinishGestureEvent = (
@@ -197,34 +212,39 @@ const MovableItem: FC<MovableItemProps> = React.memo(
           positions.value = context.startPositionsObject;
           newTranslateY = context.startPosition * itemHeight;
         }
-        translateY.value = withTiming(
-          newTranslateY,
-          {
-            duration: 300,
-          },
-          onAnimationEnd
-        );
-        shadowOpacity.value = withTiming(0);
-      } else {
-        if (translateX.value < translateThreshold && !taskObject.isCompleted) {
-          translateX.value = withSpring(-SCREEN_WIDTH);
-          trashIconOpacity.value = withTiming(
-            0,
-            { duration: 250 },
-            (isFinished) => {
-              if (isFinished && deleteTask) {
-                runOnJS(deleteTask)(id, taskObject.notificationId);
-              }
-            }
-          );
-        } else {
-          trashIconOpacity.value = withTiming(0, { duration: 150 });
-          translateX.value = withSpring(0);
-        }
+        translateY.value = withTiming(newTranslateY, {
+          duration: 300,
+        });
+        shadowOpacity.value = withTiming(0, undefined, onAnimationEnd);
       }
     };
 
-    const gestureEventHanlder = useAnimatedGestureHandler<
+    const onFinishDeleteGestureEvent = (
+      _: Readonly<GestureEventPayload & PanGestureHandlerEventPayload>,
+      context: ContextType
+    ) => {
+      "worklet";
+      if (isDragged) {
+        onFinishGestureEvent(_, context);
+      }
+      if (translateX.value < translateThreshold && !taskObject.isCompleted) {
+        translateX.value = withSpring(-SCREEN_WIDTH);
+        trashIconOpacity.value = withTiming(
+          0,
+          { duration: 250 },
+          (isFinished) => {
+            if (isFinished && deleteTask) {
+              runOnJS(deleteTask)(taskObject);
+            }
+          }
+        );
+      } else {
+        trashIconOpacity.value = withTiming(0, { duration: 150 });
+        translateX.value = withSpring(0);
+      }
+    };
+
+    const moveGestureEventHandler = useAnimatedGestureHandler<
       PanGestureHandlerGestureEvent,
       ContextType
     >({
@@ -233,10 +253,22 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       onFinish: onFinishGestureEvent,
     });
 
+    const deleteGestureEventHandler = useAnimatedGestureHandler<
+      PanGestureHandlerGestureEvent,
+      ContextType
+    >({
+      onStart: onStartGestureEvent,
+      onActive: onActiveDeleteGestureEvent,
+      onFinish: onFinishDeleteGestureEvent,
+    });
+
     const onLongPress = () => {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      setIsDragged(true);
-      shadowOpacity.value = withTiming(1);
+      if (!isDragged) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        setIsDragged(true);
+        zIndex.value = 10 * upperBound;
+        shadowOpacity.value = withTiming(1);
+      }
     };
 
     const clearCompletingTimeout = () => {
@@ -261,7 +293,10 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       }
     };
 
-    const isAnimated = !positions.value[id] && sectionTitle !== CALENDAR_DAY
+    const openEditTaskPopup = () =>
+      dispatch(chooseTaskToEditAction({ ...taskObject }));
+
+    const isAnimated = !positions.value[id] && sectionTitle !== CALENDAR_DAY;
 
     return (
       <Animated.View
@@ -272,14 +307,35 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         }
         style={[movableItemStyles.container, shadowStyle, containerStyleR]}
       >
-        <PanGestureHandler onGestureEvent={gestureEventHanlder}>
-          <Animated.View style={movableItemStyles.panGestureContainer}>
-            <Pressable
-              onLongPress={taskObject.isCompleted ? undefined : onLongPress}
-              style={movableItemStyles.pressable}
-            ></Pressable>
-          </Animated.View>
-        </PanGestureHandler>
+        <View style={movableItemStyles.panGestureContainer}>
+          <Pressable
+            onPress={openEditTaskPopup}
+            onLongPress={onLongPress}
+            style={movableItemStyles.pressable}
+          >
+            <PanGestureHandler
+              activateAfterLongPress={500}
+              onGestureEvent={moveGestureEventHandler}
+              onActivated={onLongPress}
+            >
+              <Animated.View
+                style={movableItemStyles.panGestureItem}
+              ></Animated.View>
+            </PanGestureHandler>
+            <PanGestureHandler onGestureEvent={deleteGestureEventHandler}>
+              <Animated.View
+                style={[
+                  movableItemStyles.panGestureItem,
+                  {
+                    maxWidth: "30%",
+                    maxHeight: "65%",
+                    // backgroundColor: "rgba(250, 0, 0, 0.2)",
+                  },
+                ]}
+              ></Animated.View>
+            </PanGestureHandler>
+          </Pressable>
+        </View>
         <Animated.View
           style={[trashIconStyleR, movableItemStyles.trashIconContainer]}
         >

@@ -1,1 +1,2 @@
 export const ADD_TASK_TO_FOLDER = 'ADD_TASK_TO_FOLDER';
+export const UPDATE_FOLDERS = 'UPDATE_FOLDERS';

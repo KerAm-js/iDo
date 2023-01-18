@@ -21,7 +21,7 @@ export type MovableItemProps = {
   opacity: { value: number };
   itemHeight: number;
   completeTask: (task: TaskType) => void;
-  deleteTask: (id: number, notificationId?: string) => void;
+  deleteTask: (task: TaskType) => void;
   sectionTitle: HomePeriodsKeys;
   upperBound: number;
 };

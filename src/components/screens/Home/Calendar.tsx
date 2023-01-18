@@ -1,6 +1,5 @@
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import {
-  useFocusEffect,
   useNavigation,
   useTheme,
 } from "@react-navigation/native";
@@ -72,7 +71,7 @@ const CalendarScreen = () => {
       />
       <View
         style={{
-          height: 1,
+          height: 0.5,
           width: "100%",
           backgroundColor: theme.colors.border,
           marginTop: 10,

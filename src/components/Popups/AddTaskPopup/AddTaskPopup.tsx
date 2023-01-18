@@ -10,6 +10,8 @@ import {
   addTaskAction,
   editTaskAction,
   setDefaultNewTaskDataAction,
+  setIsNewTaskHabitAction,
+  updateNewTaskTimeAction,
 } from "../../../redux/actions/taskActions";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
@@ -42,7 +44,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     useSelector(taskStateSelector);
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
-  const [choosedFolder, setChoosedFolder] = useState<string>("");
+  const [choosedFolder, setChoosedFolder] = useState<number | undefined>(
+    undefined
+  );
   const [circleButtonDisabled, setCircleButtonDisabled] =
     useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
@@ -51,21 +55,12 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   const setDefaults = () => {
     setTask("");
     setDescription("");
-    setChoosedFolder("");
+    setChoosedFolder(undefined);
   };
 
   const onSubmit = () => {
     const time =
-      newTaskData.time ||
-      new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate(),
-        23,
-        59,
-        59,
-        999
-      ).valueOf();
+      newTaskData.time || new Date().setHours(23, 59, 59, 999).valueOf();
     const timeType = newTaskData.timeType || "day";
     const remindTime = newTaskData.remindTime;
     const isExpired = new Date(time) <= new Date();
@@ -79,33 +74,38 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
                 task,
                 description,
                 completionTime: taskToEdit.completionTime,
-                folder: choosedFolder,
+                folderId: choosedFolder,
                 time,
                 timeType,
                 isExpired: isExpired ? 1 : 0,
                 remindTime,
+                habitId: taskToEdit.habitId,
               },
+              newTaskData.isHabit,
               taskToEdit.notificationId
             )
-          : addTaskAction({
-              id: new Date().valueOf(),
-              isCompleted: 0,
-              task,
-              description,
-              folder: choosedFolder,
-              time,
-              isExpired: isExpired ? 1 : 0,
-              timeType,
-              remindTime,
-            })
+          : addTaskAction(
+              {
+                id: new Date().valueOf(),
+                isCompleted: 0,
+                task,
+                description,
+                folderId: choosedFolder,
+                time,
+                isExpired: isExpired ? 1 : 0,
+                timeType,
+                remindTime,
+              },
+              newTaskData.isHabit
+            )
       );
       setDefaults();
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
-  const updateFolder = (id: string) => {
-    setChoosedFolder(choosedFolder === id ? "" : id);
+  const updateFolder = (id: number | undefined) => {
+    setChoosedFolder(choosedFolder === id ? undefined : id);
   };
 
   const openReminderHandler = () => {
@@ -125,9 +125,18 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     }
   };
 
+  const toggleIsTaskHabit = () => {
+    updateFolder(newTaskData.isHabit ? undefined : 2);
+    dispatch(setIsNewTaskHabitAction(!newTaskData.isHabit));
+  };
+
   useEffect(() => {
     if (visible && !taskToEdit) {
       taskInput.current?.focus();
+      if (!newTaskData.time)
+        dispatch(
+          updateNewTaskTimeAction(new Date().setHours(23, 59, 59, 999), "day")
+        );
     }
     if (!visible && setDefaultsFlag.current) {
       setDefaults();
@@ -139,21 +148,20 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     if (taskToEdit) {
       setTask(taskToEdit?.task || "");
       setDescription(taskToEdit?.description || "");
-      setChoosedFolder(taskToEdit?.folder || "");
+      setChoosedFolder(taskToEdit?.folderId || undefined);
     }
   }, [taskToEdit]);
 
   useEffect(() => {
     if (!!taskToEdit) {
-      const isTaskNotEdited =
-        task === taskToEdit.task && description === taskToEdit.description;
-      const isTimeNotEdited = newTaskData?.time === taskToEdit.time;
-      const isReminderNotEdited =
-        newTaskData?.remindTime === taskToEdit.remindTime;
-      if (
-        (isTaskNotEdited && isTimeNotEdited && isReminderNotEdited) ||
-        task.length === 0
-      ) {
+      const isTaskIsNotEdited =
+        task === taskToEdit.task &&
+        description === taskToEdit.description &&
+        newTaskData?.time === taskToEdit.time &&
+        newTaskData?.remindTime === taskToEdit.remindTime &&
+        newTaskData?.isHabit === Boolean(taskToEdit.habitId);
+
+      if (isTaskIsNotEdited || task.length === 0) {
         setCircleButtonDisabled(true);
       } else {
         setCircleButtonDisabled(false);
@@ -165,7 +173,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         setCircleButtonDisabled(true);
       }
     }
-  }, [task, description, choosedFolder, newTaskData]);
+  }, [task, description, choosedFolder, newTaskData, newTaskData.isHabit]);
 
   return (
     <BottomPopup
@@ -230,13 +238,15 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
             style={addTaskPopupStyles.iconButton}
             onClick={openReminderHandler}
           />
-          {/* <IconButton
-            xml={repeat(choosedFolder === '2' ? textColors.blue : textColors.grey)}
+          <IconButton
+            xml={repeat(
+              newTaskData.isHabit ? textColors.blue : textColors.grey
+            )}
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
-            onClick={() => updateFolder("2")}
-          /> */}
+            onClick={toggleIsTaskHabit}
+          />
         </View>
         <View style={[addTaskPopupStyles.buttonsGroup]}>
           <CircleButton
