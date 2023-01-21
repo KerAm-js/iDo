@@ -47,7 +47,7 @@ export const scheduleTaskExpiration = async (
         await addRegularTask(dispatch, task);
       } else {
         const timeDiff = task.time - currTime;
-        setTimeout(async () => {
+        setTimeout(() => {
           const expiredTask = store.getState().tasks.tasks.find((item) => {
             const isItemCompletedInTime =
               item.completionTime && item.completionTime < item.time;
@@ -59,13 +59,17 @@ export const scheduleTaskExpiration = async (
             );
           });
           if (expiredTask) {
-            await LocalDB.setTaskExpiration(expiredTask?.id);
+            LocalDB.setTaskExpiration(expiredTask?.id);
             dispatch({ type: SET_TASK_EXPIRATION, id: expiredTask.id });
-            if (
-              expiredTask.isRegular &&
-              JSON.stringify(expiredTask) === JSON.stringify(task)
-            ) {
-              await addRegularTask(dispatch, expiredTask);
+            const isTaskUpdated =
+              expiredTask.task === task.task &&
+              expiredTask.description === task.description &&
+              expiredTask.remindTime === task.remindTime &&
+              expiredTask.time === task.time &&
+              expiredTask.timeType === task.timeType;
+              expiredTask.folderId === task.folderId;
+            if (expiredTask.isRegular && isTaskUpdated) {
+              addRegularTask(dispatch, expiredTask);
             }
           }
         }, timeDiff);
@@ -120,14 +124,6 @@ export const scheduleReminder = async (
     const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
     const { language } = store.getState().prefs;
     if (notificationTime > 0) {
-      console.log(
-        toLocaleStateString({
-          defaultDate: task.remindTime,
-          dateValue: task.time,
-          timeType: task.timeType,
-          language,
-        })
-      );
       const notificationId = await setNotification(
         task.task,
         "",
