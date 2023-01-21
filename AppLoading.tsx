@@ -27,6 +27,7 @@ const loadApp = async () => {
   try {
     await LocalDB.initTasksTable();
     await LocalDB.initFoldersTable();
+    await LocalDB.setDefaultFolders();
     const result = await LocalDB.getTableColumns("tasks");
 
     if (result) {
@@ -72,7 +73,7 @@ const loadApp = async () => {
           table: "tasks",
           columnName: IS_REGULAR,
           columnType: "INT",
-          defaultValue: "'0'",
+          defaultValue: 0,
           notNull: true,
         });
         await LocalDB.updateTasksTable();

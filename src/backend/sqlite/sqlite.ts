@@ -367,7 +367,6 @@ export class LocalDB {
       db.transaction((tx) => {
         tx.executeSql(
           `CREATE TABLE IF NOT EXISTS folders (${ID} INTEGER PRIMARY KEY NOT NULL, ${TITLE} TEXT NOT NULL, ${ICON_XML} TEXT NOT NULL)`,
-          // 'DROP TABLE folders',
           [],
           (_: SQLTransaction, result: SQLResultSet) => resolve(result),
           (_: SQLTransaction, error: SQLError) => {
@@ -423,7 +422,7 @@ export class LocalDB {
     columnName: string;
     columnType: string;
     notNull?: boolean;
-    defaultValue?: string;
+    defaultValue?: string | number;
   }) {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
