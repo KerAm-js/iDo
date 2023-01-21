@@ -18,7 +18,7 @@ import { store } from "./src/redux/store";
 import { savePositions } from "./src/backend/asyncStorage/positions";
 import {
   FOLDER_ID,
-  HABIT_ID,
+  IS_REGULAR,
   NOTIFICATION_ID,
 } from "./src/backend/sqlite/constants/taskProps";
 import { loadFoldersFromDBAction } from "./src/redux/actions/folderActions";
@@ -27,13 +27,12 @@ const loadApp = async () => {
   try {
     await LocalDB.initTasksTable();
     await LocalDB.initFoldersTable();
-    await LocalDB.initHabitsBetaTable();
     const result = await LocalDB.getTableColumns("tasks");
 
     if (result) {
       let hasNotificationId = false;
       let hasFolderColumn = false;
-      let hasHabitId = false;
+      let hasIsRegular = false;
 
       result.forEach((columnData) => {
         switch (columnData.name) {
@@ -45,8 +44,8 @@ const loadApp = async () => {
             hasFolderColumn = true;
             break;
           }
-          case HABIT_ID: {
-            hasHabitId = true;
+          case IS_REGULAR: {
+            hasIsRegular = true;
             break;
           }
         }
@@ -68,12 +67,13 @@ const loadApp = async () => {
           defaultValue: "NULL",
         });
       }
-      if (!hasHabitId) {
+      if (!hasIsRegular) {
         await LocalDB.addColumn({
           table: "tasks",
-          columnName: HABIT_ID,
-          columnType: "INTEGER",
-          defaultValue: "NULL",
+          columnName: IS_REGULAR,
+          columnType: "INT",
+          defaultValue: "'0'",
+          notNull: true,
         });
         await LocalDB.updateTasksTable();
       }

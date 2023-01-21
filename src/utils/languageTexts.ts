@@ -17,6 +17,10 @@ export const languageTexts = {
     notifications: {
       taskReminder: {
         title: "Напоминание о задаче"
+      },
+      regularTaskIsAdded: {
+        title: "Новая ежедневная задача",
+        body: "Задача будет автоматически добавляться каждый день. Чтобы остановить повторение этой задачи, удалите или отредактируйте её последнюю копию.",
       }
     },
     alerts: {
@@ -177,6 +181,10 @@ export const languageTexts = {
     notifications: {
       taskReminder: {
         title: "Task reminder"
+      },
+      regularTaskIsAdded: {
+        title: "New daily task",
+        body: "The task will be added automaticly every day. Delete or edit this task to stop it's repeating.",
       }
     },
     alerts: {
@@ -329,6 +337,10 @@ export const languageTexts = {
     notifications: {
       taskReminder: {
         title: "Aufgabenerinnerung"
+      },
+      regularTaskIsAdded: {
+        title: "Neue Tagesaufgabe",
+        body: "Die Aufgabe wird jeden Tag automatisch hinzugefügt. Um zu verhindern, dass sich diese Aufgabe wiederholt, löschen oder bearbeiten Sie die letzte Kopie.",
       }
     },
     alerts: {
@@ -467,6 +479,10 @@ export const languageTexts = {
     notifications: {
       taskReminder: {
         title: "ГIуллакх дагадаийтар"
+      },
+      regularTaskIsAdded: {
+        title: "Керла хIор дийнан гIуллакх",
+        body: "ХIара гIуллакх хIор дийнан къепйозан тIекхетар долуш ду. Нагахь хьайна и сацо лаахь, кху гIуллакхийн тIеххьара кеп хийца я къепйозан юкъара дIаяккха.",
       }
     },
     alerts: {

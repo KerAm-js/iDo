@@ -9,12 +9,12 @@ export const COMPLETION_TIME = 'completionTime';
 export const REMIND_TIME = 'remindTime';
 export const NOTIFICATION_ID = 'notificationId';
 export const FOLDER_ID = 'folderId';
+export const IS_REGULAR = 'isRegular';
 
 export const TITLE = 'title';
 export const TASKS = 'tasks';
 export const ICON_XML = 'iconXml';
 
-export const HABIT_ID = 'habitId';
 export const MINUTES = 'time';
 export const HOURS = 'hours';
 export const REMIND_MINUTES = 'remindMinutes';

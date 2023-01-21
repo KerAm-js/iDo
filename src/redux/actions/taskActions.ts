@@ -1,4 +1,4 @@
-import { HabitType, TaskType, TimeType } from "./../types/task";
+import { TaskType, TimeType } from "./../types/task";
 import {
   CHOOSE_TASK_TO_EDIT,
   COMPLETE_TASK,
@@ -12,7 +12,7 @@ import {
   CALENDAR_CHOOSED_DATE,
   CLEAR_REMINDER,
   UPDATE_POSITIONS,
-  SET_IS_NEW_TASK_HABIT,
+  SET_IS_NEW_TASK_REGULAR,
 } from "./../constants/task";
 import { Dispatch } from "@reduxjs/toolkit";
 import { ADD_TASK } from "../constants/task";
@@ -24,13 +24,10 @@ import {
   setNotification,
 } from "../../native/notifications";
 import { store } from "../store";
-import {
-  getNextDate,
-  toFullTimeString,
-  toLocaleStateString,
-} from "../../utils/date";
+import { getNextDate, toLocaleStateString } from "../../utils/date";
 import { ListObject } from "../../types/global/ListObject";
 import { getPositionsFromAS } from "../../backend/asyncStorage/positions";
+import { languageTexts } from "../../utils/languageTexts";
 
 export const scheduleTaskExpiration = async (
   task: TaskType,
@@ -47,11 +44,7 @@ export const scheduleTaskExpiration = async (
       if (!isCompletedInTime && !task.isExpired && task.time <= currTime) {
         await LocalDB.setTaskExpiration(task.id);
         dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
-        if (task.habitId) {
-          const habit = store.getState().tasks.habits[task.habitId];
-          console.log(1)
-          if (habit) addTask(dispatch, getTaskFromHabit(habit))
-        }
+        await addRegularTask(dispatch, task);
       } else {
         const timeDiff = task.time - currTime;
         setTimeout(async () => {
@@ -68,10 +61,11 @@ export const scheduleTaskExpiration = async (
           if (expiredTask) {
             await LocalDB.setTaskExpiration(expiredTask?.id);
             dispatch({ type: SET_TASK_EXPIRATION, id: expiredTask.id });
-            if (expiredTask.habitId) {
-              const habit = store.getState().tasks.habits[expiredTask.habitId];
-              console.log(2)
-              if (habit) addTask(dispatch, getTaskFromHabit(habit))
+            if (
+              expiredTask.isRegular &&
+              JSON.stringify(expiredTask) === JSON.stringify(task)
+            ) {
+              await addRegularTask(dispatch, expiredTask);
             }
           }
         }, timeDiff);
@@ -86,11 +80,6 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
   try {
     const currDate = new Date().setHours(0, 0, 0, 0);
     const tasks = await LocalDB.getTasks();
-    const habits = await LocalDB.getHabits();
-    const habitsObj: { [key: number]: HabitType } = {}
-    habits.forEach(habit => {
-      habitsObj[habit.id] = habit;
-    })
 
     await deleteAllNotifications();
     const notificationsUpdatedTasks = await Promise.all(
@@ -112,7 +101,7 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
       (task) => task.time >= currDate || !task.isCompleted
     );
     filteredTasks.reverse();
-    dispatch({ type: UPDATE_TASKS, tasks: filteredTasks, habitsObj, });
+    dispatch({ type: UPDATE_TASKS, tasks: filteredTasks });
   } catch (error) {
     console.log("getTasksFromLocalDB", error);
   }
@@ -131,9 +120,19 @@ export const scheduleReminder = async (
     const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
     const { language } = store.getState().prefs;
     if (notificationTime > 0) {
+      console.log(
+        toLocaleStateString({
+          defaultDate: task.remindTime,
+          dateValue: task.time,
+          timeType: task.timeType,
+          language,
+        })
+      );
       const notificationId = await setNotification(
         task.task,
+        "",
         `${toLocaleStateString({
+          defaultDate: task.remindTime,
           dateValue: task.time,
           timeType: task.timeType,
           language,
@@ -160,9 +159,20 @@ export const scheduleReminder = async (
   }
 };
 
-export const addTask = async (dispath: Dispatch, addedTask: TaskType, habit?: HabitType | undefined) => {
-  const taskId = await LocalDB.addTask(addedTask);
+export const addRegularTask = async (dipatch: Dispatch, task: TaskType) => {
+  try {
+    const time = getNextDate(task.time);
+    const remindTime = task.remindTime
+      ? getNextDate(task.remindTime)
+      : undefined;
+    await addTask(dipatch, { ...task, time, remindTime });
+  } catch (error) {
+    console.log("addRegularTask");
+  }
+};
 
+export const addTask = async (dispath: Dispatch, addedTask: TaskType) => {
+  const taskId = await LocalDB.addTask(addedTask);
   if (taskId) {
     addedTask.id = taskId;
     await scheduleTaskExpiration(addedTask, dispath);
@@ -171,38 +181,30 @@ export const addTask = async (dispath: Dispatch, addedTask: TaskType, habit?: Ha
     dispath({
       type: ADD_TASK,
       task: addedTask,
-      habit: habit ? { ...habit, id: addedTask.habitId } : undefined,
     });
   }
-}
+};
 
-export const addTaskAction =
-  (task: TaskType, isHabit?: boolean) => async (dispath: Dispatch) => {
-    try {
-      const addedTask: TaskType = { ...task };
-      const habit = isHabit ? getHabitFromTask(addedTask) : undefined;
-      if (habit) {
-        const habitId = await LocalDB.addHabit(habit);
-        addedTask.habitId = habitId;
-      }
-      addTask(dispath, addedTask, habit);
-    } catch (error) {
-      console.log("addTaskAction", error);
+export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
+  try {
+    const addedTask: TaskType = { ...task };
+    if (addedTask.isRegular) {
+      const { language } = store.getState().prefs;
+      const { title, body } =
+        languageTexts[language].notifications.regularTaskIsAdded;
+      presentNotification(title, `"${task.task}"`, body);
     }
-  };
+    await addTask(dispath, addedTask);
+  } catch (error) {
+    console.log("addTaskAction", error);
+  }
+};
 
 export const editTaskAction =
-  (task: TaskType, isHabit?: boolean, oldNotificationId?: string) =>
+  (task: TaskType, oldNotificationId?: string) =>
   async (dispatch: Dispatch) => {
     try {
-      const habit = isHabit ? getHabitFromTask(task, task.habitId) : undefined;
-      if (task.habitId && habit) { 
-        await LocalDB.editHabit(habit);
-      } else if (!task.habitId && habit) {
-        const habitId = await LocalDB.addHabit(habit);
-        if (habitId) habit.id = habitId;
-      }
-      const editedTask: TaskType = {...task, habitId: habit ? habit.id : undefined };
+      const editedTask: TaskType = { ...task };
       await LocalDB.editTask(editedTask);
       await scheduleTaskExpiration(editedTask, dispatch);
       const notificationId = await scheduleReminder(
@@ -210,7 +212,7 @@ export const editTaskAction =
         dispatch,
         oldNotificationId
       );
-      dispatch({ type: EDIT_TASK, task: { ...editedTask, notificationId }, habit, oldHabitId: task.habitId });
+      dispatch({ type: EDIT_TASK, task: { ...editedTask, notificationId } });
     } catch (error) {
       console.log("editTaskAction", error);
     }
@@ -220,71 +222,23 @@ export const deleteTaskAction =
   (task: TaskType) => async (dispatch: Dispatch) => {
     try {
       await LocalDB.deleteTask(task.id);
-      if (task.habitId) {
-        await LocalDB.deleteHabit(task.habitId)
-      }
       if (task.notificationId) {
         await deleteNotification(task.notificationId);
       }
-      dispatch({ type: DELETE_TASK, task, habitId: task.habitId });
+      dispatch({ type: DELETE_TASK, task });
     } catch (error) {
       console.log("deleteTaskAction", error);
     }
   };
-
-export const getTaskFromHabit = (habit: HabitType) => {
-  const nextTimeDate = getNextDate(Number(habit.time || 0));
-  const nextReminderDate = getNextDate(Number(habit.remindTime || 0));
-  const timeData = habit.time.split(':').map(str => Number(str) || 0);
-  const time =
-    habit.timeType === "day" 
-      ? nextTimeDate.setHours(23, 59, 59, 999)
-      : nextTimeDate.setHours(timeData[0] || 23, timeData[1] || 59, timeData[2] || 59, timeData[3] || 999);
-  const remindTimeData = habit?.remindTime?.split(':');
-  const remindTime = remindTimeData?.length === 4
-    ? nextReminderDate.setHours(timeData[0], timeData[1], timeData[2], timeData[3])
-    : undefined;
-
-  const task: TaskType = {
-    id: 0,
-    task: habit.task,
-    description: habit.description,
-    time,
-    timeType: habit.timeType,
-    remindTime,
-    isCompleted: 0,
-    isExpired: 0,
-    habitId: habit.id,
-  };
-  return task;
-};
-
-export const getHabitFromTask = (task: TaskType, id?: number): HabitType => {
-  const time = toFullTimeString(new Date(task.time));
-  const remindTime = task.remindTime
-    ? toFullTimeString(new Date(task.remindTime))
-    : undefined;
-  return {
-    id: id || 0,
-    task: task.task,
-    description: task.description,
-    time: time,
-    timeType: task.timeType,
-    remindTime,
-    repeatingPeriod: "daily",
-    repeatingFrequency: 1,
-    repeatingWeekDays: undefined,
-  };
-};
 
 export const updateNewTaskTimeAction =
   (time: number, timeType: TimeType) => (dispatch: Dispatch) => {
     dispatch({ type: UPDATE_TASK_TIME, time, timeType });
   };
 
-export const setIsNewTaskHabitAction =
-  (isHabit: boolean) => (dispatch: Dispatch) => {
-    dispatch({ type: SET_IS_NEW_TASK_HABIT, isHabit });
+export const setIsNewTaskRegularAction =
+  (isRegular: boolean) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_IS_NEW_TASK_REGULAR, isRegular });
   };
 
 export const updateNewTaskRemindTimeAction =

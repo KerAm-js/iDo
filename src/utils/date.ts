@@ -83,8 +83,8 @@ export const getTimeStringWithSecondsConverting = (date: Date) => {
   return new Date(date.valueOf()).toTimeString().slice(0, 5);
 };
 
-export const isYesterday = (date: Date) => {
-  const currDate = new Date();
+export const isYesterday = (date: Date, defaultDate?: number) => {
+  const currDate = defaultDate ? new Date(defaultDate) : new Date();
   const dateCopy = new Date(date.valueOf());
   const yesterday = new Date(
     currDate.getFullYear(),
@@ -94,8 +94,8 @@ export const isYesterday = (date: Date) => {
   return dateCopy.setHours(0, 0, 0, 0) === yesterday.setHours(0, 0, 0, 0);
 };
 
-export const isToday = (date: Date) => {
-  const currDate = new Date();
+export const isToday = (date: Date, defaultDate?: number) => {
+  const currDate = defaultDate ? new Date(defaultDate) : new Date();
   const dateCopy = new Date(date.valueOf());
   return currDate.setHours(0, 0, 0, 0) === dateCopy.setHours(0, 0, 0, 0);
 };
@@ -107,8 +107,8 @@ export const isTheSameDate = (first: number, second: number) => {
   );
 };
 
-export const isTomorrow = (date: Date) => {
-  const currDate = new Date();
+export const isTomorrow = (date: Date, defaultDate?: number) => {
+  const currDate = defaultDate ? new Date(defaultDate) : new Date();
   const dateCopy = new Date(date.valueOf());
   const tomorrowDate = new Date(
     currDate.getFullYear(),
@@ -118,20 +118,17 @@ export const isTomorrow = (date: Date) => {
   return dateCopy.setHours(0, 0, 0, 0) === tomorrowDate.setHours(0, 0, 0, 0);
 };
 
-export const getNextDate = (date?: number) => {
+export const getNextDate = (date?: number): number => {
   const dateCopy = date ? new Date(date) : new Date();
-  const tomorrowDate = new Date(
-    dateCopy.getFullYear(),
-    dateCopy.getMonth(),
-    dateCopy.getDate() + 1
-  );
+  const tomorrowDate = dateCopy.setDate(dateCopy.getDate() + 1);
   return tomorrowDate;
 };
 
-export const isWeeklyTime = (date: Date) => {
+export const isWeeklyTime = (date: Date, defaultDate?: number) => {
+  const currDate = defaultDate ? new Date(defaultDate) : new Date();
   const dateCopy = new Date(date.valueOf());
 
-  const [currWeekDay, currDay] = [new Date().getDay(), new Date().getDate()];
+  const [currWeekDay, currDay] = [currDate.getDay(), currDate.getDate()];
 
   let timeBound = 8 - currWeekDay;
 
@@ -141,7 +138,7 @@ export const isWeeklyTime = (date: Date) => {
     timeBound = 9;
   }
 
-  const daysDiff = getDaysDiff(new Date(), dateCopy);
+  const daysDiff = getDaysDiff(currDate, dateCopy);
 
   if (daysDiff < 0 || daysDiff > timeBound) {
     return false;
@@ -170,7 +167,9 @@ export const toLocaleStateString = ({
   language,
   timeType,
   hideStateDays,
+  defaultDate
 }: {
+  defaultDate?: number,
   dateValue: number;
   language: LanguageType;
   timeType?: TimeType;
@@ -182,19 +181,18 @@ export const toLocaleStateString = ({
   const isCurrentYear = date.getFullYear() === new Date().getFullYear();
   let dayString = "";
 
-  if (isYesterday(date) && !hideStateDays) {
+  if (isYesterday(date, defaultDate) && !hideStateDays) {
     dayString = periods.yesterday;
-  } else if (isToday(date) && !hideStateDays) {
+  } else if (isToday(date, defaultDate) && !hideStateDays) {
     dayString = periods.today;
-  } else if (isTomorrow(date) && !hideStateDays) {
+  } else if (isTomorrow(date, defaultDate) && !hideStateDays) {
     dayString = periods.tomorrow;
-  } else if (isWeeklyTime(date)) {
+  } else if (isWeeklyTime(date, defaultDate)) {
     dayString = getDate(language, { date }).weekDay;
   } else {
     dayString =
       getDate(language, { date }).date +
-      " " +
-      (!isCurrentYear ? date.getFullYear() : "");
+      (!isCurrentYear ? " " + date.getFullYear() : "");
   }
 
   return dayString + (timeType === "time" ? ", " + time : "");
@@ -208,7 +206,6 @@ export const extractReminderState = (defaultDate: Date, remindDate: number) => {
     return defaultState;
   }
 
-  const weeks = diff / (1000 * 3600 * 24 * 7);
   const days = diff / (1000 * 3600 * 24);
   const hours = diff / (1000 * 3600);
   const minutes = diff / (1000 * 60);

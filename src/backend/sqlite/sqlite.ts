@@ -1,16 +1,15 @@
-import { HabitType, TaskType } from "../../redux/types/task";
+import { TaskType } from "../../redux/types/task";
 import * as SQLite from "expo-sqlite";
 import { SQLError, SQLResultSet, SQLTransaction } from "expo-sqlite";
 import {
   COMPLETION_TIME,
   DESCRIPTION,
   FOLDER_ID,
-  HABIT_ID,
-  HOURS,
   ICON_XML,
   ID,
   IS_COMPLETED,
   IS_EXPIRED,
+  IS_REGULAR,
   NOTIFICATION_ID,
   REMIND_TIME,
   REPEATING_FREQUENCY,
@@ -48,7 +47,7 @@ export class LocalDB {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `CREATE TABLE IF NOT EXISTS tasks (${ID} INTEGER PRIMARY KEY NOT NULL, ${TASK} TEXT NOT NULL, ${DESCRIPTION} TEXT, ${TIME} INTEGER NOT NULL, ${TIME_TYPE} TEXT NOT NULL, ${IS_COMPLETED} INT NOT NULL, ${IS_EXPIRED} INT NOT NULL, ${COMPLETION_TIME} INTEGER, ${REMIND_TIME} INTEGER, ${NOTIFICATION_ID} TEXT, ${FOLDER_ID} INTEGER DEFAULT NULL, ${HABIT_ID} INTEGER DEFAULT NULL, FOREIGN KEY (${FOLDER_ID}) REFERENCES folders(${ID}), FOREIGN KEY (${HABIT_ID}) REFERENCES habits_beta(${ID}))`,
+          `CREATE TABLE IF NOT EXISTS tasks (${ID} INTEGER PRIMARY KEY NOT NULL, ${TASK} TEXT NOT NULL, ${DESCRIPTION} TEXT, ${TIME} INTEGER NOT NULL, ${TIME_TYPE} TEXT NOT NULL, ${IS_COMPLETED} INT NOT NULL, ${IS_EXPIRED} INT NOT NULL, ${COMPLETION_TIME} INTEGER, ${REMIND_TIME} INTEGER, ${NOTIFICATION_ID} TEXT, ${IS_REGULAR} INT NOT NULL DEFAULT '0', ${FOLDER_ID} INTEGER DEFAULT NULL, FOREIGN KEY (${FOLDER_ID}) REFERENCES folders(${ID}))`,
           // 'DROP TABLE tasks',
           // `CREATE TABLE IF NOT EXISTS tasks (${ID} INTEGER PRIMARY KEY NOT NULL, ${TASK} TEXT NOT NULL, ${DESCRIPTION} TEXT, ${TIME} INTEGER NOT NULL, ${TIME_TYPE} TEXT NOT NULL, ${IS_COMPLETED} INT NOT NULL, ${IS_EXPIRED} INT NOT NULL, ${COMPLETION_TIME} INTEGER, ${REMIND_TIME} INTEGER, ${NOTIFICATION_ID} TEXT)`,
           [],
@@ -82,7 +81,7 @@ export class LocalDB {
         db.transaction(
           (tx) => {
             tx.executeSql(
-              `CREATE TABLE tasks_new(${ID} INTEGER PRIMARY KEY NOT NULL, ${TASK} TEXT NOT NULL, ${DESCRIPTION} TEXT, ${TIME} INTEGER NOT NULL, ${TIME_TYPE} TEXT NOT NULL, ${IS_COMPLETED} INT NOT NULL, ${IS_EXPIRED} INT NOT NULL, ${COMPLETION_TIME} INTEGER, ${REMIND_TIME} INTEGER, ${NOTIFICATION_ID} TEXT, ${FOLDER_ID} INTEGER DEFAULT NULL, ${HABIT_ID} INTEGER DEFAULT NULL, FOREIGN KEY (${FOLDER_ID}) REFERENCES folders(${ID}), FOREIGN KEY (${HABIT_ID}) REFERENCES habits_beta(${ID}))`
+              `CREATE TABLE tasks_new(${ID} INTEGER PRIMARY KEY NOT NULL, ${TASK} TEXT NOT NULL, ${DESCRIPTION} TEXT, ${TIME} INTEGER NOT NULL, ${TIME_TYPE} TEXT NOT NULL DEFAULT 0, ${IS_COMPLETED} INT NOT NULL, ${IS_EXPIRED} INT NOT NULL, ${COMPLETION_TIME} INTEGER, ${REMIND_TIME} INTEGER, ${NOTIFICATION_ID} TEXT, ${IS_REGULAR} INT NOT NULL DEFAULT '0', ${FOLDER_ID} INTEGER DEFAULT NULL, FOREIGN KEY (${FOLDER_ID}) REFERENCES folders(${ID}))`
             );
             tx.executeSql("INSERT INTO tasks_new SELECT * FROM tasks");
             tx.executeSql("DROP TABLE tasks");
@@ -155,13 +154,13 @@ export class LocalDB {
       remindTime,
       notificationId,
       folderId,
-      habitId
+      isRegular,
     } = addedTask;
 
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `INSERT INTO tasks (${TASK}, ${DESCRIPTION}, ${TIME}, ${TIME_TYPE}, ${IS_COMPLETED}, ${IS_EXPIRED}, ${COMPLETION_TIME}, ${REMIND_TIME}, ${NOTIFICATION_ID}, ${FOLDER_ID}, ${HABIT_ID}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO tasks (${TASK}, ${DESCRIPTION}, ${TIME}, ${TIME_TYPE}, ${IS_COMPLETED}, ${IS_EXPIRED}, ${COMPLETION_TIME}, ${REMIND_TIME}, ${NOTIFICATION_ID}, ${IS_REGULAR}, ${FOLDER_ID}) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             task,
             description || "",
@@ -172,8 +171,8 @@ export class LocalDB {
             completionTime || null,
             remindTime || null,
             notificationId || null,
+            isRegular || 0,
             folderId || null,
-            habitId || null
           ],
           (_: SQLTransaction, result: SQLResultSet) =>
             resolve(result.insertId || undefined),
@@ -278,14 +277,14 @@ export class LocalDB {
       completionTime,
       remindTime,
       notificationId,
+      isRegular,
       folderId,
-      habitId
     } = editedTask;
 
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `UPDATE tasks SET ${TASK} = ?, ${DESCRIPTION} = ?, ${TIME} = ?, ${TIME_TYPE} = ?, ${IS_COMPLETED} = ?, ${IS_EXPIRED} = ?, ${COMPLETION_TIME} = ?, ${REMIND_TIME} = ?, ${NOTIFICATION_ID} = ?, ${FOLDER_ID} = ?, ${HABIT_ID} = ? WHERE id = ?`,
+          `UPDATE tasks SET ${TASK} = ?, ${DESCRIPTION} = ?, ${TIME} = ?, ${TIME_TYPE} = ?, ${IS_COMPLETED} = ?, ${IS_EXPIRED} = ?, ${COMPLETION_TIME} = ?, ${REMIND_TIME} = ?, ${NOTIFICATION_ID} = ?, ${IS_REGULAR} = ?, ${FOLDER_ID} = ? WHERE id = ?`,
           [
             task,
             description || "",
@@ -296,8 +295,8 @@ export class LocalDB {
             completionTime || null,
             remindTime || null,
             notificationId || null,
+            isRegular || 0,
             folderId || null,
-            habitId || null,
             id,
           ],
           resolve,
@@ -402,130 +401,8 @@ export class LocalDB {
       db.transaction((tx) => {
         tx.executeSql(
           `INSERT INTO folders (${TITLE}, ${ICON_XML}) VALUES (?, ?), (?, ?)`,
-          ["goals", "award", "habits", "repeat"],
+          ["goals", "award", "regularly", "repeat"],
           (_: SQLTransaction, result: SQLResultSet) => resolve(result),
-          (_: SQLTransaction, error: SQLError) => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  }
-
-  static initHabitsBetaTable() {
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `CREATE TABLE IF NOT EXISTS habits_beta (${ID} INTEGER PRIMARY KEY NOT NULL, ${TASK} TEXT NOT NULL, ${DESCRIPTION} TEXT, ${TIME} TEXT NOT NULL, ${TIME_TYPE} TEXT NOT NULL, ${REMIND_TIME} TEXT, ${REPEATING_PERIOD} TEXT NOT NULL, ${REPEATING_FREQUENCY} INTEGER NOT NULL, ${REPEATING_WEEK_DAYS} TEXT)`,
-          // 'DROP TABLE habits_beta',
-          [],
-          resolve,
-          (_: SQLTransaction, error: SQLError) => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  }
-
-  static getHabits(): Promise<Array<HabitType>> {
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          "SELECT * FROM habits_beta",
-          [],
-          (_: SQLTransaction, result: SQLResultSet) =>
-            resolve(result.rows._array),
-          (_: SQLTransaction, error: SQLError) => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  }
-
-  static addHabit(habit: HabitType): Promise<number | undefined> {
-    const {
-      task,
-      description,
-      time,
-      timeType,
-      remindTime,
-      repeatingPeriod,
-      repeatingFrequency,
-      repeatingWeekDays,
-    } = habit;
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `INSERT INTO habits_beta (${TASK}, ${DESCRIPTION}, ${TIME}, ${TIME_TYPE}, ${REMIND_TIME}, ${REPEATING_PERIOD}, ${REPEATING_FREQUENCY}, ${REPEATING_WEEK_DAYS}) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-          [
-            task,
-            description || null,
-            time,
-            timeType,
-            remindTime || null,
-            repeatingPeriod || null,
-            repeatingFrequency || null,
-            repeatingWeekDays ? JSON.stringify(repeatingWeekDays) : null,
-          ],
-          (_: SQLTransaction, result: SQLResultSet) =>
-            resolve(result.insertId || undefined),
-          (_: SQLTransaction, error: SQLError) => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  }
-
-  static editHabit(habit: HabitType) {
-    const {
-      task,
-      description,
-      time,
-      timeType,
-      remindTime,
-      repeatingPeriod,
-      repeatingFrequency,
-      repeatingWeekDays,
-    } = habit;
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `UPDATE habits_beta SET ${TASK} = ?, ${DESCRIPTION} = ?, ${TIME} = ?, ${TIME_TYPE} = ?, ${REMIND_TIME} = ?, ${REPEATING_PERIOD} = ?, ${REPEATING_FREQUENCY} = ?, ${REPEATING_WEEK_DAYS} = ? WHERE ${ID} = ?`,
-          [
-            task,
-            description || null,
-            time,
-            timeType,
-            remindTime || null,
-            repeatingPeriod || null,
-            repeatingFrequency || null,
-            repeatingWeekDays ? JSON.stringify(repeatingWeekDays) : null,
-          ],
-          resolve,
-          (_: SQLTransaction, error: SQLError) => {
-            reject(error);
-            return false;
-          }
-        );
-      });
-    });
-  }
-
-  static deleteHabit(id: number): Promise<number> {
-    return new Promise((resolve, reject) => {
-      db.transaction((tx) => {
-        tx.executeSql(
-          `DELETE FROM habits_beta WHERE ${ID} = ?`,
-          [id],
-          (_: SQLTransaction, result: SQLResultSet) =>
-            resolve(result.rowsAffected),
           (_: SQLTransaction, error: SQLError) => {
             reject(error);
             return false;

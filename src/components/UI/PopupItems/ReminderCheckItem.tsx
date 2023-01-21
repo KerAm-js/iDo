@@ -29,7 +29,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   const newTaskData = useSelector(getNewTaskData);
   const language = useSelector(getLanguage);
   const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
-  let titleString = newTaskData.isHabit || newTaskData.timeType === 'day'
+  let titleString = newTaskData.timeType === 'day'
     ? languageTexts[language].periods.midnight
     : toLocaleStateString({
         dateValue: date.valueOf(),
@@ -54,8 +54,8 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   }
 
   const disabled =
-    (newTaskData.isHabit && Boolean(days || weeks)) ||
-    (!newTaskData.isHabit && new Date().valueOf() >= remindDate.valueOf());
+    (newTaskData.isRegular && Boolean(days || weeks)) ||
+    (!newTaskData.isRegular && new Date().valueOf() >= remindDate.valueOf());
 
   const onPressHandler = useCallback(() => {
     onPress(id, remindDate);
@@ -74,7 +74,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
         >
           {titleString}
         </ThemeText>
-        {id === "0" && !newTaskData.isHabit && (
+        {id === "0" && !newTaskData.isRegular && (
           <Text style={[text14LineHeight, textGrey]}>
             {languageTexts[language].popupTitles.dateOfCompletion}
           </Text>

@@ -10,7 +10,7 @@ import {
   addTaskAction,
   editTaskAction,
   setDefaultNewTaskDataAction,
-  setIsNewTaskHabitAction,
+  setIsNewTaskRegularAction,
   updateNewTaskTimeAction,
 } from "../../../redux/actions/taskActions";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
@@ -79,9 +79,8 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
                 timeType,
                 isExpired: isExpired ? 1 : 0,
                 remindTime,
-                habitId: taskToEdit.habitId,
+                isRegular: newTaskData.isRegular ? 1 : 0,
               },
-              newTaskData.isHabit,
               taskToEdit.notificationId
             )
           : addTaskAction(
@@ -95,8 +94,8 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
                 isExpired: isExpired ? 1 : 0,
                 timeType,
                 remindTime,
-              },
-              newTaskData.isHabit
+                isRegular: newTaskData.isRegular ? 1 : 0,
+              }
             )
       );
       setDefaults();
@@ -125,9 +124,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     }
   };
 
-  const toggleIsTaskHabit = () => {
-    updateFolder(newTaskData.isHabit ? undefined : 2);
-    dispatch(setIsNewTaskHabitAction(!newTaskData.isHabit));
+  const toggleIsTaskRegular = () => {
+    updateFolder(newTaskData.isRegular ? undefined : 2);
+    dispatch(setIsNewTaskRegularAction(!newTaskData.isRegular));
   };
 
   useEffect(() => {
@@ -159,7 +158,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         description === taskToEdit.description &&
         newTaskData?.time === taskToEdit.time &&
         newTaskData?.remindTime === taskToEdit.remindTime &&
-        newTaskData?.isHabit === Boolean(taskToEdit.habitId);
+        newTaskData?.isRegular === Boolean(taskToEdit.isRegular);
 
       if (isTaskIsNotEdited || task.length === 0) {
         setCircleButtonDisabled(true);
@@ -173,7 +172,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         setCircleButtonDisabled(true);
       }
     }
-  }, [task, description, choosedFolder, newTaskData, newTaskData.isHabit]);
+  }, [task, description, choosedFolder, newTaskData, newTaskData.isRegular]);
 
   return (
     <BottomPopup
@@ -240,12 +239,12 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
           />
           <IconButton
             xml={repeat(
-              newTaskData.isHabit ? textColors.blue : textColors.grey
+              newTaskData.isRegular ? textColors.blue : textColors.grey
             )}
             iconWidth={20}
             iconHeight={20}
             style={addTaskPopupStyles.iconButton}
-            onClick={toggleIsTaskHabit}
+            onClick={toggleIsTaskRegular}
           />
         </View>
         <View style={[addTaskPopupStyles.buttonsGroup]}>

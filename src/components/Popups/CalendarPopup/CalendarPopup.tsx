@@ -160,7 +160,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 
     const timeType: TimeType = time ? "time" : "day";
     const reminderTime: number =
-      state === CHOOSE || (newTaskData.isHabit) && isTimeCorrect
+      state === CHOOSE || (!state && newTaskData.isRegular) && isTimeCorrect
         ? dateCopy.setHours(hours, minutes, 0, 0)
         : dateCopy.valueOf();
     const timeValue: number = isTimeCorrect
@@ -276,13 +276,10 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 
   useEffect(() => {
     if (state !== CHOOSE && isReminderChoosing && time) {
-      if (newTaskData.isHabit) {
-        setState("");
-        return;
-      }
+      const taskTime = new Date(newTaskData.time || '')
       setState(CHOOSE);
-      setDate(new Date());
-      updateChoosedTitle(new Date());
+      setDate(new Date(taskTime));
+      updateChoosedTitle(new Date(taskTime));
     }
   }, [time])
 
@@ -322,7 +319,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
                 {...item}
               />
             ))}
-            {!newTaskData.isHabit && (
+            {!newTaskData.isRegular && (
               <DateCheckItem
                 title={chooseItemTitle}
                 isChecked={state === CHOOSE}
@@ -375,7 +372,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
         <FormButton
           title={timeInputPlaceholder}
           iconXml={clock(
-            isTimeExpired && !newTaskData.isHabit && time.length > 0
+            isTimeExpired && !newTaskData.isRegular && time.length > 0
               ? textColors.red
               : isTimeValid
               ? textColors.blue
@@ -385,7 +382,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
           onBlur={onTimeInputBlur}
           style={{ marginRight: 10 }}
           textColor={
-            isTimeExpired && !newTaskData.isHabit && time.length > 0
+            isTimeExpired && !newTaskData.isRegular && time.length > 0
               ? textColors.red
               : time.length === 5
               ? textColors.blue

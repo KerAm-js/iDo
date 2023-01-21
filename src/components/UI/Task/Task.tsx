@@ -54,7 +54,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     folderId,
     isExpired,
     remindTime,
-    habitId,
+    isRegular
   } = taskObject;
 
   const [isChecked, setIsChecked] = useState(isCompleted ? true : false);
@@ -206,7 +206,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
               )}
             </View>
           )}
-          {Boolean(habitId) && (
+          {Boolean(isRegular) && (
             <View style={[taskStyles.infoContainer]}>
               {timeString || reminderString ? (
                 <Text style={[textGrey]}>・</Text>

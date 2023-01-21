@@ -33,6 +33,7 @@ async function requestPermissionsAsync() {
 
 export const setNotification = async (
   title: string,
+  subtitle: string,
   body: string,
   time: number
 ) => {
@@ -50,6 +51,7 @@ export const setNotification = async (
       const identifier = await Notifications.scheduleNotificationAsync({
         content: {
           title,
+          subtitle,
           body,
           sound: '../../assets/notification-sound.wav',
           vibrate: [0, 250, 250, 250],
@@ -63,7 +65,7 @@ export const setNotification = async (
   }
 };
 
-export const presentNotification = async (title: string, body: string) => {
+export const presentNotification = async (title: string, subtitle: string, body: string) => {
   try {
     const isNotifictaionAvailable = await requestPermissionsAsync();
     if (isNotifictaionAvailable) {
@@ -75,9 +77,11 @@ export const presentNotification = async (title: string, body: string) => {
         }),
       });
 
+
       Notifications.scheduleNotificationAsync({
         content: {
           title,
+          subtitle,
           body,
           sound: '../../assets/notification-sound.wav',
           vibrate: [0, 250, 250, 250],
