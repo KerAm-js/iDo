@@ -1,18 +1,19 @@
 {
   "expo": {
-    "name": "Productive",
-    "slug": "productive",
-    "version": "2.0.6",
+    "name": "Taskbook",
+    "slug": "taskbook",
+    "version": "2.0.7",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#002D5E"
+      "backgroundColor": "#0061CB"
     },
     "updates": {
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/8a540d35-ad91-4043-ae4b-94afb2cfb509"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,7 +22,7 @@
       "supportsTablet": true,
       "icon": "./assets/ios-icon.png",
       "bundleIdentifier": "com.amirkerimov.productive-plus",
-      "buildNumber": "2.0.6.1"
+      "buildNumber": "2.0.7"
     },
     "android": {
       "adaptiveIcon": {
@@ -45,8 +46,11 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "36165aa4-6ef0-44c6-b929-811018fa04e7"
+        "projectId": "8a540d35-ad91-4043-ae4b-94afb2cfb509"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }

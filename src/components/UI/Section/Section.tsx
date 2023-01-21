@@ -100,7 +100,7 @@ const Section: FC<SectionProps> = React.memo(
 
     const listContainerOpacityStyle = useAnimatedStyle(() => {
       return {
-        opacity: opacity.value,
+        opacity: 1,
       };
     }, [opacity.value]);
 

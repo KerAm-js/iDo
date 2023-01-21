@@ -127,7 +127,7 @@ export default function AppLoading() {
           setTimeout(async () => {
             await SplashScreen.hideAsync();
             setStatusBarStyle(statusBarStyle);
-          }, 500);
+          }, 1000);
         } catch (error) {
           console.log("onAppReady", error);
         }
