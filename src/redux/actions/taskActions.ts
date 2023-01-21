@@ -188,13 +188,13 @@ export const addTask = async (dispath: Dispatch, addedTask: TaskType) => {
 export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
   try {
     const addedTask: TaskType = { ...task };
+    await addTask(dispath, addedTask);
     if (addedTask.isRegular) {
       const { language } = store.getState().prefs;
       const { title, body } =
         languageTexts[language].notifications.regularTaskIsAdded;
-      presentNotification(title, `"${task.task}"`, body);
+      presentNotification(title, `"${addedTask.task}"`, body);
     }
-    await addTask(dispath, addedTask);
   } catch (error) {
     console.log("addTaskAction", error);
   }
@@ -206,6 +206,12 @@ export const editTaskAction =
     try {
       const editedTask: TaskType = { ...task };
       await LocalDB.editTask(editedTask);
+      if (editedTask.isRegular) {
+        const { language } = store.getState().prefs;
+        const { title, body } =
+          languageTexts[language].notifications.regularTaskIsAdded;
+        presentNotification(title, `"${editedTask.task}"`, body);
+      }
       await scheduleTaskExpiration(editedTask, dispatch);
       const notificationId = await scheduleReminder(
         editedTask,

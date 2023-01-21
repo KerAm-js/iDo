@@ -83,8 +83,6 @@ export const presentNotification = async (title: string, subtitle: string, body:
           title,
           subtitle,
           body,
-          sound: '../../assets/notification-sound.wav',
-          vibrate: [0, 250, 250, 250],
         },
         trigger: null,
       });
