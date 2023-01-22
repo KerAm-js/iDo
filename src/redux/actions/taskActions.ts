@@ -209,17 +209,16 @@ export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
 };
 
 export const editTaskAction =
-  (task: TaskType, oldNotificationId?: string) =>
+  (editedTask: TaskType, prevTask: TaskType) =>
   async (dispatch: Dispatch) => {
     try {
-      const editedTask: TaskType = { ...task };
       await LocalDB.editTask(editedTask);
       const { language } = store.getState().prefs;
-      if (editedTask.isRegular && !task.isRegular) {
+      if (editedTask.isRegular && !prevTask.isRegular) {
         const { title, body } =
           languageTexts[language].notifications.regularTaskIsAdded;
         presentNotification(title, `"${editedTask.task}"`, body);
-      } else if (!editedTask.isRegular && task.isRegular && !task.isExpired) {
+      } else if (!editedTask.isRegular && prevTask.isRegular && !prevTask.isExpired) {
         const { title } =
         languageTexts[language].notifications.regularTaskRemoved;
         presentNotification(title, `"${editedTask.task}"`, '');
@@ -228,7 +227,7 @@ export const editTaskAction =
       const notificationId = await scheduleReminder(
         editedTask,
         dispatch,
-        oldNotificationId
+        prevTask.notificationId
       );
       dispatch({ type: EDIT_TASK, task: { ...editedTask, notificationId } });
     } catch (error) {
