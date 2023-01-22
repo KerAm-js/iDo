@@ -54,7 +54,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     folderId,
     isExpired,
     remindTime,
-    isRegular
+    isRegular,
   } = taskObject;
 
   const [isChecked, setIsChecked] = useState(isCompleted ? true : false);
@@ -186,29 +186,29 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
               </Text>
             </View>
           )}
-          {remindTime && remindTime > new Date().valueOf() && (
-            <View style={[taskStyles.infoBlock]}>
-              {timeString && (
-                <Text numberOfLines={1} style={[textGrey]}>
-                  ・
-                </Text>
-              )}
-              <SvgXml
-                xml={bell(textColors.grey)}
-                width={12}
-                height={12}
-                style={{ marginRight: 5 }}
-              />
-              {reminderString && (
-                <Text numberOfLines={1} style={[text12LineHeight, textGrey]}>
-                  {reminderString}
-                </Text>
-              )}
-            </View>
-          )}
+          {remindTime && (
+              <View style={[taskStyles.infoBlock]}>
+                {timeString && (
+                  <Text numberOfLines={1} style={[textGrey]}>
+                    ・
+                  </Text>
+                )}
+                <SvgXml
+                  xml={bell(remindTime > new Date().valueOf() ? textColors.grey : textColors.red)}
+                  width={12}
+                  height={12}
+                  style={{ marginRight: 5 }}
+                />
+                {reminderString && (
+                  <Text numberOfLines={1} style={[text12LineHeight, remindTime > new Date().valueOf() ? textGrey : textRed]}>
+                    {reminderString}
+                  </Text>
+                )}
+              </View>
+            )}
           {Boolean(isRegular) && (
             <View style={[taskStyles.infoContainer]}>
-              {timeString || reminderString ? (
+              {timeString || remindTime ? (
                 <Text style={[textGrey]}>・</Text>
               ) : (
                 <Text style={[textGrey]}>

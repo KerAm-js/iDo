@@ -138,22 +138,7 @@ export const scheduleReminder = async (
         })}`,
         notificationTime
       );
-      setTimeout(async () => {
-        dispatch({
-          type: CLEAR_REMINDER,
-          id: task.id,
-          remindTime: task.remindTime,
-        });
-      }, notificationTime * 1000);
       return notificationId;
-    } else {
-      await LocalDB.clearTaskReminder(task.id);
-      dispatch({
-        type: CLEAR_REMINDER,
-        id: task.id,
-        remindTime: task.remindTime,
-      });
-      return undefined;
     }
   }
 };
