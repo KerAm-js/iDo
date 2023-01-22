@@ -25,7 +25,7 @@ export const getReminderItemTitle = (language: LanguageType, counter: number, pe
     }
   }
 
-  return counter + ' ' + word.toLowerCase();
+  return counter + ' ' + word;
 }
 
 export const addTaskWithSorting = (

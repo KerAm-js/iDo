@@ -22,7 +22,7 @@
       "supportsTablet": true,
       "icon": "./assets/ios-icon.png",
       "bundleIdentifier": "com.amirkerimov.productive-plus",
-      "buildNumber": "2.0.7.3"
+      "buildNumber": "2.0.7.4"
     },
     "android": {
       "adaptiveIcon": {
@@ -49,6 +49,9 @@
         "projectId": "8a540d35-ad91-4043-ae4b-94afb2cfb509"
       }
     },
-    "sdkVersion": "46.0.0"
+    "sdkVersion": "46.0.0",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }
