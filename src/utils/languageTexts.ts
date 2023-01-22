@@ -21,6 +21,9 @@ export const languageTexts = {
       regularTaskIsAdded: {
         title: "Новая ежедневная задача",
         body: "Задача будет автоматически добавляться каждый день. Чтобы остановить повторение этой задачи, удалите или отредактируйте её последнюю копию.",
+      },
+      regularTaskRemoved: {
+        title: "Ежедневная задача удалена ❌",
       }
     },
     alerts: {
@@ -185,6 +188,9 @@ export const languageTexts = {
       regularTaskIsAdded: {
         title: "New daily task",
         body: "The task will be added automaticly every day. Delete or edit this task to stop it's repeating.",
+      },
+      regularTaskRemoved: {
+        title: "Daily task removed ❌",
       }
     },
     alerts: {
@@ -341,6 +347,9 @@ export const languageTexts = {
       regularTaskIsAdded: {
         title: "Neue Tagesaufgabe",
         body: "Die Aufgabe wird jeden Tag automatisch hinzugefügt. Um zu verhindern, dass sich diese Aufgabe wiederholt, löschen oder bearbeiten Sie die letzte Kopie.",
+      },
+      regularTaskRemoved: {
+        title: "Tägliche Aufgabe entfernt ❌",
       }
     },
     alerts: {
@@ -483,6 +492,9 @@ export const languageTexts = {
       regularTaskIsAdded: {
         title: "Керла хIор дийнан гIуллакх",
         body: "ХIара гIуллакх хIор дийнан къепйозан тIекхетар долуш ду. Нагахь хьайна и сацо лаахь, кху гIуллакхийн тIеххьара кеп хийца я къепйозан юкъара дIаяккха.",
+      },
+      regularTaskRemoved: {
+        title: "ХIор дийнан гIуллакх дIадяккхина"
       }
     },
     alerts: {

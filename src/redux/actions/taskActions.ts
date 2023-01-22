@@ -48,28 +48,31 @@ export const scheduleTaskExpiration = async (
       } else {
         const timeDiff = task.time - currTime;
         setTimeout(() => {
-          const expiredTask = store.getState().tasks.tasks.find((item) => {
-            const isItemCompletedInTime =
-              item.completionTime && item.completionTime < item.time;
-            return (
-              item.id === task.id &&
-              !item.isExpired &&
-              !isItemCompletedInTime &&
-              task.time === item.time
-            );
+          const currentTask = store.getState().tasks.tasks.find((item) => {
+            return item.id === task.id;
           });
-          if (expiredTask) {
-            LocalDB.setTaskExpiration(expiredTask?.id);
-            dispatch({ type: SET_TASK_EXPIRATION, id: expiredTask.id });
+          if (currentTask) {
+            const isItemCompletedInTime =
+              currentTask.completionTime &&
+              currentTask.completionTime < currentTask.time;
+            const isExpired =
+              !currentTask.isExpired &&
+              task.time === currentTask.time &&
+              !isItemCompletedInTime;
             const isTaskUpdated =
-              expiredTask.task === task.task &&
-              expiredTask.description === task.description &&
-              expiredTask.remindTime === task.remindTime &&
-              expiredTask.time === task.time &&
-              expiredTask.timeType === task.timeType;
-              expiredTask.folderId === task.folderId;
-            if (expiredTask.isRegular && isTaskUpdated) {
-              addRegularTask(dispatch, expiredTask);
+              currentTask.task === task.task &&
+              currentTask.description === task.description &&
+              currentTask.remindTime === task.remindTime &&
+              currentTask.time === task.time &&
+              currentTask.timeType === task.timeType &&
+              currentTask.folderId === task.folderId;
+
+            if (currentTask.isRegular && isTaskUpdated) {
+              addRegularTask(dispatch, currentTask);
+            }
+            if (isExpired) {
+              LocalDB.setTaskExpiration(currentTask?.id);
+              dispatch({ type: SET_TASK_EXPIRATION, id: currentTask.id });
             }
           }
         }, timeDiff);
@@ -135,7 +138,7 @@ export const scheduleReminder = async (
         })}`,
         notificationTime
       );
-      setTimeout(() => {
+      setTimeout(async () => {
         dispatch({
           type: CLEAR_REMINDER,
           id: task.id,
@@ -161,7 +164,16 @@ export const addRegularTask = async (dipatch: Dispatch, task: TaskType) => {
     const remindTime = task.remindTime
       ? getNextDate(task.remindTime)
       : undefined;
-    await addTask(dipatch, { ...task, time, remindTime });
+    const regularTask: TaskType = {
+      ...task,
+      time,
+      remindTime,
+      isRegular: 1,
+      completionTime: undefined,
+      isCompleted: 0,
+      isExpired: time > new Date().valueOf() ? 0 : 1,
+    }
+    await addTask(dipatch, regularTask);
   } catch (error) {
     console.log("addRegularTask");
   }
@@ -202,11 +214,15 @@ export const editTaskAction =
     try {
       const editedTask: TaskType = { ...task };
       await LocalDB.editTask(editedTask);
-      if (editedTask.isRegular) {
-        const { language } = store.getState().prefs;
+      const { language } = store.getState().prefs;
+      if (editedTask.isRegular && !task.isRegular) {
         const { title, body } =
           languageTexts[language].notifications.regularTaskIsAdded;
         presentNotification(title, `"${editedTask.task}"`, body);
+      } else if (!editedTask.isRegular && task.isRegular && !task.isExpired) {
+        const { title } =
+        languageTexts[language].notifications.regularTaskRemoved;
+        presentNotification(title, `"${editedTask.task}"`, '');
       }
       await scheduleTaskExpiration(editedTask, dispatch);
       const notificationId = await scheduleReminder(
@@ -224,8 +240,14 @@ export const deleteTaskAction =
   (task: TaskType) => async (dispatch: Dispatch) => {
     try {
       await LocalDB.deleteTask(task.id);
+      const { language } = store.getState().prefs;
       if (task.notificationId) {
         await deleteNotification(task.notificationId);
+      }
+      if (task.isRegular && !task.isExpired) {
+        const { title } =
+        languageTexts[language].notifications.regularTaskRemoved;
+        presentNotification(title, '', `"${task.task}"`);
       }
       dispatch({ type: DELETE_TASK, task });
     } catch (error) {
