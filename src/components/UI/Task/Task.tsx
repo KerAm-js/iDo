@@ -57,7 +57,13 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     isRegular,
   } = taskObject;
 
-  const [isChecked, setIsChecked] = useState(isCompleted ? true : false);
+  const [isChecked, setIsChecked] = useState<boolean>(
+    isCompleted ? true : false
+  );
+  const [_, setObject] = useState<object>({});
+  const updateComponent = () => {
+    setObject({});
+  };
 
   const toggleChecked = () => {
     const { title, subTitle } = languageTexts[language].alerts.taskUncompleting;
@@ -158,6 +164,22 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
     setIsChecked(!!taskObject.isCompleted);
   }, [taskObject.isCompleted]);
 
+  useEffect(() => {
+    if (remindTime) {
+      const timeDiff = remindTime - new Date().valueOf();
+      if (timeDiff >= 0) {
+        const timeOut = setTimeout(() => {
+          updateComponent();
+        }, timeDiff);
+        return () => {
+          if (timeOut) {
+            clearTimeout(timeOut);
+          }
+        };
+      }
+    }
+  }, [remindTime]);
+
   return (
     <ListItem
       isCardColor
@@ -187,25 +209,35 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
             </View>
           )}
           {remindTime && (
-              <View style={[taskStyles.infoBlock]}>
-                {timeString && (
-                  <Text numberOfLines={1} style={[textGrey]}>
-                    ・
-                  </Text>
+            <View style={[taskStyles.infoBlock]}>
+              {timeString && (
+                <Text numberOfLines={1} style={[textGrey]}>
+                  ・
+                </Text>
+              )}
+              <SvgXml
+                xml={bell(
+                  remindTime > new Date().valueOf()
+                    ? textColors.grey
+                    : textColors.red
                 )}
-                <SvgXml
-                  xml={bell(remindTime > new Date().valueOf() ? textColors.grey : textColors.red)}
-                  width={12}
-                  height={12}
-                  style={{ marginRight: 5 }}
-                />
-                {reminderString && (
-                  <Text numberOfLines={1} style={[text12LineHeight, remindTime > new Date().valueOf() ? textGrey : textRed]}>
-                    {reminderString}
-                  </Text>
-                )}
-              </View>
-            )}
+                width={12}
+                height={12}
+                style={{ marginRight: 5 }}
+              />
+              {reminderString && (
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    text12LineHeight,
+                    remindTime > new Date().valueOf() ? textGrey : textRed,
+                  ]}
+                >
+                  {reminderString}
+                </Text>
+              )}
+            </View>
+          )}
           {Boolean(isRegular) && (
             <View style={[taskStyles.infoContainer]}>
               {timeString || remindTime ? (
