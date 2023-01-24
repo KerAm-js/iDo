@@ -27,6 +27,7 @@ import { getNextDate, toLocaleStateString } from "../../utils/date";
 import { ListObject } from "../../types/global/ListObject";
 import { getPositionsFromAS } from "../../backend/asyncStorage/positions";
 import { languageTexts } from "../../utils/languageTexts";
+import { Audio } from 'expo-av';
 
 export const scheduleTaskExpiration = async (
   task: TaskType,
@@ -154,14 +155,18 @@ export const addRegularTask = async (dipatch: Dispatch, task: TaskType) => {
       completionTime: undefined,
       isCompleted: 0,
       isExpired: time > new Date().valueOf() ? 0 : 1,
-    }
+    };
     await addTask(dipatch, regularTask, false);
   } catch (error) {
     console.log("addRegularTask");
   }
 };
 
-export const addTask = async (dispath: Dispatch, addedTask: TaskType, isTaskAddingAnimated?: boolean) => {
+export const addTask = async (
+  dispath: Dispatch,
+  addedTask: TaskType,
+  isTaskAddingAnimated?: boolean
+) => {
   const taskId = await LocalDB.addTask(addedTask);
   if (taskId) {
     addedTask.id = taskId;
@@ -171,7 +176,7 @@ export const addTask = async (dispath: Dispatch, addedTask: TaskType, isTaskAddi
     dispath({
       type: ADD_TASK,
       task: addedTask,
-      isTaskAddingAnimated
+      isTaskAddingAnimated,
     });
   }
 };
@@ -192,8 +197,7 @@ export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
 };
 
 export const editTaskAction =
-  (editedTask: TaskType, prevTask: TaskType) =>
-  async (dispatch: Dispatch) => {
+  (editedTask: TaskType, prevTask: TaskType) => async (dispatch: Dispatch) => {
     try {
       await LocalDB.editTask(editedTask);
       const { language } = store.getState().prefs;
@@ -201,10 +205,14 @@ export const editTaskAction =
         const { title, body } =
           languageTexts[language].notifications.regularTaskIsAdded;
         presentNotification(title, `"${editedTask.task}"`, body);
-      } else if (!editedTask.isRegular && prevTask.isRegular && !prevTask.isExpired) {
+      } else if (
+        !editedTask.isRegular &&
+        prevTask.isRegular &&
+        !prevTask.isExpired
+      ) {
         const { title } =
-        languageTexts[language].notifications.regularTaskRemoved;
-        presentNotification(title, `"${editedTask.task}"`, '');
+          languageTexts[language].notifications.regularTaskRemoved;
+        presentNotification(title, `"${editedTask.task}"`, "");
       }
       await scheduleTaskExpiration(editedTask, dispatch);
       const notificationId = await scheduleReminder(
@@ -227,8 +235,8 @@ export const deleteTaskAction =
       }
       if (task.isRegular && !task.isExpired) {
         const { title } =
-        languageTexts[language].notifications.regularTaskRemoved;
-        presentNotification(title, '', `"${task.task}"`);
+          languageTexts[language].notifications.regularTaskRemoved;
+        presentNotification(title, "", `"${task.task}"`);
       }
       dispatch({ type: DELETE_TASK, task });
     } catch (error) {

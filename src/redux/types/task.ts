@@ -1,4 +1,5 @@
 import { Action } from "@reduxjs/toolkit";
+import { Sound } from "expo-av/build/Audio";
 import { ListObject } from "../../types/global/ListObject";
 import { RepeatingPeriodTypes } from "../../types/global/Periods";
 
@@ -14,6 +15,7 @@ export type TaskData = {
 export type TaskState = {
   tasks: Array<TaskType>;
   isTaskAddingAnimated: boolean | undefined;
+  completeTaskSound: Sound | undefined;
   positions: ListObject;
   calendarChoosedDate: number | undefined;
   taskToEdit: TaskType | undefined;
@@ -37,6 +39,7 @@ export interface TaskAction extends Action {
   calendarChoosedDate: number | undefined;
   isRegular: boolean;
   isTaskAddingAnimated: boolean | undefined;
+  completeTaskSound: Sound | undefined;
 }
 
 export interface TaskType {

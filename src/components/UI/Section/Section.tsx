@@ -142,6 +142,8 @@ const Section: FC<SectionProps> = React.memo(
           }
         );
       }
+      emptyListImageOpacity.value =
+          withTiming(opacity.value !== 1 && sortedTasks.length === 0 ? 1 : 0, { duration: 300 });
       opacity.value = withTiming(opacity.value === 0 ? 1 : 0, {
         duration: 250,
       });

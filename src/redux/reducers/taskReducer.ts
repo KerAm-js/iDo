@@ -12,7 +12,7 @@ import {
   CALENDAR_CHOOSED_DATE,
   CLEAR_REMINDER,
   UPDATE_POSITIONS,
-  SET_IS_NEW_TASK_REGULAR
+  SET_IS_NEW_TASK_REGULAR,
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
 import { TaskAction, TaskState } from "../types/task";
@@ -22,6 +22,7 @@ const initialState: TaskState = {
   tasks: [],
   positions: {},
   isTaskAddingAnimated: false,
+  completeTaskSound: undefined,
   calendarChoosedDate: undefined,
   taskToEdit: undefined,
   newTaskData: {
