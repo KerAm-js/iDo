@@ -13,6 +13,7 @@ export type TaskData = {
 
 export type TaskState = {
   tasks: Array<TaskType>;
+  isTaskAddingAnimated: boolean | undefined;
   positions: ListObject;
   calendarChoosedDate: number | undefined;
   taskToEdit: TaskType | undefined;
@@ -34,7 +35,8 @@ export interface TaskAction extends Action {
   isExpired: number;
   id: number;
   calendarChoosedDate: number | undefined;
-  isRegular: boolean,
+  isRegular: boolean;
+  isTaskAddingAnimated: boolean | undefined;
 }
 
 export interface TaskType {

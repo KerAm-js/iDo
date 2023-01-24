@@ -33,8 +33,9 @@ import { useTheme } from "@react-navigation/native";
 import Task from "../Task/Task";
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
+import { getIsTaskAddingAnimated } from "../../../redux/selectors/taskSelector";
 
 const MovableItem: FC<MovableItemProps> = React.memo(
   ({
@@ -52,6 +53,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
   }) => {
     const [isDragged, setIsDragged] = useState(false);
     const { dark } = useTheme();
+    const isInsertingAnimated = useSelector(getIsTaskAddingAnimated);
     const dispatch: AppDispatch = useDispatch();
     const shadowColor = dark ? shadowColors.dark : shadowColors.light;
     const { width: SCREEN_WIDTH } = Dimensions.get("screen");
@@ -68,6 +70,8 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     const scale = useSharedValue(1);
     const timeOut: { current: ReturnType<typeof setTimeout> | null } =
       useRef(null);
+
+    console.log(taskObject.task);
 
     const containerStyleR = useAnimatedStyle(() => {
       return {
@@ -319,7 +323,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     return (
       <Animated.View
         entering={
-          isAnimated
+          isInsertingAnimated
             ? SlideInRight.springify().damping(12).delay(100)
             : undefined
         }

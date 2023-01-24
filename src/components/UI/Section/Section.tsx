@@ -65,7 +65,8 @@ const Section: FC<SectionProps> = React.memo(
       sortedTasks.length > 0
         ? sortedTasks.length * TaskHeight +
           (completedTasksLength > 0 ? 28 : 0) +
-          baseHeight + 10
+          baseHeight +
+          10
         : emptyListHeight;
 
     const completedListOpacity = useSharedValue(
@@ -218,7 +219,7 @@ const Section: FC<SectionProps> = React.memo(
             : initialHeight - completedTasksLength * TaskHeight,
           { duration: 100 }
         );
-        sectionOpacity.value = withTiming(1, {duration: 500});
+        sectionOpacity.value = withTiming(1, { duration: 500 });
         return;
       }
       emptyListImageOpacity.value =

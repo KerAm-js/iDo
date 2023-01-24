@@ -6,7 +6,6 @@ import { bell } from "../../../../assets/icons/bell";
 import { calendarEvent } from "../../../../assets/icons/calendar";
 import { clock } from "../../../../assets/icons/clock";
 import { repeat } from "../../../../assets/icons/repeat";
-import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
 import { folderSelector } from "../../../redux/selectors/folderSelector";
 import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { regularBorderRadius } from "../../../styles/global/borderRadiuses";

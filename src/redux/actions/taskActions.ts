@@ -10,7 +10,6 @@ import {
   UPDATE_TASKS,
   SET_DEFAULT_NEW_TASK_DATA,
   CALENDAR_CHOOSED_DATE,
-  CLEAR_REMINDER,
   UPDATE_POSITIONS,
   SET_IS_NEW_TASK_REGULAR,
 } from "./../constants/task";
@@ -94,7 +93,6 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
         await scheduleTaskExpiration(task, dispatch);
         const notificationId = await scheduleReminder(
           task,
-          dispatch,
           task.notificationId
         );
         return {
@@ -116,7 +114,6 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
 
 export const scheduleReminder = async (
   task: TaskType,
-  dispatch: Dispatch,
   oldNotificationId?: string
 ): Promise<string | undefined> => {
   if (oldNotificationId) {
@@ -158,22 +155,23 @@ export const addRegularTask = async (dipatch: Dispatch, task: TaskType) => {
       isCompleted: 0,
       isExpired: time > new Date().valueOf() ? 0 : 1,
     }
-    await addTask(dipatch, regularTask);
+    await addTask(dipatch, regularTask, false);
   } catch (error) {
     console.log("addRegularTask");
   }
 };
 
-export const addTask = async (dispath: Dispatch, addedTask: TaskType) => {
+export const addTask = async (dispath: Dispatch, addedTask: TaskType, isTaskAddingAnimated?: boolean) => {
   const taskId = await LocalDB.addTask(addedTask);
   if (taskId) {
     addedTask.id = taskId;
     await scheduleTaskExpiration(addedTask, dispath);
-    const notificationId = await scheduleReminder(addedTask, dispath);
+    const notificationId = await scheduleReminder(addedTask);
     addedTask.notificationId = notificationId;
     dispath({
       type: ADD_TASK,
       task: addedTask,
+      isTaskAddingAnimated
     });
   }
 };
@@ -181,7 +179,7 @@ export const addTask = async (dispath: Dispatch, addedTask: TaskType) => {
 export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
   try {
     const addedTask: TaskType = { ...task };
-    await addTask(dispath, addedTask);
+    await addTask(dispath, addedTask, true);
     if (addedTask.isRegular) {
       const { language } = store.getState().prefs;
       const { title, body } =
@@ -211,7 +209,6 @@ export const editTaskAction =
       await scheduleTaskExpiration(editedTask, dispatch);
       const notificationId = await scheduleReminder(
         editedTask,
-        dispatch,
         prevTask.notificationId
       );
       dispatch({ type: EDIT_TASK, task: { ...editedTask, notificationId } });

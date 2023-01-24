@@ -21,6 +21,7 @@ import { ListObject } from "../../types/global/ListObject";
 const initialState: TaskState = {
   tasks: [],
   positions: {},
+  isTaskAddingAnimated: false,
   calendarChoosedDate: undefined,
   taskToEdit: undefined,
   newTaskData: {
@@ -41,6 +42,7 @@ export const taskReducer = (
       return {
         ...state,
         tasks,
+        isTaskAddingAnimated: action.isTaskAddingAnimated,
         newTaskData: !!state.calendarChoosedDate
           ? {
               time: new Date(state.calendarChoosedDate).setHours(
