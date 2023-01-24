@@ -55,6 +55,8 @@ const Section: FC<SectionProps> = React.memo(
     const areAnimationsDisabled = useRef(false);
     const upperBound = sortedTasks.length - 1 - completedTasksLength;
 
+    const sectionOpacity = useSharedValue(1);
+
     const opacity = useSharedValue(
       typeof visibilities?.list === "number" ? visibilities?.list : 1
     );
@@ -95,6 +97,7 @@ const Section: FC<SectionProps> = React.memo(
       return {
         height: height.value,
         overflow: opacity.value === 1 ? "visible" : "hidden",
+        opacity: sectionOpacity.value,
       };
     }, [opacity.value, height.value]);
 
@@ -196,7 +199,7 @@ const Section: FC<SectionProps> = React.memo(
 
     const runEffectAnimations = (areAnimationsDisabled?: boolean) => {
       if (areAnimationsDisabled && title === CALENDAR_DAY) {
-        opacity.value = 0;
+        sectionOpacity.value = 0;
         emptyListImageOpacity.value =
           sortedTasks.length === 0 ? withTiming(1) : 0;
         completedMarkerOpacity.value = withTiming(
@@ -209,15 +212,13 @@ const Section: FC<SectionProps> = React.memo(
             duration: 100,
           }
         );
-        if (opacity.value === 1) {
-          height.value = withTiming(
-            completedListOpacity.value === 1
-              ? initialHeight
-              : initialHeight - completedTasksLength * TaskHeight,
-            { duration: 100 }
-          );
-        }
-        opacity.value = withTiming(1, { duration: 300 });
+        height.value = withTiming(
+          completedListOpacity.value === 1
+            ? initialHeight
+            : initialHeight - completedTasksLength * TaskHeight,
+          { duration: 100 }
+        );
+        sectionOpacity.value = withTiming(1, {duration: 500});
         return;
       }
       emptyListImageOpacity.value =

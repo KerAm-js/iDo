@@ -8,7 +8,6 @@ import {
   PanGestureHandlerGestureEvent,
 } from "react-native-gesture-handler";
 import Animated, {
-  interpolate,
   runOnJS,
   SlideInRight,
   useAnimatedGestureHandler,
@@ -56,7 +55,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     const dispatch: AppDispatch = useDispatch();
     const shadowColor = dark ? shadowColors.dark : shadowColors.light;
     const { width: SCREEN_WIDTH } = Dimensions.get("screen");
-    const translateThreshold = SCREEN_WIDTH * -0.3;
+    const translateThreshold = SCREEN_WIDTH * -0.4;
     const top = positions.value[id]
       ? itemHeight * positions?.value[id]?.position +
         (positions?.value[id]?.isCompleted ? 31 : 0)
@@ -66,18 +65,18 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     const trashIconOpacity = useSharedValue(0);
     const shadowOpacity = useSharedValue(0);
     const zIndex = useSharedValue(0);
+    const scale = useSharedValue(1);
     const timeOut: { current: ReturnType<typeof setTimeout> | null } =
       useRef(null);
 
     const containerStyleR = useAnimatedStyle(() => {
-      const scale = interpolate(shadowOpacity.value, [0, 1], [1, 1.04]);
       return {
         shadowOpacity: shadowOpacity.value,
         shadowColor,
         top: translateY.value,
         opacity: opacity.value,
         zIndex: zIndex.value,
-        transform: [{ scale }],
+        transform: [{ scale: scale.value }],
       };
     }, [positions, translateY, shadowOpacity, opacity]);
 
@@ -105,9 +104,23 @@ const MovableItem: FC<MovableItemProps> = React.memo(
             const newTop = isCompleted
               ? 28 + current?.position * itemHeight
               : current?.position * itemHeight;
-
-            zIndex.value = -1;
-
+            if (isCompletedChanged) {
+              zIndex.value = -10;
+              if (previous && current.position !== previous?.position) {
+                zIndex.value = -110;
+                const scaling =
+                  Math.abs(current.position - previous?.position) / 100;
+                scale.value = withTiming(
+                  0.96 - scaling,
+                  { duration: 80 },
+                  (isFinished) => {
+                    if (isFinished) {
+                      scale.value = withTiming(1, { duration: 220 });
+                    }
+                  }
+                );
+              }
+            }
             translateY.value = withTiming(
               newTop,
               {
@@ -116,6 +129,9 @@ const MovableItem: FC<MovableItemProps> = React.memo(
               (isFinished) => {
                 if (isFinished) {
                   zIndex.value = 0;
+                  if (isCompletedChanged) {
+                    scale.value = withTiming(1, { duration: 150 });
+                  }
                 }
               }
             );
@@ -215,6 +231,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         translateY.value = withTiming(newTranslateY, {
           duration: 300,
         });
+        scale.value = withTiming(1);
         shadowOpacity.value = withTiming(0, undefined, onAnimationEnd);
       }
     };
@@ -267,6 +284,7 @@ const MovableItem: FC<MovableItemProps> = React.memo(
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         setIsDragged(true);
         zIndex.value = 10 * upperBound;
+        scale.value = withTiming(1.04);
         shadowOpacity.value = withTiming(1);
       }
     };

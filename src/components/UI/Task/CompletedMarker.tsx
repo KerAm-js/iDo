@@ -4,6 +4,7 @@ import { Pressable } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedStyle,
+  withTiming,
 } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
 import { useSelector } from "react-redux";
@@ -40,7 +41,7 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
   }, [top.value, opacity.value]);
 
   return (
-    <Animated.View style={[containerStyle, completedMarkerStyles.container]}>
+    <Animated.View style={[completedMarkerStyles.container, containerStyle]}>
       <Pressable onPress={onPress}>
         <ThemeView card style={completedMarkerStyles.content}>
           <ThemeText style={text12}>{languageTexts[language].words.completed}</ThemeText>
