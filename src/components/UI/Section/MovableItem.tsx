@@ -318,12 +318,10 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     const openEditTaskPopup = () =>
       dispatch(chooseTaskToEditAction({ ...taskObject }));
 
-    const isAnimated = !positions.value[id] && sectionTitle !== CALENDAR_DAY;
-
     return (
       <Animated.View
         entering={
-          isInsertingAnimated
+          isInsertingAnimated && !positions.value[id] && sectionTitle !== CALENDAR_DAY
             ? SlideInRight.springify().damping(12).delay(100)
             : undefined
         }
