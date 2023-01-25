@@ -14,6 +14,7 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
+  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { buttonColors, themeColors } from "../../../../styles/global/colors";
@@ -48,12 +49,12 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
     onClick();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!isCompleted) {
-      playSound();
       scale.value = 0.5;
       scale.value = withSequence(
-        withTiming(1.25, { duration: 150 }),
-        withTiming(1, { duration: 200 })
+        withTiming(1.25, { duration: 140 }),
+        withTiming(1, { duration: 220 })
       );
+      playSound();
     } else {
       scale.value = 0;
     }

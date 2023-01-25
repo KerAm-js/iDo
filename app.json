@@ -22,7 +22,7 @@
       "supportsTablet": true,
       "icon": "./assets/ios-icon.png",
       "bundleIdentifier": "com.amirkerimov.productive-plus",
-      "buildNumber": "2.0.8"
+      "buildNumber": "2.0.8.1"
     },
     "android": {
       "adaptiveIcon": {
