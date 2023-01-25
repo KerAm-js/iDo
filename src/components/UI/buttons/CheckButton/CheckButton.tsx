@@ -49,11 +49,11 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
     onClick();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!isCompleted) {
-      scale.value = 0.5;
-      scale.value = withSequence(
-        withTiming(1.25, { duration: 140 }),
-        withTiming(1, { duration: 220 })
-      );
+      // scale.value = withSequence(
+      //   withTiming(1.25, { duration: 140 }),
+      //   withTiming(1, { duration: 220 })
+      // );
+      scale.value = withTiming(1, { duration: 140 })
       playSound();
     } else {
       scale.value = 0;
