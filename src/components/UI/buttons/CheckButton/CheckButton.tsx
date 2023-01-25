@@ -18,11 +18,11 @@ import Animated, {
 } from "react-native-reanimated";
 import { buttonColors, themeColors } from "../../../../styles/global/colors";
 import { useTheme } from "@react-navigation/native";
-// import { Audio } from "expo-av";
-// import { Sound } from "expo-av/build/Audio";
+import { Audio } from "expo-av";
+import { Sound } from "expo-av/build/Audio";
 
 const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
-  // const [sound, setSound] = React.useState<Sound>();
+  const [sound, setSound] = React.useState<Sound>();
   const theme = useTheme();
   const scale = useSharedValue(isCompleted ? 1 : 0);
 
@@ -32,23 +32,23 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
     };
   });
 
-  // async function playSound() {
-  //   try {
-  //     const { sound } = await Audio.Sound.createAsync(
-  //       require("../../../../../assets/pop.mov")
-  //     );
-  //     setSound(sound);
-  //     await sound.playAsync();
-  //   } catch (error) {
-  //     console.log("playSound", error);
-  //   }
-  // }
+  async function playSound() {
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        require("../../../../../assets/pop.mp3")
+      );
+      setSound(sound);
+      await sound.playAsync();
+    } catch (error) {
+      console.log("playSound", error);
+    }
+  }
 
   const handleClick = () => {
     onClick();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!isCompleted) {
-      // playSound();
+      playSound();
       scale.value = 0.5;
       scale.value = withSequence(
         withTiming(1.25, { duration: 150 }),
@@ -59,13 +59,13 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
     }
   };
 
-  // useEffect(() => {
-  //   return sound
-  //     ? () => {
-  //         sound.unloadAsync();
-  //       }
-  //     : undefined;
-  // }, [sound]);
+  useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync();
+        }
+      : undefined;
+  }, [sound]);
 
   return (
     <Pressable onPress={handleClick} style={[checkButtonStyles.container]}>

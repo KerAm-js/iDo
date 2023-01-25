@@ -216,7 +216,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
               )}
               <SvgXml
                 xml={bell(
-                  remindTime > new Date().valueOf()
+                  remindTime > new Date().valueOf() || isCompleted
                     ? textColors.grey
                     : textColors.red
                 )}
@@ -229,7 +229,7 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, completeTask }) => {
                   numberOfLines={1}
                   style={[
                     text12LineHeight,
-                    remindTime > new Date().valueOf() ? textGrey : textRed,
+                    remindTime > new Date().valueOf() || isCompleted ? textGrey : textRed,
                   ]}
                 >
                   {reminderString}

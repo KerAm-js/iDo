@@ -71,8 +71,6 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     const timeOut: { current: ReturnType<typeof setTimeout> | null } =
       useRef(null);
 
-    console.log(taskObject.task);
-
     const containerStyleR = useAnimatedStyle(() => {
       return {
         shadowOpacity: shadowOpacity.value,

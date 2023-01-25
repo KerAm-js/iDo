@@ -1,19 +1,28 @@
+import {
+  SET_AUTO_REMINDER,
+  SET_COMPLETED_TASKS_REMINDERS_DISABLED,
+} from "./../constants/prefs";
 import { Dispatch } from "@reduxjs/toolkit";
 import { ColorSchemeName } from "react-native";
 import {
   getPrefsFromAS,
-  savePrefsToAS,
 } from "../../backend/asyncStorage/prefs";
 import { lagnuages } from "../../utils/languageTexts";
-import { UPDATE_LANGUAGE, SET_THEME, UPDATE_PREFS } from "../constants/prefs";
+import { SET_LANGUAGE, SET_THEME, UPDATE_PREFS } from "../constants/prefs";
 import { store } from "../store";
 import { LanguageType, ThemeType } from "../types/prefs";
 
+export const getAutoReminderSetting = () => {
+  return store.getState().prefs.autoReminder;
+};
+
+export const getCompletedTasksRemindersDisabled = () => {
+  return store.getState().prefs.completedTasksRemindersDisabled;
+}
+
 export const updateLanguageAction =
-  (language: LanguageType) => async (dispatch: Dispatch) => {
-    const prefsState = store.getState().prefs;
-    await savePrefsToAS({ ...prefsState, language });
-    dispatch({ type: UPDATE_LANGUAGE, language });
+  (language: LanguageType) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_LANGUAGE, language });
   };
 
 export const loadPrefsFromASAction =
@@ -31,16 +40,29 @@ export const loadPrefsFromASAction =
           colorScheme === "dark" || colorScheme === "light"
             ? colorScheme
             : "light";
-        dispatch({ type: UPDATE_PREFS, prefs: { theme, language } });
+        dispatch({
+          type: UPDATE_PREFS,
+          prefs: { theme, language, autoReminder: false },
+        });
       }
     } catch (error) {
       console.log("getPrefsFromASAction", error);
     }
   };
 
-export const setThemeAction =
-  (theme: ThemeType) => async (dispatch: Dispatch) => {
-    const prefsState = store.getState().prefs;
-    await savePrefsToAS({ ...prefsState, theme });
-    dispatch({ type: SET_THEME, theme });
+export const setThemeAction = (theme: ThemeType) => (dispatch: Dispatch) => {
+  dispatch({ type: SET_THEME, theme });
+};
+
+export const setAutoReminderAction =
+  (autoReminder: boolean) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_AUTO_REMINDER, autoReminder });
+  };
+
+export const setCompletedTasksRemindersDisabled =
+  (disabled: boolean) => (dispatch: Dispatch) => {
+    dispatch({
+      type: SET_COMPLETED_TASKS_REMINDERS_DISABLED,
+      completedTasksRemindersDisabled: disabled,
+    });
   };

@@ -11,22 +11,22 @@ export const reminderStateList = [
   },
   {
     id: "1",
-    minutes: 30,
+    minutes: 15,
   },
   {
     id: "2",
-    hours: 1,
+    minutes: 30,
   },
   {
     id: "3",
-    hours: 3,
-  },
-  {
-    id: "4",
-    days: 1,
+    hours: 1,
   },
   {
     id: "5",
+    days: 1,
+  },
+  {
+    id: "6",
     weeks: 1,
   },
 ];

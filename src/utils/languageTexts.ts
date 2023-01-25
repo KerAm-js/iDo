@@ -24,6 +24,10 @@ export const languageTexts = {
       },
       regularTaskRemoved: {
         title: "Ежедневная задача удалена ❌",
+      },
+      autoReminderEnabled: {
+        title: "Автоматические напоминания",
+        body: "К каждой задаче автоматически будет добавляться напоминание за 15 минут до времени выполнения"
       }
     },
     alerts: {
@@ -152,6 +156,10 @@ export const languageTexts = {
       close: 'Закрыть',
       ok: "Ок",
     },
+    prefsTitles: {
+      autoReminder: "Автоматические напоминания",
+      disableCompletedTasksReminders: "Не напоминать о выполненных задачах"
+    },
     periodsDeclination: {
       one: {
         minute: "Минута",
@@ -187,10 +195,14 @@ export const languageTexts = {
       },
       regularTaskIsAdded: {
         title: "New daily task 🔁",
-        body: "The task will be added automaticly every day. Delete or edit this task to stop it's repeating.",
+        body: "The task will be added automatically every day. Delete or edit this task to stop it's repeating.",
       },
       regularTaskRemoved: {
         title: "Daily task removed ❌",
+      },
+      autoReminderEnabled: {
+        title: "Automatic reminders",
+        body: "A reminder will automatically be added to each task for 15 minutes before it's completion time"
       }
     },
     alerts: {
@@ -236,6 +248,10 @@ export const languageTexts = {
     screenTitles: {
       main: "Main",
       preferences: "Preferences",
+    },
+    prefsTitles: {
+      autoReminder: "Automatic reminders",
+      disableCompletedTasksReminders: "Don't remind about completed tasks"
     },
     weekDays: {
       fulls: [
@@ -350,6 +366,10 @@ export const languageTexts = {
       },
       regularTaskRemoved: {
         title: "Tägliche Aufgabe entfernt ❌",
+      },
+      autoReminderEnabled: {
+        title: "Automatische Erinnerungen",
+        body: "15 Minuten vor Fälligkeit wird jeder Aufgabe automatisch eine Erinnerung hinzugefügt"
       }
     },
     alerts: {
@@ -395,6 +415,10 @@ export const languageTexts = {
       cancel: "Abbruch",
       close: "Schließen",
       ok: "Ok",
+    },
+    prefsTitles: {
+      autoReminder: "Automatische Erinnerungen",
+      disableCompletedTasksReminders: "Lassen Sie sich nicht an erledigte Aufgaben erinnern"
     },
     weekDays: {
       fulls: [
@@ -495,6 +519,10 @@ export const languageTexts = {
       },
       regularTaskRemoved: {
         title: "ХIор дийнан гIуллакх сацадина ❌"
+      },
+      autoReminderEnabled: {
+        title: "Ша-шаха дагадийтар",
+        body: "ХIора гIуллакх цуьнан кхочушдаран хан тIекхачале 15 минот хьалха дагадоуьйтур долуш ду."
       }
     },
     alerts: {
@@ -540,6 +568,10 @@ export const languageTexts = {
       cancel: "Юхадаккха",
       close: "ДIакъовла",
       ok: "Дика ду",
+    },
+    prefsTitles: {
+      autoReminder: "Ша-шаха дагадаийтар",
+      disableCompletedTasksReminders: "Кхочушдина гIулаккхаш дага ма дахкийта"
     },
     weekDays: {
       fulls: [

@@ -6,9 +6,15 @@ export const prefItemStyles = StyleSheet.create({
     marginBottom: 10,
   },
   leftItemsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
   },
   icon: {
-    marginRight: 15
-  }
-})
+    marginRight: 15,
+  },
+  title: {
+    paddingRight: 15,
+    flex: 1,
+  },
+});

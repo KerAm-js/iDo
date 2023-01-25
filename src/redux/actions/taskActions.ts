@@ -27,7 +27,10 @@ import { getNextDate, toLocaleStateString } from "../../utils/date";
 import { ListObject } from "../../types/global/ListObject";
 import { getPositionsFromAS } from "../../backend/asyncStorage/positions";
 import { languageTexts } from "../../utils/languageTexts";
-import { Audio } from 'expo-av';
+import {
+  getAutoReminderSetting,
+  getCompletedTasksRemindersDisabled,
+} from "./prefsActions";
 
 export const scheduleTaskExpiration = async (
   task: TaskType,
@@ -92,6 +95,9 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
     const notificationsUpdatedTasks = await Promise.all(
       tasks.map(async (task) => {
         await scheduleTaskExpiration(task, dispatch);
+        if (getCompletedTasksRemindersDisabled() && task.isCompleted) {
+          return task;
+        }
         const notificationId = await scheduleReminder(
           task,
           task.notificationId
@@ -177,6 +183,7 @@ export const addTask = async (
       type: ADD_TASK,
       task: addedTask,
       isTaskAddingAnimated,
+      autoReminder: getAutoReminderSetting(),
     });
   }
 };
@@ -219,7 +226,11 @@ export const editTaskAction =
         editedTask,
         prevTask.notificationId
       );
-      dispatch({ type: EDIT_TASK, task: { ...editedTask, notificationId } });
+      dispatch({
+        type: EDIT_TASK,
+        task: { ...editedTask, notificationId },
+        autoReminder: getAutoReminderSetting(),
+      });
     } catch (error) {
       console.log("editTaskAction", error);
     }
@@ -246,7 +257,12 @@ export const deleteTaskAction =
 
 export const updateNewTaskTimeAction =
   (time: number, timeType: TimeType) => (dispatch: Dispatch) => {
-    dispatch({ type: UPDATE_TASK_TIME, time, timeType });
+    dispatch({
+      type: UPDATE_TASK_TIME,
+      time,
+      timeType,
+      autoReminder: getAutoReminderSetting(),
+    });
   };
 
 export const setIsNewTaskRegularAction =
@@ -259,9 +275,13 @@ export const updateNewTaskRemindTimeAction =
     dispatch({ type: UPDATE_TASK_REMIND_TIME, remindTime });
   };
 
-export const setDefaultNewTaskDataAction = () => (dispatch: Dispatch) => {
-  dispatch({ type: SET_DEFAULT_NEW_TASK_DATA });
-};
+export const setDefaultNewTaskDataAction =
+  (autoReminder?: boolean) => (dispatch: Dispatch) => {
+    dispatch({
+      type: SET_DEFAULT_NEW_TASK_DATA,
+      autoReminder: autoReminder || getAutoReminderSetting(),
+    });
+  };
 
 export const chooseCalendarDate =
   (value: number | undefined) => (dispatch: Dispatch) => {
@@ -270,7 +290,11 @@ export const chooseCalendarDate =
 
 export const chooseTaskToEditAction =
   (task: TaskType | undefined) => (dispatch: Dispatch) => {
-    dispatch({ type: CHOOSE_TASK_TO_EDIT, task });
+    dispatch({
+      type: CHOOSE_TASK_TO_EDIT,
+      task,
+      autoReminder: getAutoReminderSetting(),
+    });
   };
 
 export const completeTaskAction =
@@ -289,6 +313,17 @@ export const completeTaskAction =
         isExpired,
         completionTime
       );
+      if (isCompleted) {
+        if (
+          task.remindTime &&
+          task.notificationId &&
+          getCompletedTasksRemindersDisabled()
+        ) {
+          deleteNotification(task.notificationId);
+        }
+      } else {
+        scheduleReminder(task);
+      }
       dispatch({
         type: COMPLETE_TASK,
         id: task.id,

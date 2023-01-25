@@ -40,6 +40,7 @@ export interface TaskAction extends Action {
   isRegular: boolean;
   isTaskAddingAnimated: boolean | undefined;
   completeTaskSound: Sound | undefined;
+  autoReminder: boolean;
 }
 
 export interface TaskType {

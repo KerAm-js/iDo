@@ -40,26 +40,19 @@ export const taskReducer = (
   switch (action.type) {
     case ADD_TASK: {
       const tasks = [action.task, ...state.tasks];
+      const time = state.calendarChoosedDate
+        ? new Date(state.calendarChoosedDate).setHours(23, 59, 59, 999)
+        : new Date().setHours(23, 59, 59, 999);
       return {
         ...state,
         tasks,
         isTaskAddingAnimated: action.isTaskAddingAnimated,
-        newTaskData: !!state.calendarChoosedDate
-          ? {
-              time: new Date(state.calendarChoosedDate).setHours(
-                23,
-                59,
-                59,
-                999
-              ),
-              timeType: "day",
-              remindTime: undefined,
-            }
-          : {
-              ...initialState.newTaskData,
-              time: new Date().setHours(23, 59, 59, 999),
-              timeType: "day",
-            },
+        newTaskData: {
+          ...initialState.newTaskData,
+          time: time,
+          timeType: "day",
+          remindTime: action.autoReminder ? time - 1000 * 60 * 15 : undefined,
+        },
       };
     }
     case DELETE_TASK: {
@@ -83,20 +76,20 @@ export const taskReducer = (
       const tasks = state.tasks.map((task) =>
         task.id === action.task.id ? action.task : task
       );
+      const time = state.calendarChoosedDate
+        ? new Date(state.calendarChoosedDate).setHours(23, 59, 59, 999)
+        : undefined;
       return {
         ...state,
         tasks,
         taskToEdit: undefined,
-        newTaskData: !!state.calendarChoosedDate
+        newTaskData: time
           ? {
-              time: new Date(state.calendarChoosedDate).setHours(
-                23,
-                59,
-                59,
-                999
-              ),
+              time,
               timeType: "day",
-              remindTime: undefined,
+              remindTime: action.autoReminder
+                ? time - 1000 * 60 * 15
+                : undefined,
             }
           : { ...initialState.newTaskData },
       };
@@ -126,7 +119,9 @@ export const taskReducer = (
           ...state.newTaskData,
           time: action.time,
           timeType: action.timeType,
-          remindTime: undefined,
+          remindTime: action.autoReminder
+            ? action.time - 1000 * 60 * 15
+            : undefined,
         },
       };
     }
@@ -178,30 +173,31 @@ export const taskReducer = (
       };
     }
     case SET_DEFAULT_NEW_TASK_DATA: {
+      const time = new Date().setHours(23, 59, 59, 999);
       return {
         ...state,
         newTaskData: {
-          time: undefined,
-          timeType: undefined,
-          remindTime: undefined,
+          time,
+          timeType: "day",
+          remindTime: action.autoReminder ? time - 1000 * 60 * 15 : undefined,
         },
       };
     }
     case CHOOSE_TASK_TO_EDIT: {
+      const time = state.calendarChoosedDate
+        ? new Date(state.calendarChoosedDate).setHours(23, 59, 59, 999)
+        : undefined;
       return {
         ...state,
         taskToEdit: action?.task,
         newTaskData:
-          state.calendarChoosedDate && !action?.task
+          time && !action?.task
             ? {
-                time: new Date(state.calendarChoosedDate).setHours(
-                  23,
-                  59,
-                  59,
-                  999
-                ),
+                time,
                 timeType: "day",
-                remindTime: undefined,
+                remindTime: action.autoReminder
+                  ? time - 1000 * 60 * 15
+                  : undefined,
               }
             : {
                 time: action.task?.time,

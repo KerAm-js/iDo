@@ -81,7 +81,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
                 remindTime,
                 isRegular: newTaskData.isRegular ? 1 : 0,
               },
-              taskToEdit
+              taskToEdit,
             )
           : addTaskAction(
               {

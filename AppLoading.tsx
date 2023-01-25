@@ -22,6 +22,7 @@ import {
   NOTIFICATION_ID,
 } from "./src/backend/sqlite/constants/taskProps";
 import { loadFoldersFromDBAction } from "./src/redux/actions/folderActions";
+import { savePrefsToAS } from "./src/backend/asyncStorage/prefs";
 
 const loadApp = async () => {
   try {
@@ -111,9 +112,10 @@ export default function AppLoading() {
     }
     prepare();
     const subscription = AppState.addEventListener("change", (nextState) => {
-      const positions = store.getState().tasks.positions;
+      const { tasks, prefs } = store.getState();
       if (nextState === "background" || nextState === "inactive") {
-        savePositions(positions);
+        savePositions(tasks.positions);
+        savePrefsToAS(prefs);
       }
     });
     return () => {

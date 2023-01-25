@@ -32,7 +32,7 @@ import { useKeyboard } from "../../../hooks/useKeyboard";
 import ReminderCheckItem from "../../UI/PopupItems/ReminderCheckItem";
 import { textColors } from "../../../styles/global/colors";
 import { useTimeValidation } from "../../../hooks/useTimeValidation";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
+import { getAutoReminder, getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { useTheme } from "@react-navigation/native";
 
 const CalendarPopup: FC<CalendarPopupPropType> = ({
@@ -45,6 +45,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   isReminderChoosing,
 }) => {
   const language = useSelector(getLanguage);
+  const autoReminder = useSelector(getAutoReminder);
   const theme = useTheme();
   const dispatch: AppDispatch = useDispatch();
   const { taskToEdit, newTaskData, calendarChoosedDate } =
@@ -255,6 +256,9 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       (!newTaskData.time && !newTaskData.timeType)
     ) {
       setDefaults();
+    }
+    if (isReminderChoosing && newTaskData.remindTime && newTaskData.time) {
+      setDefaults(new Date(newTaskData.time), newTaskData.timeType);
     }
   }, [newTaskData]);
 
