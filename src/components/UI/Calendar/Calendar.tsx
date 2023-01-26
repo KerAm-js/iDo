@@ -34,7 +34,7 @@ const Calendar: FC<CalendarPropType> = ({
     getMonthName(language, currDate.getMonth()) + " " + currDate.getFullYear()
   );
   const [state, setState] = useState<Array<CalendarMonthItemType>>(
-    getCalendarArray(currDate, 1)
+    getCalendarArray(currDate, 3)
   );
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -75,7 +75,7 @@ const Calendar: FC<CalendarPropType> = ({
       );
       setState([
         ...state,
-        ...getCalendarArray(nextSlideDate, state.length + 24),
+        ...getCalendarArray(nextSlideDate, state.length + 12),
       ]);
     }
   };
