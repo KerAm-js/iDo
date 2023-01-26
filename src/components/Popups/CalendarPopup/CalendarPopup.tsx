@@ -365,6 +365,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
                 isCardBackgroundColor={true}
                 date={date}
                 setDate={onDateItemClick}
+                pastDatesShown
               />
             </Animated.View>
           )}

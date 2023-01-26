@@ -19,11 +19,13 @@ const DateItem: FC<DateItemPropType> = React.memo(
     isSelected,
     busyness,
     isCardBackgroundColor,
+    pastDatesShown,
   }) => {
     const theme = useTheme();
     const isExpired =
       new Date().getMonth() === date.getMonth() &&
-      new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24;
+      (new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24 &&
+        !pastDatesShown);
     const onClickHandler = () => {
       onClick(date);
     };

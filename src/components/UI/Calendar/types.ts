@@ -5,17 +5,18 @@ import {
 } from "react-native";
 
 export type DateBusynessType = {
-  hasCompleted: boolean,
-  hasUncompleted: boolean,
-  hasExpired: boolean,
-}
+  hasCompleted: boolean;
+  hasUncompleted: boolean;
+  hasExpired: boolean;
+};
 
 export type DateItemPropType = {
   data: DateItemType;
   isSelected: boolean;
-  busyness?: DateBusynessType,
-  isCardBackgroundColor?: boolean,
+  busyness?: DateBusynessType;
+  isCardBackgroundColor?: boolean;
   onClick: (date: Date) => void;
+  pastDatesShown?: boolean;
 };
 
 export type DateItemType = {
@@ -28,6 +29,7 @@ export type CalendarPropType = {
   setDate: (date: Date) => void;
   setGlobalTitle?: (title: string) => void;
   isCardBackgroundColor?: boolean;
+  pastDatesShown?: boolean;
 };
 
 export type ListPropType = {
@@ -37,6 +39,7 @@ export type ListPropType = {
   setDate: (date: Date) => void;
   onScrollEnd: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   isCardBackgroundColor?: boolean;
+  pastDatesShown?: boolean;
 };
 
 export type CalendarMonthItemType = Array<Array<DateItemType>>;

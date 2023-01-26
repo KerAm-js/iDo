@@ -13,6 +13,7 @@ const List: FC<ListPropType> = ({
   reference,
   setDate,
   isCardBackgroundColor,
+  pastDatesShown
 }) => {
   const { width: WIDTH } = Dimensions.get("screen");
   const tasks = useSelector(getTasks);
@@ -77,6 +78,7 @@ const List: FC<ListPropType> = ({
                   key={object.date.valueOf()}
                   data={object}
                   isCardBackgroundColor={isCardBackgroundColor}
+                  pastDatesShown={pastDatesShown}
                 />
               ))}
             </View>

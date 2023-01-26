@@ -140,6 +140,7 @@ export const languageTexts = {
       de: "Немецкий",
     },
     words: {
+      complete: 'Выполнить',
       calendar: 'Календарь',
       nightTheme: "Ночной режим",
       version: "Версия",
@@ -229,6 +230,7 @@ export const languageTexts = {
       language: "Language",
     },
     words: {
+      complete: 'Complete',
       calendar: 'Calendar',
       nightTheme: "Night theme",
       version: "Version",
@@ -400,6 +402,7 @@ export const languageTexts = {
       preferences: "Einstellungen",
     },
     words: {
+      complete: 'Komplett',
       calendar: 'Kalender',
       nightTheme: "Nachtmodus",
       beta: "Beta",
@@ -553,6 +556,7 @@ export const languageTexts = {
       preferences: "Нисдарш",
     },
     words: {
+      complete: 'Кхочушдан',
       calendar: 'Календарь',
       nightTheme: "Буьйсанан раж",
       beta: "Бета",

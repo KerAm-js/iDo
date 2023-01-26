@@ -21,6 +21,7 @@ const Calendar: FC<CalendarPropType> = ({
   setDate,
   setGlobalTitle,
   isCardBackgroundColor,
+  pastDatesShown,
 }) => {
   const language = useSelector(getLanguage);
   const { width: WIDTH } = Dimensions.get("screen");
@@ -88,6 +89,7 @@ const Calendar: FC<CalendarPropType> = ({
         setDate={setDate}
         onScrollEnd={onScroll}
         isCardBackgroundColor={isCardBackgroundColor}
+        pastDatesShown={pastDatesShown}
       />
     ),
     [state, date]

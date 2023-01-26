@@ -68,6 +68,7 @@ const CalendarScreen = () => {
         date={date}
         setDate={setDate}
         setGlobalTitle={updateScreenTitle}
+        pastDatesShown
       />
       <View
         style={{

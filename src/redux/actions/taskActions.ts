@@ -88,7 +88,6 @@ export const scheduleTaskExpiration = async (
 
 export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
   try {
-    const currDate = new Date().setHours(0, 0, 0, 0);
     const tasks = await LocalDB.getTasks();
 
     await deleteAllNotifications();
@@ -108,12 +107,8 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
         };
       })
     );
-
-    const filteredTasks = notificationsUpdatedTasks.filter(
-      (task) => task.time >= currDate || !task.isCompleted
-    );
-    filteredTasks.reverse();
-    dispatch({ type: UPDATE_TASKS, tasks: filteredTasks });
+    notificationsUpdatedTasks.reverse();
+    dispatch({ type: UPDATE_TASKS, tasks: notificationsUpdatedTasks });
   } catch (error) {
     console.log("getTasksFromLocalDB", error);
   }
