@@ -27,7 +27,7 @@ export interface TaskAction extends Action {
   time: number;
   timeType: TimeType;
   remindTime: number | undefined;
-  notificationId: number;
+  notificationId: string;
   newTaskData: TaskData;
   tasks: Array<TaskType>;
   positions: ListObject;

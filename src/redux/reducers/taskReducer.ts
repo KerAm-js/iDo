@@ -102,6 +102,7 @@ export const taskReducer = (
             isCompleted: action.isCompleted,
             completionTime: action.completionTime,
             isExpired: action.isExpired,
+            notificationId: action.notificationId
           };
         } else {
           return el;

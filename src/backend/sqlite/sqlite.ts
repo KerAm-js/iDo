@@ -345,7 +345,7 @@ export class LocalDB {
     id: number,
     isCompleted: number,
     isExpired: number,
-    completionTime: number | null
+    completionTime: number | null,
   ) {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {

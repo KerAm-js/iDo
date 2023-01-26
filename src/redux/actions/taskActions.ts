@@ -31,6 +31,7 @@ import {
   getAutoReminderSetting,
   getCompletedTasksRemindersDisabled,
 } from "./prefsActions";
+import { notificationAsync } from "expo-haptics";
 
 export const scheduleTaskExpiration = async (
   task: TaskType,
@@ -118,27 +119,33 @@ export const scheduleReminder = async (
   task: TaskType,
   oldNotificationId?: string
 ): Promise<string | undefined> => {
-  if (oldNotificationId) {
-    await deleteNotification(oldNotificationId);
-  }
-  if (task.remindTime) {
-    const currentDate = new Date().valueOf();
-    const notificationTime = Math.round((task.remindTime - currentDate) / 1000);
-    const { language } = store.getState().prefs;
-    if (notificationTime > 0) {
-      const notificationId = await setNotification(
-        task.task,
-        "",
-        `${toLocaleStateString({
-          defaultDate: task.remindTime,
-          dateValue: task.time,
-          timeType: task.timeType,
-          language,
-        })}`,
-        notificationTime
-      );
-      return notificationId;
+  try {
+    if (oldNotificationId) {
+      await deleteNotification(oldNotificationId);
     }
+    if (task.remindTime) {
+      const currentDate = new Date().valueOf();
+      const notificationTime = Math.round(
+        (task.remindTime - currentDate) / 1000
+      );
+      const { language } = store.getState().prefs;
+      if (notificationTime > 0) {
+        const notificationId = await setNotification(
+          task.task,
+          "",
+          `${toLocaleStateString({
+            defaultDate: task.remindTime,
+            dateValue: task.time,
+            timeType: task.timeType,
+            language,
+          })}`,
+          notificationTime
+        );
+        return notificationId;
+      }
+    }
+  } catch (error) {
+    console.log("scheduleReminder", error);
   }
 };
 
@@ -302,30 +309,37 @@ export const completeTaskAction =
         : new Date().valueOf() > task.time
         ? 1
         : 0;
-      await LocalDB.completeTask(
-        task.id,
-        isCompleted,
-        isExpired,
-        completionTime
-      );
+      let notificationId: string | undefined = undefined;
       if (isCompleted) {
         if (
           task.remindTime &&
           task.notificationId &&
           getCompletedTasksRemindersDisabled()
         ) {
-          deleteNotification(task.notificationId);
+          await deleteNotification(task.notificationId);
+          notificationId = undefined;
         }
-      } else {
-        scheduleReminder(task);
+      } else if (getCompletedTasksRemindersDisabled()) {
+        const newNotificationId = await scheduleReminder(
+          task,
+          task.notificationId
+        );
+        notificationId = newNotificationId;
       }
       dispatch({
         type: COMPLETE_TASK,
         id: task.id,
+        notificationId,
         isCompleted,
         isExpired,
         completionTime,
       });
+      await LocalDB.completeTask(
+        task.id,
+        isCompleted,
+        isExpired,
+        completionTime
+      );
     } catch (error) {
       console.log("completeTaskAction", error);
     }

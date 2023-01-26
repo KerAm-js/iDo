@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import { Pressable } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { check } from "../../../../../assets/icons/check";
@@ -11,10 +11,10 @@ import {
   ultraSmallBorderRadius,
 } from "../../../../styles/global/borderRadiuses";
 import Animated, {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSequence,
-  withSpring,
   withTiming,
 } from "react-native-reanimated";
 import { buttonColors, themeColors } from "../../../../styles/global/colors";
@@ -23,7 +23,7 @@ import { Audio } from "expo-av";
 import { Sound } from "expo-av/build/Audio";
 
 const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
-  const [sound, setSound] = React.useState<Sound>();
+  const [sound, setSound] = useState<Sound>();
   const theme = useTheme();
   const scale = useSharedValue(isCompleted ? 1 : 0);
 
@@ -49,13 +49,7 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
     onClick();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!isCompleted) {
-      scale.value = withSequence(
-        withTiming(1.25, { duration: 150 }),
-        withTiming(1, { duration: 220 })
-      );
       playSound();
-    } else {
-      scale.value = 0;
     }
   };
 
@@ -66,6 +60,18 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
         }
       : undefined;
   }, [sound]);
+
+  useEffect(() => {
+    if (isCompleted) {
+      scale.value = 0.5
+      scale.value = withSequence(
+        withTiming(1.25, { duration: 150 }),
+        withTiming(1, { duration: 220 })
+      );
+    } else {
+      scale.value = 0;
+    }
+  }, [isCompleted])
 
   return (
     <Pressable onPress={handleClick} style={[checkButtonStyles.container]}>
@@ -79,26 +85,43 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
           strokeWidth: 1,
         }}
       >
-        {isCompleted && (
-          <Animated.View style={styleR}>
-            <SquircleView
-              style={[checkButtonStyles.sqiurcleView]}
-              squircleParams={{
-                cornerSmoothing: borderSmoothing,
-                cornerRadius: ultraSmallBorderRadius,
-                fillColor: buttonColors.blue,
-                strokeColor: buttonColors.blue,
-                strokeWidth: 1,
-              }}
-            >
-              <SvgXml
-                xml={check(themeColors.dark.colors.text)}
-                width={10}
-                height={8}
-              />
-            </SquircleView>
-          </Animated.View>
-        )}
+        <Animated.View style={styleR}>
+          <SquircleView
+            style={[checkButtonStyles.sqiurcleView]}
+            squircleParams={{
+              cornerSmoothing: borderSmoothing,
+              cornerRadius: ultraSmallBorderRadius,
+              fillColor: buttonColors.blue,
+              strokeColor: buttonColors.blue,
+              strokeWidth: 1,
+            }}
+          >
+            <SvgXml
+              xml={check(themeColors.dark.colors.text)}
+              width={10}
+              height={8}
+            />
+          </SquircleView>
+        </Animated.View>
+
+        {/* {isCompleted && scale.value === 0 && (
+          <SquircleView
+            style={[checkButtonStyles.sqiurcleView, { position: "absolute" }]}
+            squircleParams={{
+              cornerSmoothing: borderSmoothing,
+              cornerRadius: ultraSmallBorderRadius,
+              fillColor: buttonColors.blue,
+              strokeColor: buttonColors.blue,
+              strokeWidth: 1,
+            }}
+          >
+            <SvgXml
+              xml={check(themeColors.dark.colors.text)}
+              width={10}
+              height={8}
+            />
+          </SquircleView>
+        )} */}
       </SquircleView>
     </Pressable>
   );
