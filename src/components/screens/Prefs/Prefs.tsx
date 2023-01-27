@@ -1,5 +1,4 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { FC, useEffect, useState } from "react";
+import React, { FC } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { languageIcon } from "../../../../assets/icons/languages";
 import { themeIcon } from "../../../../assets/icons/theme";
@@ -18,14 +17,17 @@ import PrefItem from "../../UI/PrefItem/PrefItem";
 import { PrefsPropType } from "./types";
 import appJson from "../../../../app.json";
 import { setStatusBarStyle } from "expo-status-bar";
-import { bellFill } from "../../../../assets/icons/bellFill";
 import { presentNotification } from "../../../native/notifications";
 import { setDefaultNewTaskDataAction } from "../../../redux/actions/taskActions";
-import { bellSlashFill } from "../../../../assets/icons/bellSlashFill";
+import { bell } from "../../../../assets/icons/bell";
+import { bellSlash } from "../../../../assets/icons/bellSlash";
+import { appStore } from "../../../../assets/icons/appStore";
+import { Linking } from "react-native";
 
 const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
   const dispatch: AppDispatch = useDispatch();
-  const { language, theme, autoReminder, completedTasksRemindersDisabled } = useSelector(getPrefs);
+  const { language, theme, autoReminder, completedTasksRemindersDisabled } =
+    useSelector(getPrefs);
 
   const toggleTheme = () => {
     dispatch(setThemeAction(theme === "dark" ? "light" : "dark"));
@@ -43,7 +45,16 @@ const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
   };
 
   const toggleCompletedTasksRemindersEnabled = () => {
-    dispatch(setCompletedTasksRemindersDisabled(!completedTasksRemindersDisabled))
+    dispatch(
+      setCompletedTasksRemindersDisabled(!completedTasksRemindersDisabled)
+    );
+  };
+
+  const rateApp = () => {
+    const itunesItemId = 1604538068;
+    Linking.openURL(
+      `itms-apps://itunes.apple.com/app/viewContentsUserReviews/id${itunesItemId}?action=write-review`
+    );
   }
 
   return (
@@ -66,15 +77,23 @@ const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
         type="switching"
         onPress={toggleAutoReminder}
         title={languageTexts[language].prefsTitles.autoReminder}
-        iconXml={bellFill(themeColors[theme].colors.text)}
+        iconXml={bell(themeColors[theme].colors.text)}
         state={autoReminder}
       />
       <PrefItem
         type="switching"
         onPress={toggleCompletedTasksRemindersEnabled}
-        title={languageTexts[language].prefsTitles.disableCompletedTasksReminders}
-        iconXml={bellSlashFill(themeColors[theme].colors.text)}
+        title={
+          languageTexts[language].prefsTitles.disableCompletedTasksReminders
+        }
+        iconXml={bellSlash(themeColors[theme].colors.text)}
         state={completedTasksRemindersDisabled}
+      />
+      <PrefItem
+        type="navigation"
+        title={languageTexts[language].words.rateApplication}
+        iconXml={appStore(themeColors[theme].colors.text)}
+        onPress={rateApp}
       />
       <PrefItem
         type="info"

@@ -140,6 +140,7 @@ export const languageTexts = {
       de: "Немецкий",
     },
     words: {
+      rateApplication: 'Оценить приложение',
       complete: 'Выполнить',
       calendar: 'Календарь',
       nightTheme: "Ночной режим",
@@ -230,6 +231,7 @@ export const languageTexts = {
       language: "Language",
     },
     words: {
+      rateApplication: 'Rate application',
       complete: 'Complete',
       calendar: 'Calendar',
       nightTheme: "Night theme",
@@ -402,6 +404,7 @@ export const languageTexts = {
       preferences: "Einstellungen",
     },
     words: {
+      rateApplication: "RateAnwendung",
       complete: 'Komplett',
       calendar: 'Kalender',
       nightTheme: "Nachtmodus",
@@ -556,6 +559,7 @@ export const languageTexts = {
       preferences: "Нисдарш",
     },
     words: {
+      rateApplication: "Программин мах хадо",
       complete: 'Кхочушдан',
       calendar: 'Календарь',
       nightTheme: "Буьйсанан раж",

@@ -123,7 +123,7 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
             >
               <BlurView
                 tint={theme.dark ? "dark" : "default"}
-                intensity={80}
+                intensity={75}
                 style={[StyleSheet.absoluteFill]}
               />
             </Animated.View>

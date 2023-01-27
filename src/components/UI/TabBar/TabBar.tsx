@@ -28,7 +28,7 @@ const TabBar: FC<TabBarPropTypes> = ({
   return (
     <BlurView
       tint={dark ? "dark" : "default"}
-      intensity={70}
+      intensity={75}
       style={[
         tabBarStyles.container,
         { paddingBottom: bottom > 0 ? bottom + 10 : 25 },
