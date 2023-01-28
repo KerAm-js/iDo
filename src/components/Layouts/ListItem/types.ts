@@ -7,4 +7,5 @@ export type ListItemPopupStyles = {
   isCardColor?: boolean,
   borderRadius?: number,
   style?: ViewStyle,
+  rStyle?: ViewStyle,
 }

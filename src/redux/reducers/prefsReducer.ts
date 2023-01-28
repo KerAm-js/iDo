@@ -3,7 +3,6 @@ import {
   SET_LANGUAGE,
   UPDATE_PREFS,
   SET_AUTO_REMINDER,
-  SET_COMPLETED_TASKS_REMINDERS_DISABLED,
 } from "./../constants/prefs";
 import { PrefsAction, PrefsState } from "../types/prefs";
 
@@ -41,12 +40,6 @@ export const prefsReducer = (
       return {
         ...state,
         autoReminder: action.autoReminder,
-      };
-    }
-    case SET_COMPLETED_TASKS_REMINDERS_DISABLED: {
-      return {
-        ...state,
-        completedTasksRemindersDisabled: action.completedTasksRemindersDisabled,
       };
     }
     default: {

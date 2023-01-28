@@ -1,23 +1,18 @@
 import React, { FC } from "react";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { SvgXml } from "react-native-svg";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
 import { calendarEvent } from "../../../../assets/icons/calendar";
 import { textColors } from "../../../styles/global/colors";
-import {
-  text12,
-  text17LineHeight,
-  textGrey,
-} from "../../../styles/global/texts";
+import { text17LineHeight, textGrey } from "../../../styles/global/texts";
 import { getDate } from "../../../utils/date";
 import { popupItemStyles } from "./styles";
 import { DateCheckItemPropType } from "./types";
 import ListItem from "../../Layouts/ListItem/ListItem";
 import { useTheme } from "@react-navigation/native";
-import ThemeText from "../../Layouts/Theme/Text/ThemeText";
-import { useSelector } from "react-redux";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import CalendarDateIcon from "./CalendarIcon";
+import LangText from "../LangText/LangText";
+import { LanguageType } from "../../../redux/types/prefs";
 
 const DateCheckItem: FC<DateCheckItemPropType> = ({
   title,
@@ -28,11 +23,13 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
   isChecked,
 }) => {
   const { colors } = useTheme();
-  const language = useSelector(getLanguage);
-  const { weekDay } = getDate(language, { date: date, isShort: true });
 
   const onPressHandler = () => {
     onPress(state, date);
+  };
+
+  const weekDayGetter = (lang: LanguageType) => {
+    return getDate(lang, { date: date, isShort: true }).weekDay;
   };
 
   return (
@@ -54,15 +51,14 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
               color={isChecked ? textColors.blue : colors.text}
             />
           )}
-          <ThemeText
+          <LangText
+            title={title}
             style={[
               text17LineHeight,
               isChecked && { color: textColors.blue },
               { paddingLeft: 10 },
             ]}
-          >
-            {title}
-          </ThemeText>
+          />
         </View>
         {isToggleCalendarShownComponent ? (
           <SvgXml
@@ -72,7 +68,11 @@ const DateCheckItem: FC<DateCheckItemPropType> = ({
             height={16}
           />
         ) : (
-          <Text style={[text17LineHeight, textGrey]}>{weekDay}</Text>
+          <LangText
+            handleTheme={false}
+            style={[text17LineHeight, textGrey]}
+            title={weekDayGetter}
+          />
         )}
       </ListItem>
     </Pressable>

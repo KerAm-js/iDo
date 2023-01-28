@@ -1,6 +1,7 @@
 import { CalendarMonthItemType } from "../components/UI/Calendar/types";
 import { LanguageType } from "../redux/types/prefs";
 import { TimeType } from "../redux/types/task";
+import { LangObjectType } from "../types/global/LangObject";
 import { CHOOSE, TODAY, TOMORROW, YESTERDAY } from "./constants/periods";
 import { languageTexts } from "./languageTexts";
 
@@ -35,7 +36,7 @@ export const getDate = (
   lang: LanguageType,
   options?: { date?: Date; isShort?: boolean }
 ) => {
-  const language = languageTexts[lang];
+  const language = languageTexts;
   const date = options?.date ? options.date : new Date();
   const day = date.getDate();
   const months = options?.isShort
@@ -45,8 +46,8 @@ export const getDate = (
     ? language.weekDays.shorts
     : language.weekDays.fulls;
   return {
-    date: day + " " + months[date.getMonth()],
-    weekDay: weekDays[date.getDay()],
+    date: day + " " + months[date.getMonth()][lang],
+    weekDay: weekDays[date.getDay()][lang],
   };
 };
 
@@ -128,7 +129,7 @@ export const isWeeklyTime = (date: Date, defaultDate?: number) => {
   const currDate = defaultDate ? new Date(defaultDate) : new Date();
   const dateCopy = new Date(date.valueOf());
 
-  const [currWeekDay, currDay] = [currDate.getDay(), currDate.getDate()];
+  const currWeekDay = currDate.getDay();
 
   let timeBound = 8 - currWeekDay;
 
@@ -140,16 +141,11 @@ export const isWeeklyTime = (date: Date, defaultDate?: number) => {
 
   const daysDiff = getDaysDiff(currDate, dateCopy);
 
-  if (daysDiff < 0 || daysDiff > timeBound) {
+  if (daysDiff >= 0 && daysDiff < timeBound) {
+    return true;
+  } else {
     return false;
   }
-
-  const result =
-    date.valueOf() <
-      new Date(dateCopy.setHours(0, 0, 0, 0)).setDate(currDay + timeBound) &&
-    date.valueOf() >= new Date().setHours(0, 0, 0, 0);
-
-  return result;
 };
 
 export const toMonthYearString = ({
@@ -167,26 +163,26 @@ export const toLocaleStateString = ({
   language,
   timeType,
   hideStateDays,
-  defaultDate
+  defaultDate,
 }: {
-  defaultDate?: number,
+  defaultDate?: number;
   dateValue: number;
   language: LanguageType;
   timeType?: TimeType;
   hideStateDays?: boolean;
 }) => {
-  const { periods } = languageTexts[language];
+  const { periods } = languageTexts;
   const date = new Date(dateValue);
   const time = date.toTimeString().slice(0, 5);
   const isCurrentYear = date.getFullYear() === new Date().getFullYear();
   let dayString = "";
 
   if (isYesterday(date, defaultDate) && !hideStateDays) {
-    dayString = periods.yesterday;
+    dayString = periods.yesterday[language];
   } else if (isToday(date, defaultDate) && !hideStateDays) {
-    dayString = periods.today;
+    dayString = periods.today[language];
   } else if (isTomorrow(date, defaultDate) && !hideStateDays) {
-    dayString = periods.tomorrow;
+    dayString = periods.tomorrow[language];
   } else if (isWeeklyTime(date, defaultDate)) {
     dayString = getDate(language, { date }).weekDay;
   } else {
@@ -194,7 +190,6 @@ export const toLocaleStateString = ({
       getDate(language, { date }).date +
       (!isCurrentYear ? " " + date.getFullYear() : "");
   }
-
   return dayString + (timeType === "time" ? ", " + time : "");
 };
 
@@ -255,8 +250,10 @@ export const extractCalendarState = (date: Date) => {
 };
 
 export const getMonthName = (lang: LanguageType, month: number) => {
-  const language = languageTexts[lang];
-  return language?.months?.names[month] || language?.months?.fulls[month];
+  return (
+    languageTexts.months.names[month][lang] ||
+    languageTexts.months.fulls[month][lang]
+  );
 };
 
 export const isLeapYear = (year: number) => {

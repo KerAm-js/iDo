@@ -11,7 +11,6 @@ import {
   ultraSmallBorderRadius,
 } from "../../../../styles/global/borderRadiuses";
 import Animated, {
-  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withSequence,
@@ -19,11 +18,11 @@ import Animated, {
 } from "react-native-reanimated";
 import { buttonColors, themeColors } from "../../../../styles/global/colors";
 import { useTheme } from "@react-navigation/native";
-import { Audio } from "expo-av";
-import { Sound } from "expo-av/build/Audio";
+// import { Audio } from "expo-av";
+// import { Sound } from "expo-av/build/Audio";
 
 const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
-  const [sound, setSound] = useState<Sound>();
+  // const [sound, setSound] = useState<Sound>();
   const theme = useTheme();
   const scale = useSharedValue(isCompleted ? 1 : 0);
 
@@ -33,33 +32,33 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
     };
   });
 
-  async function playSound() {
-    try {
-      const { sound } = await Audio.Sound.createAsync(
-        require("../../../../../assets/pop.mp3")
-      );
-      setSound(sound);
-      await sound.playAsync();
-    } catch (error) {
-      console.log("playSound", error);
-    }
-  }
+  // async function playSound() {
+  //   try {
+  //     const { sound } = await Audio.Sound.createAsync(
+  //       require("../../../../../assets/pop.mp3")
+  //     );
+  //     setSound(sound);
+  //     await sound.playAsync();
+  //   } catch (error) {
+  //     console.log("playSound", error);
+  //   }
+  // }
 
   const handleClick = () => {
     onClick();
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (!isCompleted) {
-      playSound();
+      // playSound();
     }
   };
 
-  useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync();
-        }
-      : undefined;
-  }, [sound]);
+  // useEffect(() => {
+  //   return sound
+  //     ? () => {
+  //         sound.unloadAsync();
+  //       }
+  //     : undefined;
+  // }, [sound]);
 
   useEffect(() => {
     if (isCompleted) {
@@ -103,25 +102,6 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
             />
           </SquircleView>
         </Animated.View>
-
-        {/* {isCompleted && scale.value === 0 && (
-          <SquircleView
-            style={[checkButtonStyles.sqiurcleView, { position: "absolute" }]}
-            squircleParams={{
-              cornerSmoothing: borderSmoothing,
-              cornerRadius: ultraSmallBorderRadius,
-              fillColor: buttonColors.blue,
-              strokeColor: buttonColors.blue,
-              strokeWidth: 1,
-            }}
-          >
-            <SvgXml
-              xml={check(themeColors.dark.colors.text)}
-              width={10}
-              height={8}
-            />
-          </SquircleView>
-        )} */}
       </SquircleView>
     </Pressable>
   );

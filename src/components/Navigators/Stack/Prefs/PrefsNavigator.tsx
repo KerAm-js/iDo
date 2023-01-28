@@ -7,7 +7,6 @@ const NativaStack = createStackNavigator<PrefsStackNavigatorParamsList>();
 
 const PrefsNavigator: FC<PrefsNavigatorPropType> = ({ openLanguageModal }) => {
   const RenderPrefs = () => <Prefs openLanguageModal={openLanguageModal} />;
-
   return (
     <NativaStack.Navigator
       screenOptions={{

@@ -1,12 +1,7 @@
-import {
-  SET_AUTO_REMINDER,
-  SET_COMPLETED_TASKS_REMINDERS_DISABLED,
-} from "./../constants/prefs";
+import { SET_AUTO_REMINDER } from "./../constants/prefs";
 import { Dispatch } from "@reduxjs/toolkit";
 import { ColorSchemeName } from "react-native";
-import {
-  getPrefsFromAS,
-} from "../../backend/asyncStorage/prefs";
+import { getPrefsFromAS } from "../../backend/asyncStorage/prefs";
 import { lagnuages } from "../../utils/languageTexts";
 import { SET_LANGUAGE, SET_THEME, UPDATE_PREFS } from "../constants/prefs";
 import { store } from "../store";
@@ -15,10 +10,6 @@ import { LanguageType, ThemeType } from "../types/prefs";
 export const getAutoReminderSetting = () => {
   return store.getState().prefs.autoReminder;
 };
-
-export const getCompletedTasksRemindersDisabled = () => {
-  return store.getState().prefs.completedTasksRemindersDisabled;
-}
 
 export const updateLanguageAction =
   (language: LanguageType) => (dispatch: Dispatch) => {
@@ -57,12 +48,4 @@ export const setThemeAction = (theme: ThemeType) => (dispatch: Dispatch) => {
 export const setAutoReminderAction =
   (autoReminder: boolean) => (dispatch: Dispatch) => {
     dispatch({ type: SET_AUTO_REMINDER, autoReminder });
-  };
-
-export const setCompletedTasksRemindersDisabled =
-  (disabled: boolean) => (dispatch: Dispatch) => {
-    dispatch({
-      type: SET_COMPLETED_TASKS_REMINDERS_DISABLED,
-      completedTasksRemindersDisabled: disabled,
-    });
   };

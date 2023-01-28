@@ -1,10 +1,13 @@
-import { Animated, Pressable, Text, TouchableOpacity } from "react-native";
+import { Animated, Pressable } from "react-native";
 import { tabRenderProps } from "./types";
 import { SvgXml } from "react-native-svg";
 import { icons } from "../../../../assets/icons/tabBar";
 import { tabBarStyles } from "./styles";
 import { textColors } from "../../../styles/global/colors";
 import { FC, useRef } from "react";
+import LangText from "../LangText/LangText";
+import { languageTexts } from "../../../utils/languageTexts";
+import { LangObjectType } from "../../../types/global/LangObject";
 
 const TabsRender: FC<tabRenderProps> = ({
   routes,
@@ -42,17 +45,15 @@ const TabsRender: FC<tabRenderProps> = ({
           });
 
           if (!isFocused && !event.defaultPrevented) {
-            // The `merge: true` option makes sure that the params inside the tab screen are preserved
             navigation.navigate(route.name, {merge: true});
           }
         };
 
-        const onLongPress = () => {
-          navigation.emit({
-            type: "tabLongPress",
-            target: route.key,
-          });
-        };
+        let labelObject: LangObjectType = languageTexts.screenTitles.home;
+
+        if (label === 'Prefs') {
+          labelObject = languageTexts.screenTitles.prefs;
+        }
 
         return (
           <Pressable
@@ -61,7 +62,6 @@ const TabsRender: FC<tabRenderProps> = ({
             accessibilityLabel={options.tabBarAccessibilityLabel}
             testID={options.tabBarTestID}
             onPress={onPress}
-            onLongPress={onLongPress}
             style={tabBarStyles.button}
             key={route.key}
           >
@@ -73,14 +73,13 @@ const TabsRender: FC<tabRenderProps> = ({
                 height={tabBarStyles.icon.height}
               />
             </Animated.View>
-            <Text
+            <LangText
+              title={labelObject}
               style={[
                 { color: isFocused ? textColors.blue : textColors.grey },
                 tabBarStyles.title,
               ]}
-            >
-              {label}
-            </Text>
+            />
           </Pressable>
         );
       })}

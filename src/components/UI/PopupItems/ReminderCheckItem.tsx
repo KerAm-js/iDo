@@ -30,7 +30,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   const language = useSelector(getLanguage);
   const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
   let titleString = newTaskData.timeType === 'day'
-    ? languageTexts[language].periods.midnight
+    ? languageTexts.periods.midnight[language]
     : toLocaleStateString({
         dateValue: date.valueOf(),
         timeType: newTaskData.timeType,
@@ -76,7 +76,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
         </ThemeText>
         {id === "0" && !newTaskData.isRegular && (
           <Text style={[text14LineHeight, textGrey]}>
-            {languageTexts[language].popupTitles.dateOfCompletion}
+            {languageTexts.popupTitles.dateOfCompletion[language]}
           </Text>
         )}
       </ListItem>

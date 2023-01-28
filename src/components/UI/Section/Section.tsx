@@ -29,12 +29,11 @@ import {
 } from "../../../utils/section/sections";
 import { SvgXml } from "react-native-svg";
 import { textColors } from "../../../styles/global/colors";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
-import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { TaskType } from "../../../redux/types/task";
 import { saveSectionVisibilityToAS } from "../../../backend/asyncStorage/section";
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { taskListToObject } from "../../../utils/section/positionsObject";
+import LangText from "../LangText/LangText";
 
 const TaskMargin = 8;
 const TaskHeight = 58 + TaskMargin;
@@ -44,8 +43,8 @@ const baseHeight = 46;
 
 const Section: FC<SectionProps> = React.memo(
   ({ title, list, initPositions, visibilities, disableAnimationsTrigger }) => {
+    console.log('section')
     const dispatch: AppDispatch = useDispatch();
-    const language = useSelector(getLanguage);
     const [sortedTasks, completedTasksLength] = sortTasksAndUpdatePositions(
       list,
       initPositions
@@ -270,8 +269,8 @@ const Section: FC<SectionProps> = React.memo(
       }
     }, [list.length]);
 
-    const titleString = languageTexts[language].periods[getSectionTitle(title)];
-    const clearListMessage = languageTexts[language].sectionEmptyList[title];
+    const titleString = languageTexts.periods[getSectionTitle(title)];
+    const clearListMessage = languageTexts.sectionEmptyList[title];
 
     return (
       <Animated.View style={[sectionStyles.container, containerStyle]}>
@@ -281,7 +280,7 @@ const Section: FC<SectionProps> = React.memo(
             style={sectionStyles.headerContainer}
           >
             <View style={sectionStyles.headerTextContainer}>
-              <ThemeText style={title22}>{titleString}</ThemeText>
+              <LangText style={title22} title={titleString} />
               {list.length > 0 && (
                 <Text style={[textGrey, textSemiBold, sectionStyles.counter]}>
                   {`${completedTasksLength}/${sortedTasks.length}`}

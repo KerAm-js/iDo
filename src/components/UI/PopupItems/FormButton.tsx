@@ -9,12 +9,14 @@ import {
 } from "../../../styles/global/borderRadiuses";
 import { text17Input, text17LineHeight } from "../../../styles/global/texts";
 import ThemeInput from "../../Layouts/Theme/Input/ThemeInput";
+import LangText from "../LangText/LangText";
 import { popupItemStyles } from "./styles";
 import { FormButtonPropType } from "./types";
 
 const FormButton: FC<FormButtonPropType> = ({
   title,
   iconXml,
+  placeholder,
   isInput,
   textColor,
   onPress,
@@ -52,7 +54,7 @@ const FormButton: FC<FormButtonPropType> = ({
           <ThemeInput
             keyboardType="numeric"
             reference={input}
-            placeholder={title}
+            placeholder={placeholder}
             style={[
               text17Input,
               { color: textColor }
@@ -60,10 +62,8 @@ const FormButton: FC<FormButtonPropType> = ({
             {...props}
           />
         ) : (
-          <Text style={[text17LineHeight, popupItemStyles.buttonTitle]}>
-            {title}
-          </Text>
-        )}
+          <LangText title={title} handleTheme={false} style={[text17LineHeight, popupItemStyles.buttonTitle]} />
+        )} 
       </SquircleView>
     </Pressable>
   );

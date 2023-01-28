@@ -13,655 +13,815 @@ import {
 } from "./constants/periods";
 
 export const languageTexts = {
-  ru: {
-    notifications: {
-      taskReminder: {
-        title: "Напоминание о задаче"
-      },
-      regularTaskIsAdded: {
-        title: "Новая ежедневная задача 🔁",
-        body: "Задача будет автоматически добавляться каждый день. Чтобы остановить повторение этой задачи, удалите или отредактируйте её последнюю копию.",
-      },
-      regularTaskRemoved: {
-        title: "Ежедневная задача удалена ❌",
-      },
-      autoReminderEnabled: {
-        title: "Автоматические напоминания",
-        body: "К каждой задаче автоматически будет добавляться напоминание за 15 минут до времени выполнения"
-      }
-    },
-    alerts: {
-      taskUncompleting: {
-        title: "Внимание!",
-        subTitle: "Задача будет засчитана в статистике, как просроченная",
-      },
-      taskTimeIsNotChoosen: {
-        title: "Пожалуйста, выберите дату выполнения задачи"
-      }
-    },
-    sectionEmptyList: {
-      [FOR_TODAY]: "Что делаем сегодня?",
-      [FOR_WEEK]: "Какие планы на неделю?",
-      [FOR_TOMORROW]: "Что планируете на завтра?",
-      [EXPIRED]: "Нет просроченных задач",
-      [LATER]: 'Нет задач на более позднее время',
-      [CALENDAR_DAY]: 'На этот день задач не запланировано',
-    },
-    popupTitles: {
-      taskCategories: "Категории задач",
-      dateOfCompletion: "Дата выполнения",
-      reminder: "Напоминание",
-      language: "Язык",
-    },
-    weekDays: {
-      fulls: [
-        "Воскресенье",
-        "Понедельник",
-        "Вторник",
-        "Среда",
-        "Четверг",
-        "Пятница",
-        "Суббота",
-      ],
-      shorts: ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"],
-    },
-    months: {
-      names: [
-        "Январь",
-        "Февраль",
-        "Март",
-        "Апрель",
-        "Май",
-        "Июнь",
-        "Июль",
-        "Август",
-        "Сентябрь",
-        "Октябрь",
-        "Ноябрь",
-        "Декабрь",
-      ],
-      fulls: [
-        "Января",
-        "Февраля",
-        "Марта",
-        "Апреля",
-        "Мая",
-        "Июня",
-        "Июля",
-        "Августа",
-        "Сентября",
-        "Октября",
-        "Ноября",
-        "Декабря",
-      ],
-      shorts: [
-        "Янв",
-        "Фев",
-        "Мар",
-        "Апр",
-        "Май",
-        "Июн",
-        "Июл",
-        "Авг",
-        "Сен",
-        "Окт",
-        "Ноя",
-        "Дек",
-      ],
-    },
-    periods: {
-      [EXPIRED]: "Просрочено",
-      [YESTERDAY]: "Вчера",
-      [TODAY]: "Сегодня",
-      [FOR_TODAY]: "На сегодня",
-      [TOMORROW]: "Завтра",
-      [FOR_TOMORROW]: "На завтра",
-      [LATER]: 'Позже',
-      [CALENDAR_DAY]: 'Календарный день',
-      minute: "Минута",
-      hour: "Час",
-      day: "День",
-      days: "Дни",
-      week: "Неделя",
-      [FOR_WEEK]: "На неделю",
-      [NEXT_WEEK]: "На след. неделю",
-      weeks: "Недели",
-      month: "Месяц",
-      forMonth: "На месяц",
-      months: "Месяцы",
-      year: "Год",
-      years: "Года",
-      midnight: 'Полночь'
-    },
-    languages: {
-      en: "Английский",
-      ru: "Русский",
-      ch: "Чеченский",
-      de: "Немецкий",
-    },
-    words: {
-      rateApplication: 'Оценить приложение',
-      complete: 'Выполнить',
-      calendar: 'Календарь',
-      nightTheme: "Ночной режим",
-      version: "Версия",
-      beta: "Бета",
-      save: "Сохранить",
-      delete: "Удалить",
-      done: "Готово",
-      time: "Время",
-      choose: "Выбрать",
-      task: "Задача",
-      description: "Описание",
-      completed: "Выполнено",
-      cancel: "Отмена",
-      close: 'Закрыть',
-      ok: "Ок",
-    },
-    prefsTitles: {
-      autoReminder: "Автоматические напоминания",
-      disableCompletedTasksReminders: "Не напоминать о выполненных задачах"
-    },
-    periodsDeclination: {
-      one: {
-        minute: "Минута",
-        hour: "Час",
-        day: "День",
-        week: "Неделя",
-      },
-      lessThan5: {
-        minute: "Минуты",
-        hour: "Часа",
-        day: "Дня",
-        week: "Недели",
-      },
-      equalAndMoreThan5: {
-        minute: "Минут",
-        hour: "Часов",
-        day: "Дней",
-        week: "Недель",
+  notifications: {
+    taskReminder: {
+      title: {
+        ru: "Напоминание о задаче",
+        en: "Task reminder",
+        de: "Aufgabenerinnerung",
+        ch: "ГIуллакх дагадаийтар",
       },
     },
-    screenTitles: {
-      main: "Главная",
-      preferences: "Настройки",
+    regularTaskIsAdded: {
+      title: {
+        ru: "Новая ежедневная задача 🔁",
+        en: "New daily task 🔁",
+        de: "Neue Tagesaufgabe 🔁",
+        ch: "Керла хIор дийнан гIуллакх 🔁",
+      },
+      body: {
+        ru: "Задача будет автоматически добавляться каждый день. Чтобы остановить повторение этой задачи, удалите или отредактируйте её последнюю копию.",
+        en: "The task will be added automatically every day. Delete or edit this task to stop it's repeating.",
+        de: "Die Aufgabe wird jeden Tag automatisch hinzugefügt. Um zu verhindern, dass sich diese Aufgabe wiederholt, löschen oder bearbeiten Sie die letzte Kopie.",
+        ch: "ХIара гIуллакх хIор дийнан къепйозан тIекхетар долуш ду. Нагахь хьайна и сацо лаахь, кху гIуллакхийн тIеххьара кеп хийца я къепйозан юкъара дIаяккха.",
+      },
     },
-    habitsPeriods: {
-      daily: 'Ежедневно',
-    }
+    regularTaskRemoved: {
+      title: {
+        ru: "Ежедневная задача удалена ❌",
+        en: "Daily task removed ❌",
+        de: "Tägliche Aufgabe entfernt ❌",
+        ch: "ХIор дийнан гIуллакх сацадина ❌",
+      },
+    },
+    autoReminderEnabled: {
+      title: {
+        ru: "Автоматические напоминания",
+        en: "Automatic reminders",
+        de: "Automatische Erinnerungen",
+        ch: "Ша-шаха дагадийтар",
+      },
+      body: {
+        ru: "К каждой задаче автоматически будет добавляться напоминание за 15 минут до времени выполнения",
+        en: "A reminder will automatically be added to each task for 15 minutes before it's completion time",
+        de: "15 Minuten vor Fälligkeit wird jeder Aufgabe automatisch eine Erinnerung hinzugefügt",
+        ch: "ХIора гIуллакх цуьнан кхочушдаран хан тIекхачале 15 минот хьалха дагадоуьйтур долуш ду.",
+      },
+    },
   },
-  en: {
-    notifications: {
-      taskReminder: {
-        title: "Task reminder"
+  alerts: {
+    taskUncompleting: {
+      title: {
+        ru: "Внимание!",
+        en: "Attention!",
+        de: "Aufmerksamkeit!",
+        ch: "Тидам белахь!",
       },
-      regularTaskIsAdded: {
-        title: "New daily task 🔁",
-        body: "The task will be added automatically every day. Delete or edit this task to stop it's repeating.",
+      subTitle: {
+        ru: "Задача будет засчитана в статистике, как просроченная",
+        en: "The task will be counted in the statistics as overdue",
+        de: "Die Aufgabe wird in der Statistik als überfällig gezählt",
+        ch: "ХIокху гIуллакхийн хан тиллина лорур ю хьуна",
       },
-      regularTaskRemoved: {
-        title: "Daily task removed ❌",
+    },
+    taskTimeIsNotChoosen: {
+      title: {
+        ru: "Пожалуйста, выберите дату выполнения задачи",
+        en: "Please, select a due date for the task",
+        de: "Bitte wählen Sie ein Fälligkeitsdatum für die Aufgabe aus",
+        ch: "Цкъа хьалха гIуллакх кхочушдаран хан харжа еза",
       },
-      autoReminderEnabled: {
-        title: "Automatic reminders",
-        body: "A reminder will automatically be added to each task for 15 minutes before it's completion time"
-      }
     },
-    alerts: {
-      taskUncompleting: {
-        title: "Attention!",
-        subTitle: "The task will be counted in the statistics as overdue",
+  },
+  sectionEmptyList: {
+    [FOR_TODAY]: {
+      ru: "Что делаем сегодня?",
+      en: "What are we doing today?",
+      de: "Was machen wir heute?",
+      ch: "Тахана хIун до вай?",
+    },
+    [FOR_WEEK]: {
+      ru: "Какие планы на неделю?",
+      en: "What are you planning for a week?",
+      de: "Was sind deine Pläne für die Woche?",
+      ch: "Кху кIиранахь хIун дича бакъахь хира дара те?",
+    },
+    [FOR_TOMORROW]: {
+      ru: "Что планируете на завтра?",
+      en: "What are the plans for tomorrow?",
+      de: "Was hast du für morgen vor?",
+      ch: "Кханаьнна да хIумма дуй?",
+    },
+    [EXPIRED]: {
+      ru: "Нет просроченных задач",
+      en: "No expired tasks",
+      de: "Keine überfälligen Aufgaben",
+      ch: "Тиллина хIумма а дац",
+    },
+    [LATER]: {
+      ru: "Нет задач на более позднее время",
+      en: "No tasks for a later time",
+      de: "Keine Aufgaben für später",
+      ch: "Кхиъ тIаьхьа гIуллакхаш дац",
+    },
+    [CALENDAR_DAY]: {
+      ru: "На этот день задач не запланировано",
+      en: "No tasks scheduled for this day",
+      de: "Für diesen Tag sind keine Aufgaben geplant",
+      ch: "Кху даьнна плане хIоттийна гIуллакхаш дац",
+    },
+  },
+  popupTitles: {
+    taskCategories: {
+      ru: "Категории задач",
+      en: "Task categories",
+      de: "Aufgabenkategorie",
+      ch: "ГIуллакхийн категориш",
+    },
+    dateOfCompletion: {
+      ru: "Дата выполнения",
+      en: "Date of completion",
+      de: "Datum der Fertigstellung",
+      ch: "Кхочушдаран терахь",
+    },
+    reminder: {
+      ru: "Напоминание",
+      en: "Reminder",
+      de: "Erinnerung",
+      ch: "Дагадаийтар",
+    },
+    language: {
+      ru: "Язык",
+      en: "Language",
+      de: "Sprache",
+      ch: "Мотт",
+    },
+  },
+  weekDays: {
+    fulls: [
+      {
+        ru: "Воскресенье",
+        en: "Sunday",
+        de: "Sonntag",
+        ch: "КIиранде",
       },
-      taskTimeIsNotChoosen: {
-        title: "Please, select a due date for the task"
-      }
+      {
+        ru: "Понедельник",
+        en: "Monday",
+        de: "Montag",
+        ch: "Оршот",
+      },
+      {
+        ru: "Вторник",
+        en: "Tuesday",
+        de: "Dienstag",
+        ch: "Шинара",
+      },
+      {
+        ru: "Среда",
+        en: "Wednesday",
+        de: "Mittwoch",
+        ch: "Кхаара",
+      },
+      {
+        ru: "Четверг",
+        en: "Thursday",
+        de: "Donnerstag",
+        ch: "Еара",
+      },
+      {
+        ru: "Пятница",
+        en: "Friday",
+        de: "Freitag",
+        ch: "ПIераска",
+      },
+      {
+        ru: "Суббота",
+        en: "Saturday",
+        de: "Samstag",
+        ch: "Шот",
+      },
+    ],
+    shorts: [
+      {
+        ru: "Вс",
+        en: "Su",
+        de: "So",
+        ch: "КI",
+      },
+      {
+        ru: "Пн",
+        en: "Mo",
+        de: "Mo",
+        ch: "Ор",
+      },
+      {
+        ru: "Вт",
+        en: "Tu",
+        de: "Di",
+        ch: "Ши",
+      },
+      {
+        ru: "Ср",
+        en: "We",
+        de: "Mi",
+        ch: "Кх",
+      },
+      {
+        ru: "Чт",
+        en: "Th",
+        de: "Do",
+        ch: "Еа",
+      },
+      {
+        ru: "Пт",
+        en: "Fr",
+        de: "Fr",
+        ch: "ПI",
+      },
+      {
+        ru: "Сб",
+        en: "Sa",
+        de: "Sa",
+        ch: "Шо",
+      },
+    ],
+  },
+  months: {
+    names: [
+      {
+        ru: "Январь",
+        en: "January",
+        de: "Januar",
+        ch: "Кхолламан",
+      },
+      {
+        ru: "Февраль",
+        en: "February",
+        de: "Februar",
+        ch: "Чиллин",
+      },
+      {
+        ru: "Март",
+        en: "March",
+        de: "März",
+        ch: "Бекарг",
+      },
+      {
+        ru: "Апрель",
+        en: "April",
+        de: "April",
+        ch: "Оханан",
+      },
+      {
+        ru: "Май",
+        en: "May",
+        de: "Mai",
+        ch: "ХIутосург",
+      },
+      {
+        ru: "Июнь",
+        en: "June",
+        de: "Juni",
+        ch: "Асаран",
+      },
+      {
+        ru: "Июль",
+        en: "July",
+        de: "Juli",
+        ch: "Мангалан",
+      },
+      {
+        ru: "Август",
+        en: "August",
+        de: "August",
+        ch: "Хьаьттан",
+      },
+      {
+        ru: "Сентябрь",
+        en: "September",
+        de: "September",
+        ch: "Тов-бецан",
+      },
+      {
+        ru: "Октябрь",
+        en: "October",
+        de: "Oktober",
+        ch: "Эсаран",
+      },
+      {
+        ru: "Ноябрь",
+        en: "November",
+        de: "November",
+        ch: "Лахьанан",
+      },
+      {
+        ru: "Декабрь",
+        en: "December",
+        de: "Dezember",
+        ch: "ГIуран",
+      },
+    ],
+    fulls: [
+      {
+        ru: "Января",
+        en: "January",
+        de: "Januar",
+        ch: "Кхолламан",
+      },
+      {
+        ru: "Февраля",
+        en: "February",
+        de: "Februar",
+        ch: "Чиллин",
+      },
+      {
+        ru: "Марта",
+        en: "March",
+        de: "März",
+        ch: "Бекарг",
+      },
+      {
+        ru: "Апреля",
+        en: "April",
+        de: "April",
+        ch: "Оханан",
+      },
+      {
+        ru: "Мая",
+        en: "May",
+        de: "Mai",
+        ch: "ХIутосург",
+      },
+      {
+        ru: "Июня",
+        en: "June",
+        de: "Juni",
+        ch: "Асаран",
+      },
+      {
+        ru: "Июля",
+        en: "July",
+        de: "Juli",
+        ch: "Мангалан",
+      },
+      {
+        ru: "Августа",
+        en: "August",
+        de: "August",
+        ch: "Хьаьттан",
+      },
+      {
+        ru: "Сентября",
+        en: "September",
+        de: "September",
+        ch: "Тов-бецан",
+      },
+      {
+        ru: "Октября",
+        en: "October",
+        de: "Oktober",
+        ch: "Эсаран",
+      },
+      {
+        ru: "Ноября",
+        en: "November",
+        de: "November",
+        ch: "Лахьанан",
+      },
+      {
+        ru: "Декабря",
+        en: "December",
+        de: "Dezember",
+        ch: "ГIуран",
+      },
+    ],
+    shorts: [
+      {
+        ru: "Янв",
+        en: "Jan",
+        de: "Jan",
+        ch: "Кхл",
+      },
+      {
+        ru: "Фев",
+        en: "Feb",
+        de: "Feb",
+        ch: "Чил",
+      },
+      {
+        ru: "Мар",
+        en:  "Mar",
+        de: "Mär",
+        ch: "Бкг",
+      },
+      {
+        ru: "Апр",
+        en: "Apr",
+        de: "Apr",
+        ch: "Охн",
+      },
+      {
+        ru: "Май",
+        en: "May",
+        de: "Mai",
+        ch: "ХIт",
+      },
+      {
+        ru: "Июн",
+        en: "Jun",
+        de: "Jun",
+        ch: "Аср",
+      },
+      {
+        ru: "Июл",
+        en: "Jul",
+        de: "Jul",
+        ch: "Мнг",
+      },
+      {
+        ru: "Авг",
+        en: "Aug",
+        de: "Aug",
+        ch: "Хьт",
+      },
+      {
+        ru: "Сен",
+        en: "Sep",
+        de: "Sep",
+        ch: "Твб",
+      },
+      {
+        ru: "Окт",
+        en: "Oct",
+        de: "Okt",
+        ch: "Эср",
+      },
+      {
+        ru: "Ноя",
+        en: "Nov",
+        de: "Nov",
+        ch: "Лхь",
+      },
+      {
+        ru: "Дек",
+        en: "Dec",
+        de: "Dez",
+        ch: "ГIр",
+      },
+    ],
+  },
+  periods: {
+    [EXPIRED]: {
+      ru: "Просрочено",
+      en: "Expired",
+      de: "Abgelaufen",
+      ch: "Тиллина",
     },
-    sectionEmptyList: {
-      [FOR_TODAY]: "What are we doing today?",
-      [FOR_WEEK]: "What are you planning for a week?",
-      [FOR_TOMORROW]: "What are the plans for tomorrow?",
-      [EXPIRED]: "No expired tasks",
-      [LATER]: 'No tasks for a later time',
-      [CALENDAR_DAY]: 'No tasks scheduled for this day',
+    [YESTERDAY]: {
+      ru: "Вчера",
+      en: "Yesterday",
+      de: "Gestern",
+      ch: "Селхана",
     },
-    popupTitles: {
-      taskCategories: "Task categories",
-      dateOfCompletion: "Date of completion",
-      reminder: "Reminder",
-      language: "Language",
+    [TODAY]: {
+      ru: "Сегодня",
+      en: "Today",
+      de: "Heute",
+      ch: "Тахана",
     },
-    words: {
-      rateApplication: 'Rate application',
-      complete: 'Complete',
-      calendar: 'Calendar',
-      nightTheme: "Night theme",
-      version: "Version",
-      beta: "Beta",
-      save: "Save",
-      delete: "Delete",
-      done: "Done",
-      time: "Time",
-      choose: "Choose",
-      task: "Task",
-      description: "Description",
-      completed: "Completed",
-      cancel: "Cancel",
-      close: 'Close',
-      ok: "Ok",
+    [FOR_TODAY]: {
+      ru: "На сегодня",
+      en: "For today",
+      de: "Für heute",
+      ch: "Таханаьнна",
     },
-    screenTitles: {
-      main: "Main",
-      preferences: "Preferences",
+    [TOMORROW]: {
+      ru: "Завтра",
+      en: "Tomorrow",
+      de: "Morgen",
+      ch: "Кхана",
     },
-    prefsTitles: {
-      autoReminder: "Automatic reminders",
-      disableCompletedTasksReminders: "Don't remind about completed tasks"
+    [FOR_TOMORROW]: {
+      ru: "На завтра",
+      en: "For tomorrow",
+      de: "Für morgen",
+      ch: "Кханаьнна",
     },
-    weekDays: {
-      fulls: [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ],
-      shorts: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"],
+    [LATER]: {
+      ru: "Позже",
+      en: "later",
+      de: "Später",
+      ch: "ТIаьхьа",
+    },
+    [CALENDAR_DAY]: {
+      ru: "Календарный день",
+      en: "Calendar day",
+      de: "Kalendertag",
+      ch: "Календаран де",
+    },
+    day: {
+      ru: "День",
+      en: "Day",
+      de: "Tag",
+      ch: "Де",
+    },
+    days: {
+      ru: "Дни",
+      en: "Days",
+      de: "Tage",
+      ch: "Денош",
+    },
+    week: {
+      ru: "Неделя",
+      en: "Week",
+      de: "Woche",
+      ch: "КIира",
+    },
+    [FOR_WEEK]: {
+      ru: "На неделю",
+      en: "For week",
+      de: "Eine Woche lang",
+      ch: "КIиранна",
+    },
+    [NEXT_WEEK]: {
+      ru: "На след. неделю",
+      en: "Next week",
+      de: "Für die nächste Woche",
+      ch: "ТIедогIу кIиранна",
+    },
+    weeks: {
+      ru: "Недели",
+      en: "Weeks",
+      de: "Wochen",
+      ch: "КIиранаш",
+    },
+    month: {
+      ru: "Месяц",
+      en: "Month",
+      de: "Monat",
+      ch: "Бутт",
     },
     months: {
-      names: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ],
-      fulls: [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ],
-      shorts: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
+      ru: "Месяцы",
+      en: "Months",
+      de: "Monate",
+      ch: "Беттанаш",
     },
-    periods: {
-      [EXPIRED]: "Expired",
-      [YESTERDAY]: "Yesterday",
-      [TODAY]: "Today",
-      [TOMORROW]: "Tomorrow",
-      [FOR_TODAY]: "For today",
-      [FOR_TOMORROW]: "For tomorrow",
-      [LATER]: 'later',
-      [CALENDAR_DAY]: 'Calendar day',
-      day: "Dat",
-      days: "Days",
-      week: "Week",
-      [FOR_WEEK]: "For week",
-      [NEXT_WEEK]: "Next week",
-      weeks: "Weeks",
-      month: "Month",
-      forMonth: "For month",
-      months: "Months",
-      year: "Year",
-      years: "Years",
-      midnight: 'Midnight'
+    year: {
+      ru: "Год",
+      en: "Year",
+      de: "Jahr",
+      ch: "Шо",
     },
-    languages: {
+    years: {
+      ru: "Года",
+      en: "Years",
+      de: "Jahre",
+      ch: "Шеранаш",
+    },
+    midnight: {
+      ru: "Полночь",
+      en: "Midnight",
+      de: "Mitternacht",
+      ch: "Ахбуьйса",
+    },
+  },
+  languages: {
+    en: {
+      ru: "Английский",
       en: "English",
-      ru: "Russian",
-      ch: "Chechen",
-      de: "Deutsch",
+      de: "Englisch",
+      ch: "Ингалсан",
     },
-    periodsDeclination: {
-      one: {
-        minute: "Minute",
-        hour: "Hour",
-        day: "Day",
-        week: "Week",
-      },
-      moreThanOne: {
-        minute: "Minutes",
-        hour: "Hours",
-        day: "Days",
-        week: "Weeks",
-      },
+    ru: {
+      ru: "Русский",
+      en: "Russian",
+      de: "Russisch",
+      ch: "Оьрсийн",
     },
-    habitsPeriods: {
-      daily: 'Daily',
-    }
-  },
-  de: {
-    notifications: {
-      taskReminder: {
-        title: "Aufgabenerinnerung"
-      },
-      regularTaskIsAdded: {
-        title: "Neue Tagesaufgabe 🔁",
-        body: "Die Aufgabe wird jeden Tag automatisch hinzugefügt. Um zu verhindern, dass sich diese Aufgabe wiederholt, löschen oder bearbeiten Sie die letzte Kopie.",
-      },
-      regularTaskRemoved: {
-        title: "Tägliche Aufgabe entfernt ❌",
-      },
-      autoReminderEnabled: {
-        title: "Automatische Erinnerungen",
-        body: "15 Minuten vor Fälligkeit wird jeder Aufgabe automatisch eine Erinnerung hinzugefügt"
-      }
-    },
-    alerts: {
-      taskUncompleting: {
-        title: "Aufmerksamkeit!",
-        subTitle: "Die Aufgabe wird in der Statistik als überfällig gezählt",
-      },
-      taskTimeIsNotChoosen: {
-        title: "Bitte wählen Sie ein Fälligkeitsdatum für die Aufgabe aus"
-      }
-    },
-    sectionEmptyList: {
-      [FOR_TODAY]: "Was machen wir heute?",
-      [FOR_WEEK]: "Was sind deine Pläne für die Woche?",
-      [FOR_TOMORROW]: "Was hast du für morgen vor?",
-      [EXPIRED]: "Keine überfälligen Aufgaben",
-      [LATER]: 'Keine Aufgaben für später',
-      [CALENDAR_DAY]: 'Für diesen Tag sind keine Aufgaben geplant'
-    },
-    popupTitles: {
-      taskCategories: "Aufgabenkategorie",
-      dateOfCompletion: "Datum der Fertigstellung",
-      reminder: "Erinnerung",
-      language: "Sprache",
-    },
-    screenTitles: {
-      main: "Startseite",
-      preferences: "Einstellungen",
-    },
-    words: {
-      rateApplication: "RateAnwendung",
-      complete: 'Komplett',
-      calendar: 'Kalender',
-      nightTheme: "Nachtmodus",
-      beta: "Beta",
-      version: "Ausführung",
-      save: "Speichern",
-      delete: "Löschen",
-      done: "Bereit",
-      time: "Zeit",
-      choose: "Wählen",
-      task: "Aufgabe",
-      description: "Beschreibung",
-      completed: "Erledigt",
-      cancel: "Abbruch",
-      close: "Schließen",
-      ok: "Ok",
-    },
-    prefsTitles: {
-      autoReminder: "Automatische Erinnerungen",
-      disableCompletedTasksReminders: "Lassen Sie sich nicht an erledigte Aufgaben erinnern"
-    },
-    weekDays: {
-      fulls: [
-        "Sonntag",
-        "Montag",
-        "Dienstag",
-        "Mittwoch",
-        "Donnerstag",
-        "Freitag",
-        "Samstag",
-      ],
-      shorts: ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
-    },
-    months: {
-      names: [],
-      fulls: [
-        "Januar",
-        "Februar",
-        "März",
-        "April",
-        "Mai",
-        "Juni",
-        "Juli",
-        "August",
-        "September",
-        "Oktober",
-        "November",
-        "Dezember",
-      ],
-      shorts: [
-        "Jan",
-        "Feb",
-        "Mär",
-        "Apr",
-        "Mai",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Okt",
-        "Nov",
-        "Dez",
-      ],
-    },
-    periods: {
-      [EXPIRED]: "Abgelaufen",
-      [YESTERDAY]: "Gestern",
-      [TODAY]: "Heute",
-      [TOMORROW]: "Morgen",
-      [FOR_TODAY]: "Für heute",
-      [FOR_TOMORROW]: "Für morgen",
-      [LATER]: 'Später',
-      [CALENDAR_DAY]: 'Kalendertag',
-      day: "Tag",
-      days: "Tage",
-      week: "Woche",
-      [FOR_WEEK]: "Eine Woche lang",
-      [NEXT_WEEK]: "Für die nächste Woche",
-      weeks: "Wochen",
-      month: "Monat",
-      months: "Monate",
-      year: "Jahr",
-      years: "Jahre",
-      midnight: "Mitternacht",
-    },
-    languages: {
-      en: "Englisch",
-      ru: "Russisch",
-      ch: "Tschetschenisch",
-      de: "Deutsch",
-    },
-    periodsDeclination: {
-      one: {
-        minute: "Minute",
-        hour: "Stunde",
-        day: "Tag",
-        week: "Woche",
-      },
-      moreThanOne: {
-        minute: "Minuten",
-        hour: "Stunden",
-        day: "Tage",
-        week: "Wochen",
-      },
-    },
-    habitsPeriods: {
-      daily: 'Tagli',
-    }
-  },
-  ch: {
-    notifications: {
-      taskReminder: {
-        title: "ГIуллакх дагадаийтар"
-      },
-      regularTaskIsAdded: {
-        title: "Керла хIор дийнан гIуллакх 🔁",
-        body: "ХIара гIуллакх хIор дийнан къепйозан тIекхетар долуш ду. Нагахь хьайна и сацо лаахь, кху гIуллакхийн тIеххьара кеп хийца я къепйозан юкъара дIаяккха.",
-      },
-      regularTaskRemoved: {
-        title: "ХIор дийнан гIуллакх сацадина ❌"
-      },
-      autoReminderEnabled: {
-        title: "Ша-шаха дагадийтар",
-        body: "ХIора гIуллакх цуьнан кхочушдаран хан тIекхачале 15 минот хьалха дагадоуьйтур долуш ду."
-      }
-    },
-    alerts: {
-      taskUncompleting: {
-        title: "Тидам белахь!",
-        subTitle: "ХIокху гIуллакхийн хан тиллина лорур ю хьуна",
-      },
-      taskTimeIsNotChoosen: {
-        title: "Цкъа хьалха гIуллакх кхочушдаран хан харжа еза"
-      }
-    },
-    sectionEmptyList: {
-      [FOR_TODAY]: "Тахана хIун до вай?",
-      [FOR_WEEK]: "Кху кIиранахь хIун дича бакъахь хира дара те?",
-      [FOR_TOMORROW]: "Кханаьнна да хIумма дуй?",
-      [EXPIRED]: "Тиллина хIумма а дац",
-      [LATER]: 'Кхиъ тIаьхьа гIуллакхаш дац',
-      [CALENDAR_DAY]: 'Кху даьнна плане хIоттийна гIуллакхаш дац'
-    },
-    popupTitles: {
-      taskCategories: "ГIуллакхийн категориш",
-      dateOfCompletion: "Кхочушдаран терахь",
-      reminder: "Дагадаийтар",
-      language: "Мотт",
-    },
-    screenTitles: {
-      main: "Коьртнаг",
-      preferences: "Нисдарш",
-    },
-    words: {
-      rateApplication: "Программин мах хадо",
-      complete: 'Кхочушдан',
-      calendar: 'Календарь',
-      nightTheme: "Буьйсанан раж",
-      beta: "Бета",
-      version: "Верси",
-      save: "Iалашдан",
-      delete: "ДIадаккха",
-      done: "Кийча ю",
-      time: "Хан",
-      choose: "Харжа",
-      task: "ГIуллакх",
-      description: "Хаам",
-      completed: "Кхочушдина",
-      cancel: "Юхадаккха",
-      close: "ДIакъовла",
-      ok: "Дика ду",
-    },
-    prefsTitles: {
-      autoReminder: "Ша-шаха дагадаийтар",
-      disableCompletedTasksReminders: "Кхочушдина гIулаккхаш дага ма дахкийта"
-    },
-    weekDays: {
-      fulls: [
-        "КIиранде",
-        "Оршот",
-        "Шинара",
-        "Кхаара",
-        "Еара",
-        "ПIераска",
-        "Шот",
-      ],
-      shorts: ["КI", "Ор", "Ши", "Кх", "Еа", "ПI", "Шо"],
-    },
-    months: {
-      names: [],
-      fulls: [
-        "Кхолламан",
-        "Чиллин",
-        "Бекарг",
-        "Оханан",
-        "ХIутосург",
-        "Асаран",
-        "Мангалан",
-        "Хьаьттан",
-        "Тов-бецан",
-        "Эсаран",
-        "Лахьанан",
-        "ГIуран",
-      ],
-      shorts: [
-        "Кхл",
-        "Члн",
-        "Бкг",
-        "Охн",
-        "ХIт",
-        "Аср",
-        "Мнг",
-        "Хьт",
-        "Твб",
-        "Эср",
-        "Лхь",
-        "ГIр",
-      ],
-    },
-    periods: {
-      [EXPIRED]: "Тиллина",
-      [YESTERDAY]: "Селхана",
-      [TODAY]: "Тахана",
-      [TOMORROW]: "Кхана",
-      [FOR_TODAY]: "Таханаьнна",
-      [FOR_TOMORROW]: "Кханаьнна",
-      [LATER]: 'ТIаьхьа',
-      [CALENDAR_DAY]: 'Календаран де',
-      minute: "Минот",
-      hour: "Сахьт",
-      day: "Де",
-      days: "Денош",
-      week: "КIира",
-      weeks: "КIиранаш",
-      [FOR_WEEK]: "КIиранна",
-      [NEXT_WEEK]: "ТIедогIу кIиранна",
-      month: "Бутт",
-      months: "Беттанаш",
-      year: "Шо",
-      years: "Шеранаш",
-      midnight: 'Ахбуьйса'
-    },
-    periodsDeclination: {
-      minute: "Минот",
-      hour: "Сахьт",
-      day: "Де",
-      week: "КIира",
-    },
-    languages: {
-      en: "Ингалсан",
-      ru: "Оьрсийн",
+    ch: {
+      ru: "Чеченский",
+      en: "Chechen",
+      de: "Tschetschenisch",
       ch: "Нохчийн",
-      de: "Немцойн",
     },
-    habitsPeriods: {
-      daily: 'ХIор дийнахь',
-    }
+    de: {
+      ru: "Немецкий",
+      en: "Deutsch",
+      de: "Deutsch",
+      ch: "Немцойн",
+    },
+  },
+  words: {
+    rateApplication: {
+      ru:"Оценить приложение",
+      en:"Rate application",
+      de:"RateAnwendung",
+      ch:"Программин мах хадо",
+    }, 
+    complete: {
+      ru:"Выполнить",
+      en:"Complete",
+      de:"Komplett",
+      ch:"Кхочушдан",
+    }, 
+    calendar: {
+      ru:"Календарь",
+      en:"Calendar",
+      de:"Kalender",
+      ch:"Календарь",
+    },
+    nightTheme: {
+      ru:"Ночной режим",
+      en:"Night theme",
+      de: "Nachtmodus",
+      ch:"Буьйсанан раж",
+    },
+    version: {
+      ru:"Версия",
+      en:"Version",
+      de:"Ausführung",
+      ch:"Верси",
+    },
+    beta: {
+      ru:"Бета",
+      en:"Beta",
+      de:"Beta",
+      ch:"Бета",
+    },
+    save: {
+      ru:"Сохранить",
+      en: "Save",
+      de:"Speichern",
+      ch:"Iалашдан",
+    },
+    delete: {
+      ru:"Удалить",
+      en:"Delete",
+      de:"Löschen",
+      ch:"ДIадаккха",
+    },
+    done: {
+      ru:"Готово",
+      en:"Done",
+      de:"Bereit",
+      ch:"Кийча ю",
+    },
+    time: {
+      ru:"Время",
+      en:"Time",
+      de:"Zeit",
+      ch:"Хан",
+    },
+    choose: {
+      ru:"Выбрать",
+      en:"Choose",
+      de:"Wählen",
+      ch:"Харжа",
+    },
+    task: {
+      ru:"Задача",
+      en:"Task",
+      de:"Aufgabe",
+      ch:"ГIуллакх",
+    },
+    description: {
+      ru:"Описание",
+      en:"Description",
+      de:"Beschreibung",
+      ch:"Хаам",
+    },
+    completed: {
+      ru:"Выполнено",
+      en:"Completed",
+      de:"Erledigt",
+      ch:"Кхочушдина",
+    },
+    cancel: {
+      ru:"Отмена",
+      en:"Cancel",
+      de:"Abbruch",
+      ch:"Юхадаккха",
+    },
+    close: {
+      ru:"Закрыть",
+      en:"Close",
+      de:"Schließen",
+      ch:"ДIакъовла",
+    },
+    ok: {
+      ru:"Ок",
+      en:"Ok",
+      de:"Ok",
+      ch:"Дика ду",
+    },
+  },
+  prefsTitles: {
+    autoReminder: {
+      ru:"Автоматические напоминания",
+      en:"Automatic reminders",
+      de:"Automatische Erinnerungen",
+      ch:"Ша-шаха дагадаийтар",
+    },
+    disableCompletedTasksReminders: {
+      ru:"Не напоминать о выполненных задачах",
+      en:"Don't remind about completed tasks",
+      de:"Lassen Sie sich nicht an erledigte Aufgaben erinnern",
+      ch:"Кхочушдина гIулаккхаш дага ма дахкийта",
+    },
+  },
+  periodsDeclination: {
+    one: {
+      minute: {
+        ru:"Минута",
+        en:"Minute",
+        de:"Minute",
+        ch:"Минот",
+      },
+      hour: {
+        ru:"Час",
+        en:"Hour",
+        de:"Stunde",
+        ch: "Сахьт",
+      },
+      day: {
+        ru:"День",
+        en:"Day",
+        de:"Tag",
+        ch:"Де",
+      },
+      week: {
+        ru:"Неделя",
+        en:"Week",
+        de:"Woche",
+        ch:"КIира",
+      },
+    },
+    lessThan5: {
+      minute: {
+        ru:"Минуты",
+        en:"Minutes",
+        de:"Minuten",
+        ch:"Минот",
+      },
+      hour: {
+        ru:"Часа",
+        en:"Hours",
+        de:"Stunden",
+        ch: "Сахьт",
+      },
+      day: {
+        ru:"Дня",
+        en:"Days",
+        de:"Tage",
+        ch:"Де",
+      },
+      week: {
+        ru:"Недели",
+        en:"Weeks",
+        de:"Wochen",
+        ch:"КIира",
+      },
+    },
+    equalAndMoreThan5: {
+      minute: {
+        ru:"Минут",
+        en:"Minutes",
+        de:"Minuten",
+        ch:"Минот",
+      },
+      hour: {
+        ru:"Часов",
+        en:"Hours",
+        de:"Stunden",
+        ch: "Сахьт",
+      },
+      day: {
+        ru:"Дней",
+        en:"Days",
+        de:"Tage",
+        ch:"Де",
+      },
+      week: {
+        ru:"Недель",
+        en:"Weeks",
+        de:"Wochen",
+        ch:"КIира",
+      },
+    },
+  },
+  screenTitles: {
+    home: {
+      ru:"Главная",
+      en:"Main",
+      de:"Startseite",
+      ch:"Коьртнаг",
+    },
+    prefs: {
+      ru:"Настройки",
+      en:"Preferences",
+      de:"Einstellungen",
+      ch:"Нисдарш",
+    },
+  },
+  habitsPeriods: {
+    daily: {
+      ru:"Ежедневно",
+      en:"Daily",
+      de:"Tagli",
+      ch:"ХIор дийнахь",
+    },
   },
 };
 

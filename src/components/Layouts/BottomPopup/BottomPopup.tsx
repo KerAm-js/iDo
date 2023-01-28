@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useKeyboard } from "../../../hooks/useKeyboard";
 import { title22 } from "../../../styles/global/texts";
 import TextButton from "../../UI/buttons/TextButton/TextButton";
-import ThemeText from "../Theme/Text/ThemeText";
+import LangText from "../../UI/LangText/LangText";
 import ThemeView from "../Theme/View/ThemeView";
 import { bottomPopupStyles } from "./styles";
 import { BottomPopupPropType } from "./types";
@@ -75,7 +75,7 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
         <View>
           {title && (
             <View style={bottomPopupStyles.headingContainer}>
-              <ThemeText style={title22}>{title}</ThemeText>
+              <LangText title={title} style={title22} />
               {rightButtonTitle && onRightButtonPress && (
                 <TextButton
                   title={rightButtonTitle}

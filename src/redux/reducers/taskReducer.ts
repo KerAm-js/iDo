@@ -22,7 +22,6 @@ const initialState: TaskState = {
   tasks: [],
   positions: {},
   isTaskAddingAnimated: false,
-  completeTaskSound: undefined,
   calendarChoosedDate: undefined,
   taskToEdit: undefined,
   newTaskData: {

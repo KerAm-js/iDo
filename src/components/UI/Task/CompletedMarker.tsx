@@ -44,7 +44,7 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
     <Animated.View style={[completedMarkerStyles.container, containerStyle]}>
       <Pressable onPress={onPress}>
         <ThemeView card style={completedMarkerStyles.content}>
-          <ThemeText style={text12}>{languageTexts[language].words.completed}</ThemeText>
+          <ThemeText style={text12}>{languageTexts.words.completed[language]}</ThemeText>
           <Animated.View style={iconStyle}>
             <SvgXml
               xml={arrowBottom(colors.text)}

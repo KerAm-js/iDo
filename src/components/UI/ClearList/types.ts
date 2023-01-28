@@ -1,3 +1,4 @@
-export type ClearListPropType = {
-  title: string,
+import { LangTextPropTypes } from "../LangText/types";
+
+export interface ClearListPropType extends LangTextPropTypes {
 }

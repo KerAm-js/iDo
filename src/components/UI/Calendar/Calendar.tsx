@@ -3,7 +3,6 @@ import {
   Dimensions,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Text,
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
@@ -26,7 +25,7 @@ const Calendar: FC<CalendarPropType> = ({
   const language = useSelector(getLanguage);
   const { width: WIDTH } = Dimensions.get("screen");
   const currDate = new Date();
-  const weekDaysArr = languageTexts[language].weekDays.shorts;
+  const weekDaysArr = languageTexts.weekDays.shorts;
   const weekDays = [weekDaysArr[1], ...weekDaysArr.slice(2), weekDaysArr[0]];
   const currentIndex = 0;
   const scrollViewRef = useRef(null);
@@ -36,6 +35,8 @@ const Calendar: FC<CalendarPropType> = ({
   const [state, setState] = useState<Array<CalendarMonthItemType>>(
     getCalendarArray(currDate, 3)
   );
+
+  console.log('calendar')
 
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newCurrentIndex = Math.round(
@@ -115,9 +116,9 @@ const Calendar: FC<CalendarPropType> = ({
           return (
             <ThemeText
               style={[calendarStyles.item, text17, textSemiBold]}
-              key={weekDay}
+              key={weekDay[language]}
             >
-              {weekDay}
+              {weekDay[language]}
             </ThemeText>
           );
         })}
@@ -127,4 +128,4 @@ const Calendar: FC<CalendarPropType> = ({
   );
 };
 
-export default Calendar;
+export default React.memo(Calendar);

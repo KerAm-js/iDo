@@ -1,7 +1,7 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
-import { getPrefs } from "../../../redux/selectors/prefsSelectors";
+import { getTheme } from "../../../redux/selectors/prefsSelectors";
 import { getTaskToEdit } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import ModalLayout from "../../Layouts/Modal/ModalLayout";
@@ -17,7 +17,7 @@ import { StatusBar } from "expo-status-bar";
 
 const Root: FC<RootPropType> = ({ onAppReady }) => {
   const taskToEdit = useSelector(getTaskToEdit);
-  const { language, theme } = useSelector(getPrefs);
+  const theme = useSelector(getTheme);
   const dispatch: AppDispatch = useDispatch();
   const [addTaskModalVisible, setAddTaskModalVisible] =
     useState<boolean>(false);
@@ -99,7 +99,7 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
           visible={calendarModalVisible}
           setDefaultsFlag={didAllAddTaskModalsClosed}
           closePopup={closeCalendar}
-          title={languageTexts[language].popupTitles.dateOfCompletion}
+          title={languageTexts.popupTitles.dateOfCompletion}
         />
       </ModalLayout>
       <ModalLayout visible={reminderModalVisible} close={closeReminderModal}>
@@ -109,12 +109,11 @@ const Root: FC<RootPropType> = ({ onAppReady }) => {
           closePopup={closeReminderModal}
           isReminderChoosing
           hasDeleteButton
-          title={languageTexts[language].popupTitles.reminder}
+          title={languageTexts.popupTitles.reminder}
         />
       </ModalLayout>
       <ModalLayout visible={languageModalVisible} close={closeLanguageModal}>
         <LanguagePopup
-          title={languageTexts[language].popupTitles.language}
           visible={languageModalVisible}
         />
       </ModalLayout>

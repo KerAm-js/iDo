@@ -27,9 +27,8 @@ import {
 import { movableItemStyles } from "./style";
 import { ContextType, MovableItemProps } from "./types";
 import { trash } from "../../../../assets/icons/trash";
-import { shadowColors, textColors } from "../../../styles/global/colors";
+import { textColors } from "../../../styles/global/colors";
 import { TaskType } from "../../../redux/types/task";
-import { useTheme } from "@react-navigation/native";
 import Task from "../Task/Task";
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -51,16 +50,15 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     taskObject,
     upperBound,
   }) => {
+    console.log('movable item')
     const [isDragged, setIsDragged] = useState(false);
-    const { dark } = useTheme();
     const isInsertingAnimated = useSelector(getIsTaskAddingAnimated);
     const dispatch: AppDispatch = useDispatch();
-    const shadowColor = dark ? shadowColors.dark : shadowColors.light;
     const { width: SCREEN_WIDTH } = Dimensions.get("screen");
     const translateThreshold = SCREEN_WIDTH * -0.4;
     const top = positions.value[id]
       ? itemHeight * positions?.value[id]?.position +
-        (positions?.value[id]?.isCompleted ? 31 : 0)
+        (positions?.value[id]?.isCompleted ? 28 : 0)
       : index * itemHeight;
     const translateY = useSharedValue(top);
     const translateX = useSharedValue(0);
@@ -73,8 +71,6 @@ const MovableItem: FC<MovableItemProps> = React.memo(
 
     const containerStyleR = useAnimatedStyle(() => {
       return {
-        shadowOpacity: shadowOpacity.value,
-        shadowColor,
         top: translateY.value,
         opacity: opacity.value,
         zIndex: zIndex.value,
@@ -82,9 +78,11 @@ const MovableItem: FC<MovableItemProps> = React.memo(
       };
     }, [positions, translateY, shadowOpacity, opacity]);
 
-    const taskContainerStyleR = useAnimatedStyle(() => {
+    const taskStyleR = useAnimatedStyle(() => {
       return {
         transform: [{ translateX: translateX.value }],
+        ...shadowStyle,
+        shadowOpacity: shadowOpacity.value,
       };
     }, [translateX]);
 
@@ -373,13 +371,12 @@ const MovableItem: FC<MovableItemProps> = React.memo(
             />
           )}
         </Animated.View>
-        <Animated.View style={taskContainerStyleR}>
-          <Task
-            taskObject={taskObject}
-            completeTask={completeTaskHandler}
-            sectionType={sectionTitle}
-          />
-        </Animated.View>
+        <Task
+          rStyle={taskStyleR}
+          taskObject={taskObject}
+          completeTask={completeTaskHandler}
+          sectionType={sectionTitle}
+        />
       </Animated.View>
     );
   },

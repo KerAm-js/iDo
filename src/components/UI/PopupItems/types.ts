@@ -1,4 +1,5 @@
 import { TextInput, TextInputProps, ViewStyle } from "react-native";
+import { LangObjectType, TextGetterType } from "../../../types/global/LangObject";
 
 export type SwithItemPropType = {
   title: string;
@@ -7,13 +8,13 @@ export type SwithItemPropType = {
 };
 
 export type CheckItemPropType = {
-  title: string;
+  title: LangObjectType;
   isChecked: boolean,
   onPress: () => void;
 }
 
 export type DateCheckItemPropType = {
-  title: string;
+  title: LangObjectType | TextGetterType;
   state: string,
   isChecked: boolean,
   date?: Date,
@@ -34,7 +35,7 @@ export type ReminderCheckItemPropType = {
 export interface FormButtonPropType extends TextInputProps {
   style?: ViewStyle,
   textColor?: string,
-  title: string,
+  title: LangObjectType | TextGetterType;
   onPress?: () => void,
   iconXml?: string,
   isInput?: boolean,

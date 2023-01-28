@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 import { View } from "react-native";
 import { getDate } from "../../../utils/date";
 import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
@@ -10,7 +10,6 @@ import {
   getTasks,
 } from "../../../redux/selectors/taskSelector";
 import { getSections } from "../../../utils/section/sections";
-import { getPrefs } from "../../../redux/selectors/prefsSelectors";
 import { useNavigation } from "@react-navigation/native";
 import { EXPIRED, PERIODS_LIST } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -20,20 +19,24 @@ import CalendarIconButton from "../../UI/buttons/IconButton/CalendarIconButton";
 import { textColors } from "../../../styles/global/colors";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { HomeStackNavigatorParamsList } from "../../Navigators/Stack/Home/types";
+import { LanguageType } from "../../../redux/types/prefs";
 
 const Home: FC<HomePropType> = () => {
-  const { language } = useSelector(getPrefs);
   const navigator = useNavigation<StackNavigationProp<HomeStackNavigatorParamsList>>();
   const dispatch: AppDispatch = useDispatch();
   const positions = useSelector(getPositions);
   const sectionsVisibilities = useSelector(getSectionsVisibilities);
-  const { date, weekDay } = getDate(language);
   const tasks = useSelector(getTasks);
   const sections: SectionsObjectType = getSections(
     PERIODS_LIST,
     tasks,
     positions
   );
+
+  const screenTitleGetter = (lang: LanguageType) => getDate(lang).date
+  const screenSubTitleGetter = (lang: LanguageType) => getDate(lang).weekDay
+
+  console.log('home')
 
   const HeadingRight = (
     <CalendarIconButton
@@ -45,8 +48,8 @@ const Home: FC<HomePropType> = () => {
 
   return (
     <ScreenLayout
-      title={date}
-      subtitle={weekDay}
+      title={screenTitleGetter}
+      subtitle={screenSubTitleGetter}
       headingRight={HeadingRight}
       onUnmount={() => {
         dispatch(loadSectionsVisibilitiesFromASAction());

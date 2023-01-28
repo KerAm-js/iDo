@@ -1,23 +1,25 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import { useNavigation, useTheme } from "@react-navigation/native";
-import { Animated, Text, StyleSheet, View } from "react-native";
+import { Animated, StyleSheet, View } from "react-native";
 import { screenLayoutStyles } from "./styles";
 import { ScreenLayoutProps } from "./types";
-import { subTitle16, textGrey, title30 } from "../../../styles/global/texts";
+import { subTitle16, textGrey } from "../../../styles/global/texts";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { BlurView } from "expo-blur";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { headerTitleStyle } from "../../../styles/header";
+import LangText from "../../UI/LangText/LangText";
+import { LanguageType } from "../../../redux/types/prefs";
 
 const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
   ({
-    children,
     title,
     headingRight: HeadingRight,
     subtitle,
     subtitleComponent: SubtitleComponent,
     onMount,
     onUnmount,
+    children,
   }) => {
     const theme = useTheme();
     const [headerShown, setHeaderShown] = useState(false);
@@ -27,17 +29,17 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
 
     const scrollY = useRef(new Animated.Value(0)).current;
     const headerOpactiy = useRef(new Animated.Value(0)).current;
-    const titleTranslationY = useRef(new Animated.Value(14)).current;
+    const titleTranslationY = useRef(new Animated.Value(12)).current;
 
     const titleScale = scrollY.interpolate({
       inputRange: [-100, 0],
-      outputRange: [1.2, 1],
+      outputRange: [1.1, 1],
       extrapolate: "clamp",
     });
 
     const translateX = scrollY.interpolate({
-      inputRange: [-100, -50, 0],
-      outputRange: [23, 13, 0],
+      inputRange: [-100, 0],
+      outputRange: [12, 0],
       extrapolate: "clamp",
     });
 
@@ -64,21 +66,33 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
         Animated.timing(titleTranslationY, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 200,
+          duration: 220,
         }).start();
       } else if (event.nativeEvent.contentOffset.y <= 30 && headerShown) {
         setHeaderShown(false);
         Animated.timing(headerOpactiy, {
           toValue: 0,
           useNativeDriver: true,
-          duration: 150,
+          duration: 140,
         }).start();
         Animated.timing(titleTranslationY, {
-          toValue: 14,
+          toValue: 12,
           useNativeDriver: true,
-          duration: 150,
+          duration: 170,
         }).start();
       }
+    };
+
+    const setScreenTitle = (language: LanguageType) => {
+      let newTitle;
+      if (typeof title === "function") {
+        newTitle = title(language);
+      } else {
+        newTitle = title[language];
+      }
+      navigation.setOptions({
+        title: newTitle,
+      });
     };
 
     useEffect(() => {
@@ -96,7 +110,6 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
           color: theme.colors.text,
           transform: [{ translateY: titleTranslationY }],
         },
-        title,
         // headerRight: () => HeadingRight,
         headerBackground: () => (
           <View
@@ -132,9 +145,17 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
       });
     }, [theme]);
 
+    let newTitle;
+      if (typeof title === "function") {
+        newTitle = title('ru');
+      } else {
+        newTitle = title['ru'];
+      }
+
+    console.log("screen layout", newTitle);
+
     return (
       <Animated.ScrollView
-        scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
         onScroll={Animated.event(
           [
@@ -157,18 +178,24 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
       >
         <View style={screenLayoutStyles.headingContainer}>
           <View style={screenLayoutStyles.titleContainer}>
-            <Animated.Text
-              style={[
-                title30,
-                screenLayoutStyles.title,
-                { transform: [{ scale: titleScale }, { translateX }] },
-              ]}
+            <Animated.View
+              style={{ transform: [{ scale: titleScale }, { translateX }] }}
             >
-              {title}
-            </Animated.Text>
+              <LangText
+                title={title}
+                style={screenLayoutStyles.title}
+                setScreenTitle={setScreenTitle}
+              />
+            </Animated.View>
             {HeadingRight}
           </View>
-          {subtitle && <Text style={[subTitle16, textGrey]}>{subtitle}</Text>}
+          {subtitle && (
+            <LangText
+              handleTheme={false}
+              title={subtitle}
+              style={[subTitle16, textGrey]}
+            />
+          )}
           {SubtitleComponent}
         </View>
         {children}

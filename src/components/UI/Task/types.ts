@@ -1,9 +1,11 @@
-import { HomePeriodsKeys } from '../../../types/global/Periods';
-import { TaskType } from './../../../redux/types/task';
+import { ViewStyle } from "react-native";
+import { HomePeriodsKeys } from "../../../types/global/Periods";
+import { TaskType } from "./../../../redux/types/task";
 
 export type TaskPropTypes = {
-  taskObject: TaskType,
+  taskObject: TaskType;
   sectionType?: HomePeriodsKeys;
+  rStyle?: ViewStyle;
   completeTask: (task: TaskType) => void;
 };
 

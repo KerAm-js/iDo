@@ -1,5 +1,7 @@
+import { LangObjectType } from "../../../../types/global/LangObject";
+
 export type TextButtonPropTypes = {
   color?: string,
-  title: string,
+  title: LangObjectType,
   onPress: () => void,
 }

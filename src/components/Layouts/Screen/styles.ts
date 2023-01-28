@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { textColors } from "../../../styles/global/colors";
+import { title30 } from "../../../styles/global/texts";
 
 export const screenLayoutStyles = StyleSheet.create({
   container: {
@@ -9,6 +10,7 @@ export const screenLayoutStyles = StyleSheet.create({
   title: {
     width: 280,
     color: textColors.blue,
+    ...title30,
   },
   headingContainer: {
     marginBottom: 30,

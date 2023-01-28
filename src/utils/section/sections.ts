@@ -16,20 +16,20 @@ import { HomePeriodsKeys, PeriodsListType } from '../../types/global/Periods';
 import { ListObject } from '../../types/global/ListObject';
 
 export const getSectionListEmptyMessage = (title: HomePeriodsKeys, lang: LanguageType) => {
-  let clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_TODAY]} ${languageTexts[lang].periods[
+  let clearListMessage = `${languageTexts.sectionEmptyList[FOR_TODAY][lang]} ${languageTexts.periods[
     TODAY
-  ].toLowerCase()}?`;
+  ][lang].toLowerCase()}?`;
 
   if (title === FOR_TOMORROW) {
-    clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_TOMORROW]} ${languageTexts[lang].periods[
+    clearListMessage = `${languageTexts.sectionEmptyList[FOR_TOMORROW][lang]} ${languageTexts.periods[
       title
-    ].toLowerCase()}?`;
+    ][lang].toLowerCase()}?`;
   } else if (title === FOR_WEEK) {
-    clearListMessage = `${languageTexts[lang].sectionEmptyList[FOR_WEEK]} ${languageTexts[lang].periods[
+    clearListMessage = `${languageTexts.sectionEmptyList[FOR_WEEK][lang]} ${languageTexts.periods[
       title
-    ].toLowerCase()}?`;
+    ][lang].toLowerCase()}?`;
   } else if (title === EXPIRED) {
-    clearListMessage = languageTexts[lang].sectionEmptyList[EXPIRED];
+    clearListMessage = languageTexts.sectionEmptyList[EXPIRED][lang];
   }
 
   return clearListMessage;

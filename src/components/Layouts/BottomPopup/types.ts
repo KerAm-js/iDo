@@ -1,9 +1,11 @@
+import { LangObjectType, TextGetterType } from "../../../types/global/LangObject";
+
 export interface BottomPopupPropType {
   visible: boolean,
-  title?: string,
+  title?: LangObjectType | TextGetterType,
   children?: JSX.Element | null | Array<JSX.Element | null>,
   handleKeyboard?: boolean
-  rightButtonTitle?: string | false,
+  rightButtonTitle?: LangObjectType | false,
   rightButtonColor?: string,
   onRightButtonPress?: (() => void) | false,
 }

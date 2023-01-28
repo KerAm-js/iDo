@@ -112,11 +112,11 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
       openReminderModal();
     } else {
       Alert.alert(
-        languageTexts[language].alerts.taskTimeIsNotChoosen.title,
+        languageTexts.alerts.taskTimeIsNotChoosen.title[language],
         "",
         [
           {
-            text: languageTexts[language].words.ok,
+            text: languageTexts.words.ok[language],
             style: "default",
           },
         ]
@@ -186,7 +186,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         multiline
         maxLength={150}
         reference={taskInput}
-        placeholder={languageTexts[language].words.task}
+        placeholder={languageTexts.words.task[language]}
         style={[text17Input, textSemiBold, addTaskPopupStyles.input]}
       />
       <ThemeInput
@@ -194,7 +194,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         onChangeText={(text) => setDescription(text)}
         multiline
         maxLength={500}
-        placeholder={languageTexts[language].words.description}
+        placeholder={languageTexts.words.description[language]}
         style={[text16Input, addTaskPopupStyles.input]}
       />
       {/* <ScrollView
