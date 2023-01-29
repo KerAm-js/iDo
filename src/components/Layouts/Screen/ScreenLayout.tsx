@@ -145,15 +145,6 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
       });
     }, [theme]);
 
-    let newTitle;
-      if (typeof title === "function") {
-        newTitle = title('ru');
-      } else {
-        newTitle = title['ru'];
-      }
-
-    console.log("screen layout", newTitle);
-
     return (
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}

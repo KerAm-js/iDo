@@ -36,8 +36,6 @@ const Calendar: FC<CalendarPropType> = ({
     getCalendarArray(currDate, 3)
   );
 
-  console.log('calendar')
-
   const onScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const newCurrentIndex = Math.round(
       event.nativeEvent.contentOffset.x / WIDTH

@@ -56,7 +56,6 @@ const shouldTaskRerender = (curr: TaskType, prev: TaskType) => {
 };
 
 const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, rStyle, completeTask }) => {
-  console.log('task')
   const { folders } = useSelector(folderSelector);
   const {
     task,

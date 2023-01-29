@@ -36,8 +36,6 @@ const PrefsContent = ({
   const theme = useSelector(getTheme);
   const autoReminder = useSelector(getAutoReminder);
 
-  console.log('prefs content')
-
   const toggleTheme = () => {
     dispatch(setThemeAction(theme === "dark" ? "light" : "dark"));
     setStatusBarStyle(theme);

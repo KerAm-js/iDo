@@ -36,8 +36,6 @@ const Home: FC<HomePropType> = () => {
   const screenTitleGetter = (lang: LanguageType) => getDate(lang).date
   const screenSubTitleGetter = (lang: LanguageType) => getDate(lang).weekDay
 
-  console.log('home')
-
   const HeadingRight = (
     <CalendarIconButton
       date={new Date()}

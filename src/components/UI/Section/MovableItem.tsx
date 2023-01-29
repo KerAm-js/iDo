@@ -50,7 +50,6 @@ const MovableItem: FC<MovableItemProps> = React.memo(
     taskObject,
     upperBound,
   }) => {
-    console.log('movable item')
     const [isDragged, setIsDragged] = useState(false);
     const isInsertingAnimated = useSelector(getIsTaskAddingAnimated);
     const dispatch: AppDispatch = useDispatch();
