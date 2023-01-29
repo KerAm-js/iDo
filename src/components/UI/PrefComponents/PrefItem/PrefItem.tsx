@@ -16,7 +16,7 @@ import { PrefItemPropTypes } from "./types";
 const PrefItem: FC<PrefItemPropTypes> = React.memo(
   ({ iconXml, title, type, onPress, state }) => {
     let rightItem;
-
+    console.log('prefItem')
     if (type === "navigation") {
       rightItem = (
         <SvgXml

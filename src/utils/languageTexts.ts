@@ -94,13 +94,13 @@ export const languageTexts = {
       ru: "Какие планы на неделю?",
       en: "What are you planning for a week?",
       de: "Was sind deine Pläne für die Woche?",
-      ch: "Кху кIиранахь хIун дича бакъахь хира дара те?",
+      ch: "Кху кIиранахь хIун дича бакъахьа хира дара те?",
     },
     [FOR_TOMORROW]: {
       ru: "Что планируете на завтра?",
       en: "What are the plans for tomorrow?",
       de: "Was hast du für morgen vor?",
-      ch: "Кханаьнна да хIумма дуй?",
+      ch: "Кхана дан хIумма дуй?",
     },
     [EXPIRED]: {
       ru: "Нет просроченных задач",
@@ -112,7 +112,7 @@ export const languageTexts = {
       ru: "Нет задач на более позднее время",
       en: "No tasks for a later time",
       de: "Keine Aufgaben für später",
-      ch: "Кхиъ тIаьхьа гIуллакхаш дац",
+      ch: "Кхи тIаьхьа гIуллакхаш дац",
     },
     [CALENDAR_DAY]: {
       ru: "На этот день задач не запланировано",

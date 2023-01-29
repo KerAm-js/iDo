@@ -31,7 +31,7 @@ export const completedMarkerStyles = StyleSheet.create({
     paddingHorizontal: 7,
     flexDirection: "row",
     alignItems: 'center',
-    borderRadius: 4,
+    borderRadius: 5,
     marginBottom: 10,
   },
   icon: {

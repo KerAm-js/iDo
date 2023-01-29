@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { languageIcon } from "../../../../assets/icons/languages";
 import { themeIcon } from "../../../../assets/icons/theme";
@@ -25,6 +25,7 @@ import { setDefaultNewTaskDataAction } from "../../../redux/actions/taskActions"
 import { bell } from "../../../../assets/icons/bell";
 import { appStore } from "../../../../assets/icons/appStore";
 import { Linking, View } from "react-native";
+import { store } from "../../../redux/store";
 
 const PrefsContent = ({
   openLanguageModal,
@@ -41,14 +42,14 @@ const PrefsContent = ({
     setStatusBarStyle(theme);
   };
 
-  const toggleAutoReminder = () => {
+  const toggleAutoReminder = useCallback(() => {
     if (!autoReminder) {
       const { title, body } = languageTexts.notifications.autoReminderEnabled;
       presentNotification(title[language], "", body[language]);
     }
     dispatch(setAutoReminderAction(!autoReminder));
     dispatch(setDefaultNewTaskDataAction(!autoReminder));
-  };
+  }, []);
 
   const rateApp = () => {
     const itunesItemId = 1604538068;

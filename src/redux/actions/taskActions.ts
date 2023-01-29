@@ -310,7 +310,7 @@ export const checkNotificationForDisabling = async (
   const hasReminder = task.remindTime && task.remindTime > new Date().valueOf();
   if (isCompleted) {
     if (hasReminder && task.notificationId) {
-      await deleteNotification(task.notificationId);
+      deleteNotification(task.notificationId);
     }
     notificationId = undefined;
   } else if (hasReminder) {

@@ -49,12 +49,6 @@ import LangText from "../LangText/LangText";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
 
-const shouldTaskRerender = (curr: TaskType, prev: TaskType) => {
-  const currCopy: TaskType = { ...curr, notificationId: undefined };
-  const prevCopy: TaskType = { ...prev, notificationId: undefined };
-  return JSON.stringify(currCopy) === JSON.stringify(prevCopy);
-};
-
 const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, rStyle, completeTask }) => {
   const { folders } = useSelector(folderSelector);
   const {
@@ -312,4 +306,8 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, rStyle, completeTask
   );
 };
 
-export default Task;
+const shouldTaskRerender = (prev: TaskPropTypes, curr: TaskPropTypes) => {
+  return JSON.stringify(curr.taskObject) === JSON.stringify(prev.taskObject);
+};
+
+export default React.memo(Task, shouldTaskRerender);

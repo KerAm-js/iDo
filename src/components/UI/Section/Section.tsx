@@ -41,9 +41,7 @@ const TaskHeight = 58 + TaskMargin;
 const emptyListHeight = 220;
 const baseHeight = 46;
 
-const Section: FC<SectionProps> = React.memo(
-  ({ title, list, initPositions, visibilities, disableAnimationsTrigger }) => {
-    console.log('section')
+const Section: FC<SectionProps> =({ title, list, initPositions, visibilities, disableAnimationsTrigger }) => {
     const dispatch: AppDispatch = useDispatch();
     const [sortedTasks, completedTasksLength] = sortTasksAndUpdatePositions(
       list,
@@ -52,8 +50,8 @@ const Section: FC<SectionProps> = React.memo(
     const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
     const [isDeleting, setIsDeleting] = useState(false);
     const areAnimationsDisabled = useRef(false);
-    const upperBound = sortedTasks.length - 1 - completedTasksLength;
-
+    const upperBound = useRef<number>(0);
+    upperBound.current = sortedTasks.length - 1 - completedTasksLength
     const sectionOpacity = useSharedValue(1);
 
     const opacity = useSharedValue(
@@ -85,9 +83,9 @@ const Section: FC<SectionProps> = React.memo(
       sortedTasks.length === 0 ? 1 : 0
     );
     const completedMarkerTop = useSharedValue(
-      upperBound === sortedTasks.length - 1
-        ? upperBound * TaskHeight
-        : (upperBound + 1) * TaskHeight
+      upperBound.current === sortedTasks.length - 1
+        ? upperBound.current * TaskHeight
+        : (upperBound.current + 1) * TaskHeight
     );
     const completedMarkerOpacity = useSharedValue(
       completedTasksLength > 0 ? 1 : 0
@@ -209,7 +207,7 @@ const Section: FC<SectionProps> = React.memo(
           { duration: 100 }
         );
         completedMarkerTop.value = withTiming(
-          updateCompletedMarkerTop(completedTasksLength, upperBound),
+          updateCompletedMarkerTop(completedTasksLength, upperBound.current),
           {
             duration: 100,
           }
@@ -233,7 +231,7 @@ const Section: FC<SectionProps> = React.memo(
       );
       completedMarkerTop.value = withDelay(
         1,
-        withTiming(updateCompletedMarkerTop(completedTasksLength, upperBound), {
+        withTiming(updateCompletedMarkerTop(completedTasksLength, upperBound.current), {
           duration: 300,
         })
       );
@@ -339,13 +337,13 @@ const Section: FC<SectionProps> = React.memo(
         </Animated.View>
       </Animated.View>
     );
-  },
-  (prev, curr) => {
-    let result =
-      JSON.stringify(prev.list) === JSON.stringify(curr.list) &&
-      JSON.stringify(prev.initPositions) === JSON.stringify(curr.initPositions);
-    return result;
   }
-);
 
-export default Section;
+const shouldSectionUpdate = (prev: SectionProps, curr: SectionProps) => {
+  let result =
+    JSON.stringify(prev.list) === JSON.stringify(curr.list) &&
+    JSON.stringify(prev.initPositions) === JSON.stringify(curr.initPositions);
+  return result;
+}
+
+export default React.memo(Section, shouldSectionUpdate);

@@ -23,7 +23,7 @@ export type MovableItemProps = {
   completeTask: (task: TaskType) => void;
   deleteTask: (task: TaskType) => void;
   sectionTitle: HomePeriodsKeys;
-  upperBound: number;
+  upperBound: { current: number };
 };
 
 export type ContextType = {
