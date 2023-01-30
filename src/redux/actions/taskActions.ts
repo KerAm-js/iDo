@@ -23,19 +23,16 @@ import {
   setNotification,
 } from "../../native/notifications";
 import { store } from "../store";
-import {
-  getNextDate,
-  isYesterday,
-  toLocaleStateString,
-} from "../../utils/date";
+import { getNextDate, toLocaleStateString } from "../../utils/date";
 import { ListObject } from "../../types/global/ListObject";
 import { getPositionsFromAS } from "../../backend/asyncStorage/positions";
 import { languageTexts } from "../../utils/languageTexts";
 import { getAutoReminderSetting } from "./prefsActions";
 
-export const scheduleTaskExpiration = async (
+export const scheduleTaskExpiration = (
   task: TaskType,
-  dispatch: Dispatch
+  dispatch: Dispatch,
+  isInit?: boolean
 ) => {
   try {
     if (!task.isExpired) {
@@ -44,13 +41,20 @@ export const scheduleTaskExpiration = async (
         task.isCompleted &&
         task.completionTime &&
         task.completionTime < task.time;
-      if (!isCompletedInTime && !task.isExpired && task.time <= currTime) {
-        await LocalDB.setTaskExpiration(task.id);
-        dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
-        await addRegularTask(dispatch, task);
+
+      if (!isCompletedInTime && task.time <= currTime) {
+        LocalDB.setTaskExpiration(task.id);
+        if (task.isRegular) {
+          addRegularTask(dispatch, task);
+        }
+        if (isInit) {
+          return 1;
+        } else {
+          dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
+        }
       } else {
         const timeDiff = task.time - currTime;
-        setTimeout(async () => {
+        setTimeout(() => {
           const currentTask = store.getState().tasks.tasks.find((item) => {
             return item.id === task.id;
           });
@@ -71,17 +75,22 @@ export const scheduleTaskExpiration = async (
               currentTask.timeType === task.timeType &&
               currentTask.folderId === task.folderId;
 
-            if (currentTask.isRegular && isTaskNotUpdated && !currentTask.isCompleted) {
-              await addRegularTask(dispatch, currentTask);
+            if (
+              currentTask.isRegular &&
+              isTaskNotUpdated &&
+              !currentTask.isCompleted
+            ) {
+              addRegularTask(dispatch, currentTask);
             }
             if (isExpired) {
-              await LocalDB.setTaskExpiration(currentTask?.id);
+              LocalDB.setTaskExpiration(currentTask?.id);
               dispatch({ type: SET_TASK_EXPIRATION, id: currentTask.id });
             }
           }
         }, timeDiff);
       }
     }
+    return 0;
   } catch (error) {
     console.log("scheduleTaskExpiration", error);
   }
@@ -93,7 +102,7 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
     await deleteAllNotifications();
     const notificationsUpdatedTasks = await Promise.all(
       tasks.map(async (task) => {
-        await scheduleTaskExpiration(task, dispatch);
+        const isExpired = task.isExpired || scheduleTaskExpiration(task, dispatch, true);
         if (task.isCompleted) {
           return task;
         }
@@ -104,6 +113,7 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
         return {
           ...task,
           notificationId,
+          isExpired,
         };
       })
     );
@@ -177,7 +187,7 @@ export const addTask = async (
   const taskId = await LocalDB.addTask(addedTask);
   if (taskId) {
     addedTask.id = taskId;
-    await scheduleTaskExpiration(addedTask, dispath);
+    scheduleTaskExpiration(addedTask, dispath);
     const notificationId = await scheduleReminder(addedTask);
     addedTask.notificationId = notificationId;
     dispath({
@@ -227,7 +237,7 @@ export const editTaskAction =
         const { title } = languageTexts.notifications.regularTaskRemoved;
         presentNotification(title[language], `"${editedTask.task}"`, "");
       }
-      await scheduleTaskExpiration(editedTask, dispatch);
+      scheduleTaskExpiration(editedTask, dispatch);
       const notificationId = await scheduleReminder(
         editedTask,
         prevTask.notificationId
@@ -324,7 +334,9 @@ export const completeTaskAction =
   (task: TaskType) => async (dispatch: Dispatch) => {
     try {
       const isCompleted = task.isCompleted ? 0 : 1;
-      const completionTime = isCompleted ? new Date().valueOf() : task.completionTime || null;
+      const completionTime = isCompleted
+        ? new Date().valueOf()
+        : task.completionTime || null;
       const isExpired = isCompleted
         ? task.isExpired
         : new Date().valueOf() > task.time
@@ -343,7 +355,12 @@ export const completeTaskAction =
         completionTime,
       });
       LocalDB.completeTask(task.id, isCompleted, isExpired, completionTime);
-      if (isCompleted && task.isRegular && !task.completionTime && !task.isExpired) {
+      if (
+        isCompleted &&
+        task.isRegular &&
+        !task.completionTime &&
+        !task.isExpired
+      ) {
         addRegularTask(dispatch, task);
       }
     } catch (error) {

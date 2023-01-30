@@ -18,7 +18,6 @@ import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
 import {
   extractCalendarState,
   extractReminderState,
-  isWeeklyTime,
   reminderStateList,
   toLocaleStateString,
 } from "../../../utils/date";
@@ -272,7 +271,6 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   }, [calendarShown]);
 
   useEffect(() => {
-    console.log(time, time.length);
     if (state !== CHOOSE && isReminderChoosing && time) {
       const taskTime = new Date(newTaskData.time || '')
       setState(CHOOSE);
