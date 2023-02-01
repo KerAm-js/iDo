@@ -230,6 +230,11 @@ export const extractReminderState = (defaultDate: Date, remindDate: number) => {
       reminderStateList.find((item) => item.minutes === 30)?.id ||
       reminderStateList[0].id
     );
+  } else if (minutes === 15) {
+    return (
+      reminderStateList.find((item) => item.minutes === 15)?.id ||
+      reminderStateList[0].id
+    );
   } else if (minutes === 0) {
     return reminderStateList[0].id;
   } else {

@@ -344,7 +344,6 @@ const MovableItem: FC<MovableItemProps> = ({
                 {
                   maxWidth: "30%",
                   maxHeight: "65%",
-                  // backgroundColor: "rgba(250, 0, 0, 0.2)",
                 },
               ]}
             ></Animated.View>

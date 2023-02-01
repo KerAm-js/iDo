@@ -17,13 +17,12 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import { buttonColors, themeColors } from "../../../../styles/global/colors";
-import { useTheme } from "@react-navigation/native";
 import { Audio } from "expo-av";
 import { Sound } from "expo-av/build/Audio";
+import ThemeSquircle from "../../ThemeSquircle/ThemeSquircle";
 
 const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
   const [sound, setSound] = useState<Sound>();
-  const theme = useTheme();
   const scale = useSharedValue(isCompleted ? 1 : 0);
 
   const styleR = useAnimatedStyle(() => {
@@ -74,12 +73,11 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
 
   return (
     <Pressable onPress={handleClick} style={[checkButtonStyles.container]}>
-      <SquircleView
+      <ThemeSquircle
         style={[checkButtonStyles.sqiurcleView]}
         squircleParams={{
           cornerSmoothing: borderSmoothing,
           cornerRadius: ultraSmallBorderRadius,
-          fillColor: theme.colors.card,
           strokeColor: buttonColors.blue,
           strokeWidth: 1,
         }}
@@ -102,7 +100,7 @@ const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
             />
           </SquircleView>
         </Animated.View>
-      </SquircleView>
+      </ThemeSquircle>
     </Pressable>
   );
 };

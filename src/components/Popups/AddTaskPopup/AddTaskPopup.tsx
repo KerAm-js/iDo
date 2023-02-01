@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import * as Haptics from "expo-haptics";
 import { Alert, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,15 +13,9 @@ import {
   setIsNewTaskRegularAction,
   updateNewTaskTimeAction,
 } from "../../../redux/actions/taskActions";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { textColors, themeColors } from "../../../styles/global/colors";
-import {
-  text16Input,
-  text17Input,
-  textSemiBold,
-} from "../../../styles/global/texts";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import ThemeInput from "../../Layouts/Theme/Input/ThemeInput";
@@ -30,6 +24,7 @@ import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { addTaskPopupStyles } from "./styles";
 import { AddTaskPopupPropType } from "./types";
 import { repeat } from "../../../../assets/icons/repeat";
+import { store } from "../../../redux/store";
 
 const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   visible,
@@ -39,7 +34,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   openReminderModal,
   setDefaultsFlag,
 }) => {
-  const language = useSelector(getLanguage);
   const { taskToEdit, newTaskData, calendarChoosedDate } =
     useSelector(taskStateSelector);
   const dispatch: AppDispatch = useDispatch();
@@ -51,6 +45,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
   const taskInput = useRef<TextInput | null>(null);
+
+  const updateTask = useCallback((text: string) => setTask(text), []);
+  const updateDescription = useCallback((text: string) => setDescription(text), []);
 
   const setDefaults = () => {
     setTask("");
@@ -108,6 +105,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   };
 
   const openReminderHandler = () => {
+    const language = store.getState().prefs.language;
     if (newTaskData.time && newTaskData.timeType) {
       openReminderModal();
     } else {
@@ -182,20 +180,20 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     >
       <ThemeInput
         value={task}
-        onChangeText={(text) => setTask(text)}
+        onChangeText={updateTask}
         multiline
         maxLength={150}
         reference={taskInput}
-        placeholder={languageTexts.words.task[language]}
-        style={[text17Input, textSemiBold, addTaskPopupStyles.input]}
+        langPlaceholder={languageTexts.words.task}
+        style={addTaskPopupStyles.taskInput}
       />
       <ThemeInput
         value={description}
-        onChangeText={(text) => setDescription(text)}
+        onChangeText={updateDescription}
         multiline
         maxLength={500}
-        placeholder={languageTexts.words.description[language]}
-        style={[text16Input, addTaskPopupStyles.input]}
+        langPlaceholder={languageTexts.words.description}
+        style={addTaskPopupStyles.input}
       />
       {/* <ScrollView
         style={[addTaskPopupStyles.foldersContainer]}

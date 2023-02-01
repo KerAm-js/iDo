@@ -44,7 +44,7 @@ export const scheduleTaskExpiration = (
 
       if (!isCompletedInTime && task.time <= currTime) {
         LocalDB.setTaskExpiration(task.id);
-        if (task.isRegular) {
+        if (task.isRegular && !task.completionTime) {
           addRegularTask(dispatch, task);
         }
         if (isInit) {
@@ -78,7 +78,7 @@ export const scheduleTaskExpiration = (
             if (
               currentTask.isRegular &&
               isTaskNotUpdated &&
-              !currentTask.isCompleted
+              !currentTask.completionTime
             ) {
               addRegularTask(dispatch, currentTask);
             }
@@ -312,7 +312,7 @@ export const chooseTaskToEditAction =
     });
   };
 
-export const checkNotificationForDisabling = async (
+export const checkNotificationDisabling = async (
   task: TaskType,
   isCompleted: number
 ): Promise<string | undefined> => {
@@ -342,7 +342,7 @@ export const completeTaskAction =
         : new Date().valueOf() > task.time
         ? 1
         : 0;
-      const notificationId = await checkNotificationForDisabling(
+      const notificationId = await checkNotificationDisabling(
         task,
         isCompleted
       );

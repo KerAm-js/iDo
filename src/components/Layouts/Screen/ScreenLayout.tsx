@@ -1,15 +1,14 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import { useNavigation, useTheme } from "@react-navigation/native";
-import { Animated, StyleSheet, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import { Animated, View } from "react-native";
 import { screenLayoutStyles } from "./styles";
 import { ScreenLayoutProps } from "./types";
 import { subTitle16, textGrey } from "../../../styles/global/texts";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { BlurView } from "expo-blur";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { headerTitleStyle } from "../../../styles/header";
 import LangText from "../../UI/LangText/LangText";
 import { LanguageType } from "../../../redux/types/prefs";
+import ThemeHandler from "./ThemeHandler";
 
 const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
   ({
@@ -21,7 +20,6 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
     onUnmount,
     children,
   }) => {
-    const theme = useTheme();
     const [headerShown, setHeaderShown] = useState(false);
     const headerHeight = useHeaderHeight();
     const tabBarHeight = useBottomTabBarHeight();
@@ -40,18 +38,6 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
     const translateX = scrollY.interpolate({
       inputRange: [-100, 0],
       outputRange: [12, 0],
-      extrapolate: "clamp",
-    });
-
-    const headerBlurBackgroundOpacity = scrollY.interpolate({
-      inputRange: [66, 76],
-      outputRange: [0, 1],
-      extrapolate: "clamp",
-    });
-
-    const headerBackgroundOpacity = scrollY.interpolate({
-      inputRange: [75.5, 76],
-      outputRange: [1, 0],
       extrapolate: "clamp",
     });
 
@@ -102,49 +88,6 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
       };
     }, []);
 
-    useEffect(() => {
-      navigation.setOptions({
-        headerStyle: { opacity: headerOpactiy },
-        headerTitleStyle: {
-          ...headerTitleStyle,
-          color: theme.colors.text,
-          transform: [{ translateY: titleTranslationY }],
-        },
-        // headerRight: () => HeadingRight,
-        headerBackground: () => (
-          <View
-            style={[
-              StyleSheet.absoluteFill,
-              { position: "absolute", overflow: "hidden" },
-            ]}
-          >
-            <Animated.View
-              style={[
-                StyleSheet.absoluteFill,
-                {
-                  opacity: headerBackgroundOpacity,
-                  backgroundColor: theme.colors.background,
-                  position: "absolute",
-                },
-              ]}
-            />
-            <Animated.View
-              style={[
-                StyleSheet.absoluteFill,
-                { opacity: headerBlurBackgroundOpacity, position: "absolute" },
-              ]}
-            >
-              <BlurView
-                tint={theme.dark ? "dark" : "default"}
-                intensity={75}
-                style={[StyleSheet.absoluteFill]}
-              />
-            </Animated.View>
-          </View>
-        ),
-      });
-    }, [theme]);
-
     return (
       <Animated.ScrollView
         showsVerticalScrollIndicator={false}
@@ -167,6 +110,11 @@ const ScreenLayout: FC<ScreenLayoutProps> = React.memo(
           },
         ]}
       >
+        <ThemeHandler
+          scrollY={scrollY}
+          headerOpacity={headerOpactiy}
+          titleTranslationY={titleTranslationY}
+        />
         <View style={screenLayoutStyles.headingContainer}>
           <View style={screenLayoutStyles.titleContainer}>
             <Animated.View

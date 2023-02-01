@@ -1,3 +1,4 @@
+import { Animated } from "react-native";
 import {
   LangObjectType,
   TextGetterType,
@@ -11,4 +12,10 @@ export type ScreenLayoutProps = {
   onMount?: () => void;
   onUnmount?: () => void;
   subtitleComponent?: JSX.Element;
+};
+
+export type ThemeHandlerPropTypes = {
+  scrollY: Animated.Value;
+  headerOpacity: Animated.Value;
+  titleTranslationY: Animated.Value;
 };

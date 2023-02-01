@@ -2,7 +2,6 @@ import React, { FC } from "react";
 import { SvgXml } from "react-native-svg";
 import { circleButtonStyles } from "./styles";
 import { circleButtonProps } from "./types";
-import { LinearGradient } from "expo-linear-gradient";
 import { buttonColors, textColors } from "../../../../styles/global/colors";
 import AnimatedButton from "../../../Layouts/AnimatedButton/AnimatedButton";
 import { View } from "react-native";

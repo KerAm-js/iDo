@@ -7,27 +7,25 @@ import PrefsNavigator from "../Stack/Prefs/PrefsNavigator";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
-const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
-  ({ openAddTaskModal, openLanguageModal }) => {
+const TabNavigator: FC<TabNavigatorPropTypes> = ({
+  openAddTaskModal,
+  openLanguageModal,
+}) => {
+  const RenderPrefsNavigator = () => {
+    return <PrefsNavigator openLanguageModal={openLanguageModal} />;
+  };
 
-    const RenderPrefsNavigator = () => {
-      return <PrefsNavigator openLanguageModal={openLanguageModal} />;
-    }
-
-    return (
-      <Tab.Navigator
-        tabBar={(props) => (
-          <TabBar onBigButtonClick={openAddTaskModal} {...props} />
-        )}
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Tab.Screen
-          name="Home"
-          component={HomeNavigator}
-        />
-        {/* <Tab.Screen
+  return (
+    <Tab.Navigator
+      tabBar={(props) => (
+        <TabBar onBigButtonClick={openAddTaskModal} {...props} />
+      )}
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <Tab.Screen name="Home" component={HomeNavigator} />
+      {/* <Tab.Screen
         name="Folders"
         component={Folders}
         options={{ title: "Папки" }}
@@ -37,13 +35,9 @@ const TabNavigator: FC<TabNavigatorPropTypes> = React.memo(
         component={Stats}
         options={{ title: "Статистика" }}
       /> */}
-        <Tab.Screen
-          name="Prefs"
-          component={RenderPrefsNavigator}
-        />
-      </Tab.Navigator>
-    );
-  }
-);
+      <Tab.Screen name="Prefs" component={RenderPrefsNavigator} />
+    </Tab.Navigator>
+  );
+};
 
-export default TabNavigator;
+export default React.memo(TabNavigator);

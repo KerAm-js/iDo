@@ -10,7 +10,6 @@ import { repeat } from "../../../../assets/icons/repeat";
 import { folderSelector } from "../../../redux/selectors/folderSelector";
 import { store } from "../../../redux/store";
 import { LanguageType } from "../../../redux/types/prefs";
-import { TaskType } from "../../../redux/types/task";
 import { regularBorderRadius } from "../../../styles/global/borderRadiuses";
 import { textColors } from "../../../styles/global/colors";
 import {

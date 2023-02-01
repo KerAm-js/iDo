@@ -3,14 +3,13 @@ import { createStackNavigator } from "@react-navigation/stack";
 import React from "react";
 import { View } from "react-native";
 import { title18 } from "../../../../styles/global/texts";
-import CalendarScreen from "../../../Screens/Home/Calendar";
+import CalendarScreen from "../../../Screens/Home/Calendar/Calendar";
 import Home from "../../../Screens/Home/Home";
 import { HomeStackNavigatorParamsList } from "./types";
 
 const NativaStack = createStackNavigator<HomeStackNavigatorParamsList>();
 
 const HomeNavigator = () => {
-  const { colors } = useTheme();
   return (
     <NativaStack.Navigator
       screenOptions={{
@@ -31,9 +30,6 @@ const HomeNavigator = () => {
           headerTransparent: false,
           headerShadowVisible: false,
           headerBackImage: () => <View />,
-          headerStyle: {
-            backgroundColor: colors.background,
-          },
         }}
       >
         <NativaStack.Screen

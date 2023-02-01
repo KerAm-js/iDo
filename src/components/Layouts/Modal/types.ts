@@ -7,5 +7,5 @@ export type ModalLayoutPropType = {
 }
 
 export type BackdropPropType = {
-  style?: ViewStyle
+  opacity: { value: number }
 }

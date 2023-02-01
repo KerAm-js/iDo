@@ -1,8 +1,10 @@
+import { LangObjectType } from './../../../types/global/LangObject';
 import React from "react";
 import { LayoutChangeEvent, TextProps, ViewProps, TextInputProps } from "react-native";
 
 export interface ThemeInputPropType extends TextInputProps {
-  reference?: {current: any }
+  reference?: {current: any },
+  langPlaceholder?: LangObjectType;
 }
 
 export interface ThemeTextPropType extends TextProps {

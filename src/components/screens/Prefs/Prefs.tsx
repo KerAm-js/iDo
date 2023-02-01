@@ -25,7 +25,6 @@ import { setDefaultNewTaskDataAction } from "../../../redux/actions/taskActions"
 import { bell } from "../../../../assets/icons/bell";
 import { appStore } from "../../../../assets/icons/appStore";
 import { Linking, View } from "react-native";
-import { store } from "../../../redux/store";
 
 const PrefsContent = ({
   openLanguageModal,
@@ -49,7 +48,7 @@ const PrefsContent = ({
     }
     dispatch(setAutoReminderAction(!autoReminder));
     dispatch(setDefaultNewTaskDataAction(!autoReminder));
-  }, []);
+  }, [autoReminder]);
 
   const rateApp = () => {
     const itunesItemId = 1604538068;
