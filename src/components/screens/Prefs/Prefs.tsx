@@ -24,7 +24,8 @@ import { presentNotification } from "../../../native/notifications";
 import { setDefaultNewTaskDataAction } from "../../../redux/actions/taskActions";
 import { bell } from "../../../../assets/icons/bell";
 import { appStore } from "../../../../assets/icons/appStore";
-import { Linking, View } from "react-native";
+import { Linking, Text, View } from "react-native";
+import { text16, textGrey } from "../../../styles/global/texts";
 
 const PrefsContent = ({
   openLanguageModal,
@@ -58,7 +59,7 @@ const PrefsContent = ({
   };
 
   return (
-    <View>
+    <View style={{ height: "100%" }}>
       <PrefItem
         type="checking"
         onPress={openLanguageModal}
@@ -86,12 +87,20 @@ const PrefsContent = ({
         iconXml={appStore(themeColors[theme].colors.text)}
         onPress={rateApp}
       />
-      <PrefItem
-        type="info"
-        title={languageTexts.words.version}
-        iconXml={version(themeColors[theme].colors.text)}
-        state={languageTexts.words.beta[language] + " " + appJson.expo.version}
-      />
+      <Text
+        style={[
+          text16,
+          textGrey,
+          {
+            textAlign: "center",
+            width: "100%",
+            position: "absolute",
+            bottom: 0,
+          },
+        ]}
+      >
+        {languageTexts.words.version[language] + " " + appJson.expo.version}
+      </Text>
     </View>
   );
 };
