@@ -1,13 +1,14 @@
 import { StyleSheet } from "react-native";
 import { buttonColors } from "../../../styles/global/colors";
-import { text16Input, text17Input, textSemiBold } from "../../../styles/global/texts";
+import { text16Input, textSemiBold, title18 } from "../../../styles/global/texts";
 
 export const addTaskPopupStyles = StyleSheet.create({
   taskInput: {
     paddingHorizontal: 20,
     marginBottom: 15,
-    ...text17Input,
+    ...title18,
     ...textSemiBold,
+    lineHeight: 24,
   },
   input: {
     paddingHorizontal: 20,

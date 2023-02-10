@@ -20,7 +20,7 @@ export const calendarStyles = StyleSheet.create({
     marginTop: 3,
   },
   weekDaysContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 25,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 15

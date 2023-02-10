@@ -1,6 +1,5 @@
 import { useTheme } from "@react-navigation/native";
-import React, { FC, PropsWithChildren } from "react";
-import { ViewStyle } from "react-native";
+import React, { PropsWithChildren } from "react";
 import {
   SquircleParams,
   SquircleView,

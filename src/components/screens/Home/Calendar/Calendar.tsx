@@ -9,7 +9,10 @@ import {
   setDefaultNewTaskDataAction,
   chooseCalendarDate,
 } from "../../../../redux/actions/taskActions";
-import { getPositions, getTasks } from "../../../../redux/selectors/taskSelector";
+import {
+  getPositions,
+  getTasks,
+} from "../../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../../redux/types/appDispatch";
 import { TaskType } from "../../../../redux/types/task";
 import { ListObject } from "../../../../types/global/ListObject";
@@ -17,6 +20,7 @@ import { CALENDAR_DAY } from "../../../../utils/constants/periods";
 import { isTheSameDate } from "../../../../utils/date";
 import Calendar from "../../../UI/Calendar/Calendar";
 import Section from "../../../UI/Section/Section";
+import ThemeBorder from "../../../UI/Theme/Border/ThemeBorder";
 import Options from "./Options";
 
 const CalendarScreen = () => {
@@ -54,6 +58,8 @@ const CalendarScreen = () => {
     }
   });
 
+  const borderStyle = { width: "100%", height: 0.5, marginTop: 5 };
+
   return (
     <View>
       <Calendar
@@ -62,6 +68,7 @@ const CalendarScreen = () => {
         setGlobalTitle={updateScreenTitle}
         pastDatesShown
       />
+      <ThemeBorder style={borderStyle} />
       <Options />
       <ScrollView
         showsVerticalScrollIndicator={false}

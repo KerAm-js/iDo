@@ -19,7 +19,7 @@ import Animated, {
 import { buttonColors, themeColors } from "../../../../styles/global/colors";
 import { Audio } from "expo-av";
 import { Sound } from "expo-av/build/Audio";
-import ThemeSquircle from "../../ThemeSquircle/ThemeSquircle";
+import ThemeSquircle from "../../Theme/SquircleView/ThemeSquircle";
 
 const CheckButton: FC<propType> = ({ isCompleted, onClick }) => {
   const [sound, setSound] = useState<Sound>();

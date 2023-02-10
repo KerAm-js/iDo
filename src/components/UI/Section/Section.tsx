@@ -34,6 +34,7 @@ import { saveSectionVisibilityToAS } from "../../../backend/asyncStorage/section
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { taskListToObject } from "../../../utils/section/positionsObject";
 import LangText from "../LangText/LangText";
+import { getIsTaskAddingAnimated } from "../../../redux/selectors/taskSelector";
 
 const TaskMargin = 8;
 const TaskHeight = 58 + TaskMargin;
@@ -49,6 +50,7 @@ const Section: FC<SectionProps> = ({
   disableAnimationsTrigger,
 }) => {
   const dispatch: AppDispatch = useDispatch();
+  const isInsertingAnimated = useSelector(getIsTaskAddingAnimated);
   const [sortedTasks, completedTasksLength] = sortTasksAndUpdatePositions(
     list,
     initPositions
@@ -319,6 +321,7 @@ const Section: FC<SectionProps> = ({
             return (
               <MovableItem
                 key={item.id}
+                isInsertingAnimated={isInsertingAnimated}
                 index={sortedTasks.findIndex((task) => task.id === item.id)}
                 positions={positions}
                 updatePositions={updatePositions}

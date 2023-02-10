@@ -25,6 +25,7 @@ import { addTaskPopupStyles } from "./styles";
 import { AddTaskPopupPropType } from "./types";
 import { repeat } from "../../../../assets/icons/repeat";
 import { store } from "../../../redux/store";
+import { title18 } from "../../../styles/global/texts";
 
 const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   visible,

@@ -34,13 +34,13 @@ import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { useDispatch, useSelector } from "react-redux";
 import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
-import { getIsTaskAddingAnimated } from "../../../redux/selectors/taskSelector";
 
 const MovableItem: FC<MovableItemProps> = ({
   id,
   index,
   positions,
   updatePositions,
+  isInsertingAnimated,
   opacity,
   itemHeight,
   sectionTitle,
@@ -50,7 +50,6 @@ const MovableItem: FC<MovableItemProps> = ({
   upperBound,
 }) => {
   const [isDragged, setIsDragged] = useState(false);
-  const isInsertingAnimated = useSelector(getIsTaskAddingAnimated);
   const dispatch: AppDispatch = useDispatch();
   const { width: SCREEN_WIDTH } = Dimensions.get("screen");
   const translateThreshold = SCREEN_WIDTH * -0.4;

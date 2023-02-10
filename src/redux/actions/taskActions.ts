@@ -158,7 +158,7 @@ export const scheduleReminder = async (
   }
 };
 
-export const addRegularTask = async (dipatch: Dispatch, task: TaskType) => {
+export const addRegularTask = async (dipatch: Dispatch, task: TaskType, isTaskAddingAnimated?: boolean) => {
   try {
     const time = getNextDate(task.time);
     const remindTime = task.remindTime
@@ -173,7 +173,7 @@ export const addRegularTask = async (dipatch: Dispatch, task: TaskType) => {
       isCompleted: 0,
       isExpired: time > new Date().valueOf() ? 0 : 1,
     };
-    await addTask(dipatch, regularTask, false);
+    await addTask(dipatch, regularTask, !!isTaskAddingAnimated);
   } catch (error) {
     console.log("addRegularTask");
   }
@@ -204,6 +204,9 @@ export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
     const addedTask: TaskType = { ...task };
     await addTask(dispath, addedTask, true);
     if (addedTask.isRegular) {
+      if (addedTask.isExpired) {
+        setTimeout(() => addRegularTask(dispath, addedTask), 500)
+      }
       const { language } = store.getState().prefs;
       const { title, body } = languageTexts.notifications.regularTaskIsAdded;
       presentNotification(
@@ -260,7 +263,7 @@ export const deleteTaskAction =
       if (task.notificationId) {
         await deleteNotification(task.notificationId);
       }
-      if (task.isRegular && !task.isExpired) {
+      if (task.isRegular && !task.isExpired && !task.completionTime) {
         const { title } = languageTexts.notifications.regularTaskRemoved;
         presentNotification(title[language], "", `"${task.task}"`);
       }

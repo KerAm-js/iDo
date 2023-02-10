@@ -14,6 +14,7 @@ export type SectionProps = {
 
 export type MovableItemProps = {
   taskObject: TaskType;
+  isInsertingAnimated?: boolean;
   id: number;
   index: number;
   positions: { value: ListObject };
