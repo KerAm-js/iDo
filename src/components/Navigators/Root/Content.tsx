@@ -8,6 +8,7 @@ import ModalLayout from "../../Layouts/Modal/ModalLayout";
 import AddTaskPopup from "../../Popups/AddTaskPopup/AddTaskPopup";
 import CalendarPopup from "../../Popups/CalendarPopup/CalendarPopup";
 import LanguagePopup from "../../Popups/LanguagePopup/LanguagePopup";
+import ReminderPopup from "../../Popups/ReminderPopup/ReminderPopup";
 import TabNavigator from "../Tab/TabNavigator";
 
 const RootContent = () => {
@@ -94,12 +95,11 @@ const RootContent = () => {
         />
       </ModalLayout>
       <ModalLayout visible={reminderModalVisible} close={closeReminderModal}>
-        <CalendarPopup
+        <ReminderPopup
           key="taskReminder"
           visible={reminderModalVisible}
           setDefaultsFlag={didAllAddTaskModalsClosed}
           closePopup={closeReminderModal}
-          isReminderChoosing
           hasDeleteButton
           title={languageTexts.popupTitles.reminder}
         />

@@ -194,8 +194,7 @@ const MovableItem: FC<MovableItemProps> = ({
     translateX.value = translationX;
     if (
       translationX < translateThreshold &&
-      trashIconOpacity.value === 0 &&
-      !taskObject.isCompleted
+      trashIconOpacity.value === 0
     ) {
       runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
     }
@@ -240,7 +239,7 @@ const MovableItem: FC<MovableItemProps> = ({
     if (isDragged) {
       onFinishGestureEvent(_, context);
     }
-    if (translateX.value < translateThreshold && !taskObject.isCompleted) {
+    if (translateX.value < translateThreshold) {
       translateX.value = withSpring(-SCREEN_WIDTH);
       trashIconOpacity.value = withTiming(
         0,
@@ -276,7 +275,7 @@ const MovableItem: FC<MovableItemProps> = ({
   });
 
   const onLongPress = () => {
-    if (!isDragged) {
+    if (!isDragged && !taskObject.isCompleted) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       setIsDragged(true);
       zIndex.value = 10 * upperBound.current;
@@ -352,21 +351,12 @@ const MovableItem: FC<MovableItemProps> = ({
       <Animated.View
         style={[trashIconStyleR, movableItemStyles.trashIconContainer]}
       >
-        {taskObject.isCompleted ? (
-          <SvgXml
-            xml={trash(textColors.grey)}
-            width={movableItemStyles.trashIcon.width}
-            height={movableItemStyles.trashIcon.height}
-            style={movableItemStyles.trashIcon}
-          />
-        ) : (
-          <SvgXml
-            xml={trash(textColors.red)}
-            width={movableItemStyles.trashIcon.width}
-            height={movableItemStyles.trashIcon.height}
-            style={movableItemStyles.trashIcon}
-          />
-        )}
+        <SvgXml
+          xml={trash(textColors.red)}
+          width={movableItemStyles.trashIcon.width}
+          height={movableItemStyles.trashIcon.height}
+          style={movableItemStyles.trashIcon}
+        />
       </Animated.View>
       <Task
         rStyle={taskStyleR}

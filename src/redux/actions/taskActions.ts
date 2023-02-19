@@ -102,7 +102,8 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
     await deleteAllNotifications();
     const notificationsUpdatedTasks = await Promise.all(
       tasks.map(async (task) => {
-        const isExpired = task.isExpired || scheduleTaskExpiration(task, dispatch, true);
+        const isExpired =
+          task.isExpired || scheduleTaskExpiration(task, dispatch, true);
         if (task.isCompleted) {
           return task;
         }
@@ -158,7 +159,11 @@ export const scheduleReminder = async (
   }
 };
 
-export const addRegularTask = async (dipatch: Dispatch, task: TaskType, isTaskAddingAnimated?: boolean) => {
+export const addRegularTask = async (
+  dipatch: Dispatch,
+  task: TaskType,
+  isTaskAddingAnimated?: boolean
+) => {
   try {
     const time = getNextDate(task.time);
     const remindTime = task.remindTime
@@ -184,18 +189,22 @@ export const addTask = async (
   addedTask: TaskType,
   isTaskAddingAnimated?: boolean
 ) => {
-  const taskId = await LocalDB.addTask(addedTask);
-  if (taskId) {
-    addedTask.id = taskId;
-    scheduleTaskExpiration(addedTask, dispath);
-    const notificationId = await scheduleReminder(addedTask);
-    addedTask.notificationId = notificationId;
-    dispath({
-      type: ADD_TASK,
-      task: addedTask,
-      isTaskAddingAnimated,
-      autoReminder: getAutoReminderSetting(),
-    });
+  try {
+    const taskId = await LocalDB.addTask(addedTask);
+    if (taskId) {
+      addedTask.id = taskId;
+      scheduleTaskExpiration(addedTask, dispath);
+      const notificationId = await scheduleReminder(addedTask);
+      addedTask.notificationId = notificationId;
+      dispath({
+        type: ADD_TASK,
+        task: addedTask,
+        isTaskAddingAnimated,
+        autoReminder: getAutoReminderSetting(),
+      });
+    }
+  } catch (error) {
+    console.log('addTask', error)
   }
 };
 
@@ -205,7 +214,7 @@ export const addTaskAction = (task: TaskType) => async (dispath: Dispatch) => {
     await addTask(dispath, addedTask, true);
     if (addedTask.isRegular) {
       if (addedTask.isExpired) {
-        setTimeout(() => addRegularTask(dispath, addedTask), 500)
+        setTimeout(() => addRegularTask(dispath, addedTask), 500);
       }
       const { language } = store.getState().prefs;
       const { title, body } = languageTexts.notifications.regularTaskIsAdded;
