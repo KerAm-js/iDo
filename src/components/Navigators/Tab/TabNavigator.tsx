@@ -7,18 +7,11 @@ import PrefsNavigator from "../Stack/Prefs/PrefsNavigator";
 
 const Tab = createBottomTabNavigator<rootTabNavigatorParamList>();
 
-const TabNavigator: FC<TabNavigatorPropTypes> = ({
-  openAddTaskModal,
-  openLanguageModal,
-}) => {
-  const RenderPrefsNavigator = () => {
-    return <PrefsNavigator openLanguageModal={openLanguageModal} />;
-  };
-
+const TabNavigator: FC<TabNavigatorPropTypes> = () => {
   return (
     <Tab.Navigator
       tabBar={(props) => (
-        <TabBar onBigButtonClick={openAddTaskModal} {...props} />
+        <TabBar {...props} />
       )}
       screenOptions={{
         headerShown: false,
@@ -35,9 +28,9 @@ const TabNavigator: FC<TabNavigatorPropTypes> = ({
         component={Stats}
         options={{ title: "Статистика" }}
       /> */}
-      <Tab.Screen name="Prefs" component={RenderPrefsNavigator} />
+      <Tab.Screen name="Prefs" component={PrefsNavigator} />
     </Tab.Navigator>
   );
 };
 
-export default React.memo(TabNavigator);
+export default TabNavigator;

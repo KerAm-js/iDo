@@ -32,8 +32,8 @@ import { TaskType } from "../../../redux/types/task";
 import Task from "../Task/Task";
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { useDispatch, useSelector } from "react-redux";
-import { chooseTaskToEditAction } from "../../../redux/actions/taskActions";
+import { useDispatch } from "react-redux";
+import { setTaskToEditAction } from "../../../redux/actions/popupsActions";
 
 const MovableItem: FC<MovableItemProps> = ({
   id,
@@ -192,10 +192,7 @@ const MovableItem: FC<MovableItemProps> = ({
     }
 
     translateX.value = translationX;
-    if (
-      translationX < translateThreshold &&
-      trashIconOpacity.value === 0
-    ) {
+    if (translationX < translateThreshold && trashIconOpacity.value === 0) {
       runOnJS(Haptics.impactAsync)(Haptics.ImpactFeedbackStyle.Light);
     }
     trashIconOpacity.value = withTiming(
@@ -307,7 +304,7 @@ const MovableItem: FC<MovableItemProps> = ({
   };
 
   const openEditTaskPopup = () =>
-    dispatch(chooseTaskToEditAction({ ...taskObject }));
+    dispatch(setTaskToEditAction({ ...taskObject }));
 
   return (
     <Animated.View

@@ -2,16 +2,11 @@ import React, { FC, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { languageIcon } from "../../../../assets/icons/languages";
 import { themeIcon } from "../../../../assets/icons/theme";
-import { version } from "../../../../assets/icons/version";
 import {
   setAutoReminderAction,
   setThemeAction,
 } from "../../../redux/actions/prefsActions";
-import {
-  getAutoReminder,
-  getLanguage,
-  getTheme,
-} from "../../../redux/selectors/prefsSelectors";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { themeColors } from "../../../styles/global/colors";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -21,21 +16,18 @@ import { PrefsPropType } from "./types";
 import appJson from "../../../../app.json";
 import { setStatusBarStyle } from "expo-status-bar";
 import { presentNotification } from "../../../native/notifications";
-import { setDefaultNewTaskDataAction } from "../../../redux/actions/taskActions";
 import { bell } from "../../../../assets/icons/bell";
 import { appStore } from "../../../../assets/icons/appStore";
 import { Linking, Text, View } from "react-native";
 import { text16, textGrey } from "../../../styles/global/texts";
+import {
+  setDefaultTaskDataAction,
+  setLanguagePopupVisibleAction,
+} from "../../../redux/actions/popupsActions";
 
-const PrefsContent = ({
-  openLanguageModal,
-}: {
-  openLanguageModal: () => void;
-}) => {
+const PrefsContent = () => {
   const dispatch: AppDispatch = useDispatch();
-  const language = useSelector(getLanguage);
-  const theme = useSelector(getTheme);
-  const autoReminder = useSelector(getAutoReminder);
+  const { language, theme, autoReminder } = useSelector(prefsSelector);
 
   const toggleTheme = () => {
     dispatch(setThemeAction(theme === "dark" ? "light" : "dark"));
@@ -48,7 +40,7 @@ const PrefsContent = ({
       presentNotification(title[language], "", body[language]);
     }
     dispatch(setAutoReminderAction(!autoReminder));
-    dispatch(setDefaultNewTaskDataAction(!autoReminder));
+    dispatch(setDefaultTaskDataAction(!autoReminder));
   }, [autoReminder]);
 
   const rateApp = () => {
@@ -56,6 +48,10 @@ const PrefsContent = ({
     Linking.openURL(
       `itms-apps://itunes.apple.com/app/viewContentsUserReviews/id${itunesItemId}?action=write-review`
     );
+  };
+
+  const openLanguageModal = () => {
+    dispatch(setLanguagePopupVisibleAction(true));
   };
 
   return (
@@ -105,12 +101,12 @@ const PrefsContent = ({
   );
 };
 
-const Prefs: FC<PrefsPropType> = React.memo(({ openLanguageModal }) => {
+const Prefs: FC<PrefsPropType> = () => {
   return (
     <ScreenLayout title={languageTexts.screenTitles.prefs}>
-      <PrefsContent openLanguageModal={openLanguageModal} />
+      <PrefsContent />
     </ScreenLayout>
   );
-});
+};
 
 export default Prefs;

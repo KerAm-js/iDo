@@ -5,22 +5,23 @@ import { BlurView } from "expo-blur";
 import { useTheme } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 import { themeColors } from "../../../styles/global/colors";
-import { TabBarPropTypes } from "./types";
 import CircleButton from "../buttons/CircleButton/CircleButton";
 import { plus } from "../../../../assets/icons/plus";
 import TabsRender from "./TabsRender";
 import { tabBarStyles } from "./styles";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../../../redux/types/appDispatch";
+import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
+import { setTaskPopupVisibleAction } from "../../../redux/actions/popupsActions";
 
-const TabBar: FC<TabBarPropTypes> = ({
-  state,
-  descriptors,
-  navigation,
-  onBigButtonClick,
-}) => {
+const TabBar: FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const { dark } = useTheme();
   const { bottom } = useSafeAreaInsets();
+  const dispatch: AppDispatch = useDispatch();
   const onCircleButtonClick = () => {
-    setTimeout(onBigButtonClick, 200);
+    setTimeout(() => {
+      dispatch(setTaskPopupVisibleAction(true));
+    }, 200);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
   const middleIndex = Math.round(state.routes.length / 2);
@@ -42,7 +43,11 @@ const TabBar: FC<TabBarPropTypes> = ({
         number={1}
       />
       <View style={tabBarStyles.circleButtonContainer}>
-        <CircleButton xml={plus(themeColors.dark.colors.text)} onClick={onCircleButtonClick} size="big" />
+        <CircleButton
+          xml={plus(themeColors.dark.colors.text)}
+          onClick={onCircleButtonClick}
+          size="big"
+        />
       </View>
       <TabsRender
         routes={state.routes.slice(middleIndex)}

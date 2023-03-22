@@ -7,18 +7,11 @@ import Animated, {
 } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { clock } from "../../../../assets/icons/clock";
-import {
-  updateNewTaskRemindTimeAction,
-  updateNewTaskTimeAction,
-} from "../../../redux/actions/taskActions";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { TimeType } from "../../../redux/types/task";
 import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
-import {
-  extractCalendarState,
-  toLocaleStateString,
-} from "../../../utils/date";
+import { extractCalendarState, toLocaleStateString } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import BottomPopup from "../../Layouts/BottomPopup/BottomPopup";
 import Calendar from "../../UI/Calendar/Calendar";
@@ -35,19 +28,23 @@ import {
   TextGetterType,
 } from "../../../types/global/LangObject";
 import { LanguageType } from "../../../redux/types/prefs";
+import ModalLayout from "../../Layouts/Modal/ModalLayout";
+import { popupsSelector } from "../../../redux/selectors/popupsSelector";
+import {
+  setTaskRemindTimeAction,
+  setTaskTimeAction,
+  setTimePopupVisibleAction,
+} from "../../../redux/actions/popupsActions";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 
-const CalendarPopup: FC<CalendarPopupPropType> = ({
-  visible,
-  title,
-  handleKeyboard,
-  setDefaultsFlag,
-  hasDeleteButton,
-  closePopup,
-}) => {
+const CalendarPopup: FC<CalendarPopupPropType> = ({ hasDeleteButton }) => {
   const theme = useTheme();
   const dispatch: AppDispatch = useDispatch();
-  const { taskToEdit, newTaskData, calendarChoosedDate } =
-    useSelector(taskStateSelector);
+  const { autoReminder } = useSelector(prefsSelector);
+  const { addTaskPopupVisibilities, taskToEdit, taskData } =
+    useSelector(popupsSelector);
+  const visible = !!addTaskPopupVisibilities?.time;
+  const { calendarChoosedDate } = useSelector(taskStateSelector);
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime, onTimeChange, isTimeValid, isTimeExpired] =
     useTimeValidation(date);
@@ -143,15 +140,15 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
 
     const timeType: TimeType = time ? "time" : "day";
     const reminderTime: number =
-      state === CHOOSE || (!state && newTaskData.isRegular && isTimeCorrect)
+      state === CHOOSE || (!state && taskData?.isRegular && isTimeCorrect)
         ? dateCopy.setHours(hours, minutes, 0, 0)
         : dateCopy.valueOf();
     const timeValue: number = isTimeCorrect
       ? dateCopy.setHours(hours, minutes, 0, 0)
       : dateCopy.setHours(23, 59, 59, 999);
 
-    if (timeValue.valueOf() !== newTaskData.time && state) {
-      dispatch(updateNewTaskTimeAction(timeValue, timeType));
+    if (timeValue.valueOf() !== taskData?.time && state) {
+      dispatch(setTaskTimeAction(timeValue, timeType, autoReminder));
     }
   };
 
@@ -160,7 +157,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
       Keyboard.dismiss();
     }
     addTime();
-    closePopup();
+    close();
   };
 
   const onItemClick = (newState: string, newDate?: Date) => {
@@ -209,19 +206,19 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
     if (
       visible &&
       !taskToEdit &&
-      newTaskData.time &&
-      newTaskData.timeType &&
+      taskData?.time &&
+      taskData?.timeType &&
       calendarChoosedDate
     ) {
-      setDefaults(new Date(newTaskData.time), newTaskData.timeType);
+      setDefaults(new Date(taskData?.time), taskData?.timeType);
     }
   }, [visible]);
 
   useEffect(() => {
-    if (newTaskData.timeType === "day") {
+    if (taskData?.timeType === "day") {
       setTime("");
     }
-  }, [newTaskData]);
+  }, [taskData]);
 
   useEffect(() => {
     if (taskToEdit) {
@@ -236,108 +233,112 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({
   }, [calendarShown]);
 
   useEffect(() => {
-    if (!visible && setDefaultsFlag.current) {
-      setDefaults();
-    }
-  }, [setDefaultsFlag.current]);
+    if (!addTaskPopupVisibilities) setDefaults();
+  }, [addTaskPopupVisibilities]);
 
   const isReminderSetted =
     state !== "" || time !== "" || !!taskToEdit?.remindTime;
 
   const deleteButtonHandler = () => {
     if (taskToEdit?.remindTime) {
-      dispatch(updateNewTaskRemindTimeAction(undefined));
+      dispatch(setTaskRemindTimeAction(undefined));
     }
     setDefaults();
   };
 
+  const close = () => {
+    dispatch(setTimePopupVisibleAction(false));
+  };
+
   return (
-    <BottomPopup
-      visible={visible}
-      title={title}
-      handleKeyboard={handleKeyboard}
-      rightButtonTitle={
-        hasDeleteButton && isReminderSetted && languageTexts.words.delete
-      }
-      rightButtonColor={textColors.red}
-      onRightButtonPress={
-        hasDeleteButton && isReminderSetted && deleteButtonHandler
-      }
-    >
-      <Animated.View style={[calendarPopupStyles.container, containerStyle]}>
-        <Animated.View style={[calendarPopupStyles.screen, scrollViewsStyle]}>
-          <DateCheckItem
-            title={languageTexts.periods[TODAY]}
-            date={currDate}
-            isChecked={state === TODAY}
-            state={TODAY}
-            onPress={onItemClick}
+    <ModalLayout visible={visible} close={close}>
+      <BottomPopup
+        visible={visible}
+        title={languageTexts.popupTitles.dateOfCompletion}
+        handleKeyboard={true}
+        rightButtonTitle={
+          hasDeleteButton && isReminderSetted && languageTexts.words.delete
+        }
+        rightButtonColor={textColors.red}
+        onRightButtonPress={
+          hasDeleteButton && isReminderSetted && deleteButtonHandler
+        }
+      >
+        <Animated.View style={[calendarPopupStyles.container, containerStyle]}>
+          <Animated.View style={[calendarPopupStyles.screen, scrollViewsStyle]}>
+            <DateCheckItem
+              title={languageTexts.periods[TODAY]}
+              date={currDate}
+              isChecked={state === TODAY}
+              state={TODAY}
+              onPress={onItemClick}
+            />
+            <DateCheckItem
+              title={languageTexts.periods[TOMORROW]}
+              date={tomorrowDate}
+              isChecked={state === TOMORROW}
+              state={TOMORROW}
+              onPress={onItemClick}
+            />
+            <DateCheckItem
+              title={chooseItemTitleGetter}
+              isChecked={state === CHOOSE}
+              state={CHOOSE}
+              isToggleCalendarShownComponent
+              onPress={onItemClick}
+            />
+          </Animated.View>
+          <View style={[calendarPopupStyles.screen]}>
+            {calendarShown && (
+              <Animated.View style={[scrollViewsStyle]}>
+                <Calendar
+                  isCardBackgroundColor={true}
+                  date={date}
+                  setDate={onDateItemClick}
+                  pastDatesShown
+                />
+              </Animated.View>
+            )}
+          </View>
+        </Animated.View>
+        <Animated.View
+          style={[formButtonWrapperStyle, calendarPopupStyles.buttonsContainer]}
+        >
+          <FormButton
+            title={timeInputPlaceholder}
+            placeholder="чч:мм"
+            iconXml={clock(
+              isTimeExpired && !taskData?.isRegular && time.length > 0
+                ? textColors.red
+                : isTimeValid
+                ? textColors.blue
+                : textColors.grey
+            )}
+            onBlur={onTimeInputBlur}
+            style={{ marginRight: 10 }}
+            textColor={
+              isTimeExpired && !taskData?.isRegular && time.length > 0
+                ? textColors.red
+                : time.length === 5
+                ? textColors.blue
+                : theme.colors.text
+            }
+            maxLength={5}
+            isInput
+            value={time}
+            onChangeText={onTimeChange}
           />
-          <DateCheckItem
-            title={languageTexts.periods[TOMORROW]}
-            date={tomorrowDate}
-            isChecked={state === TOMORROW}
-            state={TOMORROW}
-            onPress={onItemClick}
-          />
-          <DateCheckItem
-            title={chooseItemTitleGetter}
-            isChecked={state === CHOOSE}
-            state={CHOOSE}
-            isToggleCalendarShownComponent
-            onPress={onItemClick}
+          <FormButton
+            title={
+              calendarShown || keyboardHeight > 0
+                ? languageTexts.words.done
+                : languageTexts.words.save
+            }
+            onPress={onSubmit}
           />
         </Animated.View>
-        <View style={[calendarPopupStyles.screen]}>
-          {calendarShown && (
-            <Animated.View style={[scrollViewsStyle]}>
-              <Calendar
-                isCardBackgroundColor={true}
-                date={date}
-                setDate={onDateItemClick}
-                pastDatesShown
-              />
-            </Animated.View>
-          )}
-        </View>
-      </Animated.View>
-      <Animated.View
-        style={[formButtonWrapperStyle, calendarPopupStyles.buttonsContainer]}
-      >
-        <FormButton
-          title={timeInputPlaceholder}
-          placeholder="чч:мм"
-          iconXml={clock(
-            isTimeExpired && !newTaskData.isRegular && time.length > 0
-              ? textColors.red
-              : isTimeValid
-              ? textColors.blue
-              : textColors.grey
-          )}
-          onBlur={onTimeInputBlur}
-          style={{ marginRight: 10 }}
-          textColor={
-            isTimeExpired && !newTaskData.isRegular && time.length > 0
-              ? textColors.red
-              : time.length === 5
-              ? textColors.blue
-              : theme.colors.text
-          }
-          maxLength={5}
-          isInput
-          value={time}
-          onChangeText={onTimeChange}
-        />
-        <FormButton
-          title={
-            calendarShown || keyboardHeight > 0
-              ? languageTexts.words.done
-              : languageTexts.words.save
-          }
-          onPress={onSubmit}
-        />
-      </Animated.View>
-    </BottomPopup>
+      </BottomPopup>
+    </ModalLayout>
   );
 };
 

@@ -15,8 +15,6 @@ export type TaskState = {
   isTaskAddingAnimated: boolean | undefined;
   positions: ListObject;
   calendarChoosedDate: number | undefined;
-  taskToEdit: TaskType | undefined;
-  newTaskData: TaskData;
 };
 
 export interface TaskAction extends Action {
@@ -25,7 +23,6 @@ export interface TaskAction extends Action {
   timeType: TimeType;
   remindTime: number | undefined;
   notificationId: string;
-  newTaskData: TaskData;
   tasks: Array<TaskType>;
   positions: ListObject;
   newCompletionStatus: number;
@@ -34,9 +31,7 @@ export interface TaskAction extends Action {
   isExpired: number;
   id: number;
   calendarChoosedDate: number | undefined;
-  isRegular: boolean;
   isTaskAddingAnimated: boolean | undefined;
-  autoReminder: boolean;
 }
 
 export interface TaskType {

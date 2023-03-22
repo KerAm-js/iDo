@@ -1,7 +1,3 @@
-import { BottomPopupPropType } from "../../Layouts/BottomPopup/types";
-
-export interface CalendarPopupPropType extends BottomPopupPropType {
+export type CalendarPopupPropType = {
   hasDeleteButton?: boolean,
-  closePopup: () => void,
-  setDefaultsFlag: {current: boolean},
 }

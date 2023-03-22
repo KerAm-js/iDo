@@ -1,15 +1,14 @@
 import { useTheme } from "@react-navigation/native";
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 import { Pressable } from "react-native";
 import Animated, {
   interpolate,
   useAnimatedStyle,
-  withTiming,
 } from "react-native-reanimated";
 import { SvgXml } from "react-native-svg";
 import { useSelector } from "react-redux";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { text12 } from "../../../styles/global/texts";
 import { languageTexts } from "../../../utils/languageTexts";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
@@ -24,7 +23,7 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
   top,
 }) => {
   const { colors } = useTheme();
-  const language = useSelector(getLanguage);
+  const { language } = useSelector(prefsSelector);
 
   const iconStyle = useAnimatedStyle(() => {
     const rotation = interpolate(completedListOpacity.value, [0, 1], [-90, 0]);
@@ -44,7 +43,9 @@ const CompletedMarker: FC<CompletedMarkerPropTypes> = ({
     <Animated.View style={[completedMarkerStyles.container, containerStyle]}>
       <Pressable onPress={onPress}>
         <ThemeView card style={completedMarkerStyles.content}>
-          <ThemeText style={text12}>{languageTexts.words.completed[language]}</ThemeText>
+          <ThemeText style={text12}>
+            {languageTexts.words.completed[language]}
+          </ThemeText>
           <Animated.View style={iconStyle}>
             <SvgXml
               xml={arrowBottom(colors.text)}

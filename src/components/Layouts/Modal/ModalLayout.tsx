@@ -12,7 +12,6 @@ import { ModalLayoutPropType } from "./types";
 
 const ModalLayout: FC<ModalLayoutPropType> = ({ children, visible, close }) => {
   const opacity = useSharedValue(0);
-
   const containerStyle = useAnimatedStyle(() => {
     const zIndex = interpolate(opacity.value, [0, 1], [0, 100]);
     return {

@@ -1,6 +1,6 @@
 import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import * as Haptics from "expo-haptics";
-import { Alert, TextInput, View } from "react-native";
+import { TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { arrowUp } from "../../../../assets/icons/arrowUp";
 import { bell } from "../../../../assets/icons/bell";
@@ -9,9 +9,6 @@ import { penFill } from "../../../../assets/icons/penFill";
 import {
   addTaskAction,
   editTaskAction,
-  setDefaultNewTaskDataAction,
-  setIsNewTaskRegularAction,
-  updateNewTaskTimeAction,
 } from "../../../redux/actions/taskActions";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
@@ -24,19 +21,21 @@ import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { addTaskPopupStyles } from "./styles";
 import { AddTaskPopupPropType } from "./types";
 import { repeat } from "../../../../assets/icons/repeat";
-import { store } from "../../../redux/store";
-import { title18 } from "../../../styles/global/texts";
+import ModalLayout from "../../Layouts/Modal/ModalLayout";
+import { popupsSelector } from "../../../redux/selectors/popupsSelector";
+import {
+  setDefaultTaskDataAction,
+  toggleIsTaskRegularAction,
+  setTaskPopupVisibleAction,
+  setTimePopupVisibleAction,
+  setReminderPopupVisibleAction,
+} from "../../../redux/actions/popupsActions";
 
-const AddTaskPopup: FC<AddTaskPopupPropType> = ({
-  visible,
-  title,
-  handleKeyboard,
-  openCalendar,
-  openReminderModal,
-  setDefaultsFlag,
-}) => {
-  const { taskToEdit, newTaskData, calendarChoosedDate } =
-    useSelector(taskStateSelector);
+const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
+  const { calendarChoosedDate } = useSelector(taskStateSelector);
+  const { addTaskPopupVisibilities, taskToEdit, taskData } =
+    useSelector(popupsSelector);
+  const visible = !!addTaskPopupVisibilities?.task;
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
   const [choosedFolder, setChoosedFolder] = useState<number | undefined>(
@@ -48,7 +47,10 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   const taskInput = useRef<TextInput | null>(null);
 
   const updateTask = useCallback((text: string) => setTask(text), []);
-  const updateDescription = useCallback((text: string) => setDescription(text), []);
+  const updateDescription = useCallback(
+    (text: string) => setDescription(text),
+    []
+  );
 
   const setDefaults = () => {
     setTask("");
@@ -58,13 +60,13 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
 
   const onSubmit = () => {
     const time =
-      newTaskData.time || new Date().setHours(23, 59, 59, 999).valueOf();
-    const timeType = newTaskData.timeType || "day";
-    const remindTime = newTaskData.remindTime;
+      taskData?.time || new Date().setHours(23, 59, 59, 999).valueOf();
+    const timeType = taskData?.timeType || "day";
+    const remindTime = taskData?.remindTime;
     const isExpired = new Date(time) <= new Date();
     if (task.length > 0) {
       dispatch(
-        !!taskToEdit
+        taskToEdit
           ? editTaskAction(
               {
                 id: taskToEdit.id,
@@ -77,24 +79,22 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
                 timeType,
                 isExpired: isExpired ? 1 : 0,
                 remindTime,
-                isRegular: newTaskData.isRegular ? 1 : 0,
+                isRegular: taskData?.isRegular ? 1 : 0,
               },
-              taskToEdit,
+              taskToEdit
             )
-          : addTaskAction(
-              {
-                id: new Date().valueOf(),
-                isCompleted: 0,
-                task,
-                description,
-                folderId: choosedFolder,
-                time,
-                isExpired: isExpired ? 1 : 0,
-                timeType,
-                remindTime,
-                isRegular: newTaskData.isRegular ? 1 : 0,
-              }
-            )
+          : addTaskAction({
+              id: new Date().valueOf(),
+              isCompleted: 0,
+              task,
+              description,
+              folderId: choosedFolder,
+              time,
+              isExpired: isExpired ? 1 : 0,
+              timeType,
+              remindTime,
+              isRegular: taskData?.isRegular ? 1 : 0,
+            })
       );
       setDefaults();
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -105,40 +105,19 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
     setChoosedFolder(choosedFolder === id ? undefined : id);
   };
 
-  const openReminderHandler = () => {
-    const language = store.getState().prefs.language;
-    if (newTaskData.time && newTaskData.timeType) {
-      openReminderModal();
-    } else {
-      Alert.alert(
-        languageTexts.alerts.taskTimeIsNotChoosen.title[language],
-        "",
-        [
-          {
-            text: languageTexts.words.ok[language],
-            style: "default",
-          },
-        ]
-      );
-    }
-  };
-
   const toggleIsTaskRegular = () => {
-    updateFolder(newTaskData.isRegular ? undefined : 2);
-    dispatch(setIsNewTaskRegularAction(!newTaskData.isRegular));
+    updateFolder(taskData?.isRegular ? undefined : 2);
+    dispatch(toggleIsTaskRegularAction());
   };
 
   useEffect(() => {
     if (visible && !taskToEdit) {
       taskInput.current?.focus();
-      if (!newTaskData.time)
-        dispatch(
-          updateNewTaskTimeAction(new Date().setHours(23, 59, 59, 999), "day")
-        );
+      console.log("ok");
     }
-    if (!visible && setDefaultsFlag.current) {
+    if (!visible && !addTaskPopupVisibilities) {
       setDefaults();
-      if (!calendarChoosedDate) dispatch(setDefaultNewTaskDataAction());
+      if (!calendarChoosedDate) dispatch(setDefaultTaskDataAction());
     }
   }, [visible]);
 
@@ -151,13 +130,13 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
   }, [taskToEdit]);
 
   useEffect(() => {
-    if (!!taskToEdit) {
+    if (taskToEdit) {
       const isTaskIsNotEdited =
         task === taskToEdit.task &&
         description === taskToEdit.description &&
-        newTaskData?.time === taskToEdit.time &&
-        newTaskData?.remindTime === taskToEdit.remindTime &&
-        newTaskData?.isRegular === Boolean(taskToEdit.isRegular);
+        taskData?.time === taskToEdit.time &&
+        taskData?.remindTime === taskToEdit.remindTime &&
+        taskData?.isRegular === !!taskToEdit.isRegular;
 
       if (isTaskIsNotEdited || task.length === 0) {
         setCircleButtonDisabled(true);
@@ -171,32 +150,31 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
         setCircleButtonDisabled(true);
       }
     }
-  }, [task, description, choosedFolder, newTaskData, newTaskData.isRegular]);
+  }, [task, description, choosedFolder, taskData, taskData?.isRegular]);
+
+  const close = () => dispatch(setTaskPopupVisibleAction(false));
 
   return (
-    <BottomPopup
-      title={title}
-      visible={visible}
-      handleKeyboard={handleKeyboard}
-    >
-      <ThemeInput
-        value={task}
-        onChangeText={updateTask}
-        multiline
-        maxLength={150}
-        reference={taskInput}
-        langPlaceholder={languageTexts.words.task}
-        style={addTaskPopupStyles.taskInput}
-      />
-      <ThemeInput
-        value={description}
-        onChangeText={updateDescription}
-        multiline
-        maxLength={500}
-        langPlaceholder={languageTexts.words.description}
-        style={addTaskPopupStyles.input}
-      />
-      {/* <ScrollView
+    <ModalLayout visible={visible} close={close}>
+      <BottomPopup visible={visible} handleKeyboard={true}>
+        <ThemeInput
+          value={task}
+          onChangeText={updateTask}
+          multiline
+          maxLength={150}
+          reference={taskInput}
+          langPlaceholder={languageTexts.words.task}
+          style={addTaskPopupStyles.taskInput}
+        />
+        <ThemeInput
+          value={description}
+          onChangeText={updateDescription}
+          multiline
+          maxLength={500}
+          langPlaceholder={languageTexts.words.description}
+          style={addTaskPopupStyles.input}
+        />
+        {/* <ScrollView
         style={[addTaskPopupStyles.foldersContainer]}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -213,53 +191,53 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = ({
           />
         ))}
       </ScrollView> */}
-      <View style={[addTaskPopupStyles.buttonsContainer]}>
-        <View style={[addTaskPopupStyles.buttonsGroup]}>
-          <IconButton
-            xml={clock(
-              (newTaskData.time && newTaskData.timeType) ||
-                (taskToEdit && taskToEdit.time)
-                ? textColors.blue
-                : textColors.grey
-            )}
-            iconWidth={20}
-            iconHeight={20}
-            style={addTaskPopupStyles.iconButton}
-            onClick={openCalendar}
-          />
-          <IconButton
-            xml={bell(
-              newTaskData.remindTime ? textColors.blue : textColors.grey
-            )}
-            iconWidth={20}
-            iconHeight={20}
-            style={addTaskPopupStyles.iconButton}
-            onClick={openReminderHandler}
-          />
-          <IconButton
-            xml={repeat(
-              newTaskData.isRegular ? textColors.blue : textColors.grey
-            )}
-            iconWidth={20}
-            iconHeight={20}
-            style={addTaskPopupStyles.iconButton}
-            onClick={toggleIsTaskRegular}
-          />
+        <View style={[addTaskPopupStyles.buttonsContainer]}>
+          <View style={[addTaskPopupStyles.buttonsGroup]}>
+            <IconButton
+              xml={clock(
+                (taskData?.time && taskData?.timeType) || taskToEdit
+                  ? textColors.blue
+                  : textColors.grey
+              )}
+              iconWidth={20}
+              iconHeight={20}
+              style={addTaskPopupStyles.iconButton}
+              onClick={() => dispatch(setTimePopupVisibleAction(true))}
+            />
+            <IconButton
+              xml={bell(
+                taskData?.remindTime ? textColors.blue : textColors.grey
+              )}
+              iconWidth={20}
+              iconHeight={20}
+              style={addTaskPopupStyles.iconButton}
+              onClick={() => dispatch(setReminderPopupVisibleAction(true))}
+            />
+            <IconButton
+              xml={repeat(
+                taskData?.isRegular ? textColors.blue : textColors.grey
+              )}
+              iconWidth={20}
+              iconHeight={20}
+              style={addTaskPopupStyles.iconButton}
+              onClick={toggleIsTaskRegular}
+            />
+          </View>
+          <View style={[addTaskPopupStyles.buttonsGroup]}>
+            <CircleButton
+              xml={
+                !!taskToEdit
+                  ? penFill(themeColors.dark.colors.text)
+                  : arrowUp(themeColors.dark.colors.text)
+              }
+              size="small"
+              disabled={circleButtonDisabled}
+              onClick={onSubmit}
+            />
+          </View>
         </View>
-        <View style={[addTaskPopupStyles.buttonsGroup]}>
-          <CircleButton
-            xml={
-              !!taskToEdit
-                ? penFill(themeColors.dark.colors.text)
-                : arrowUp(themeColors.dark.colors.text)
-            }
-            size="small"
-            disabled={circleButtonDisabled}
-            onClick={onSubmit}
-          />
-        </View>
-      </View>
-    </BottomPopup>
+      </BottomPopup>
+    </ModalLayout>
   );
 };
 

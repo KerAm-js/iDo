@@ -1,14 +1,14 @@
 import React, { FC, useCallback } from "react";
 import { useSelector } from "react-redux";
-import { getTheme } from "../../../redux/selectors/prefsSelectors";
 import { NavigationContainer } from "@react-navigation/native";
 import { themeColors } from "../../../styles/global/colors";
 import { RootPropType } from "./types";
 import { StatusBar } from "expo-status-bar";
 import RootContent from "./Content";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 
 const Root: FC<RootPropType> = ({ onAppReady }) => {
-  const theme = useSelector(getTheme);
+  const { theme } = useSelector(prefsSelector);
 
   const onReady = useCallback(() => {
     onAppReady(theme === "light" ? "dark" : "light");

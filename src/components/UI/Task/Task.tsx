@@ -12,6 +12,7 @@ import { store } from "../../../redux/store";
 import { LanguageType } from "../../../redux/types/prefs";
 import { regularBorderRadius } from "../../../styles/global/borderRadiuses";
 import { textColors } from "../../../styles/global/colors";
+import { toLocaleStateString } from "../../../utils/date";
 import {
   text12LineHeight,
   text16LineHeight,
@@ -25,6 +26,8 @@ import {
 import {
   CALENDAR_DAY,
   EXPIRED,
+  FOR_TODAY,
+  FOR_TOMORROW,
   FOR_WEEK,
   TODAY,
   TOMORROW,
@@ -48,7 +51,12 @@ import LangText from "../LangText/LangText";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
 
-const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, rStyle, completeTask }) => {
+const Task: FC<TaskPropTypes> = ({
+  taskObject,
+  sectionType,
+  rStyle,
+  completeTask,
+}) => {
   const { folders } = useSelector(folderSelector);
   const {
     task,
@@ -135,36 +143,21 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, rStyle, completeTask
 
   if (remindTime && (remindTime !== time || !timeString)) {
     const reminder = new Date(remindTime);
-    if (isDayEnd(reminder) || getDaysDiff(reminder, taskTime) !== 0) {
+    const isMidnight = isDayEnd(reminder);
+    if (isMidnight || getDaysDiff(reminder, taskTime) !== 0) {
       if (
-        sectionType === CALENDAR_DAY &&
-        getDaysDiff(reminder, taskTime) !== 0
-      ) {
-        reminderTitle = (lang: LanguageType) =>
-          getDate(lang, {
-            date: reminder,
-          }).date;
-      } else if (
-        isToday(reminder) ||
-        isTomorrow(reminder) ||
-        sectionType === CALENDAR_DAY
+        (sectionType === CALENDAR_DAY ||
+          sectionType === FOR_TODAY ||
+          sectionType === FOR_TOMORROW) &&
+        isMidnight
       ) {
         reminderTitle = languageTexts.periods.midnight;
-      } else if (isWeeklyTime(reminder)) {
+      } else if (remindTime !== time) {
         reminderTitle = (lang: LanguageType) =>
-          getDate(lang, {
-            date: reminder,
-            isShort: true,
-          }).weekDay;
-      } else {
-        reminderTitle = (lang: LanguageType) =>
-          getDate(lang, {
-            date: reminder,
-            isShort: true,
-          }).date;
+          toLocaleStateString({ dateValue: remindTime, language: lang });
       }
     }
-    if (!isDayEnd(reminder)) {
+    if (!isMidnight) {
       reminderTimeString =
         (reminderTitle ? ", " : "") +
         getTimeStringWithSecondsConverting(reminder);
@@ -233,9 +226,9 @@ const Task: FC<TaskPropTypes> = ({ taskObject, sectionType, rStyle, completeTask
               <SvgXml
                 xml={
                   isCompleted
-                    ? bellSlash(textColors.grey) 
+                    ? bellSlash(textColors.grey)
                     : bell(
-                      (remindTime > new Date().valueOf())
+                        remindTime > new Date().valueOf()
                           ? textColors.grey
                           : textColors.red
                       )

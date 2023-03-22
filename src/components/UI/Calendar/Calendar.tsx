@@ -6,9 +6,13 @@ import {
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { text17, textSemiBold, title18 } from "../../../styles/global/texts";
-import { getCalendarArray, getMonthName, toMonthYearString } from "../../../utils/date";
+import {
+  getCalendarArray,
+  getMonthName,
+  toMonthYearString,
+} from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import List from "./List";
@@ -22,7 +26,7 @@ const Calendar: FC<CalendarPropType> = ({
   isCardBackgroundColor,
   pastDatesShown,
 }) => {
-  const language = useSelector(getLanguage);
+  const { language } = useSelector(prefsSelector);
   const { width: WIDTH } = Dimensions.get("screen");
   const currDate = new Date();
   const weekDaysArr = languageTexts.weekDays.shorts;
@@ -40,7 +44,7 @@ const Calendar: FC<CalendarPropType> = ({
     const newCurrentIndex = Math.round(
       event.nativeEvent.contentOffset.x / WIDTH
     );
-    const newTitle = toMonthYearString({ date: currDate, language })
+    const newTitle = toMonthYearString({ date: currDate, language });
 
     if (newCurrentIndex === 0) {
       if (setGlobalTitle) {
@@ -95,7 +99,7 @@ const Calendar: FC<CalendarPropType> = ({
   );
 
   useEffect(() => {
-    const newTitle = toMonthYearString({ date: currDate, language })
+    const newTitle = toMonthYearString({ date: currDate, language });
 
     if (setGlobalTitle) {
       setGlobalTitle(newTitle);

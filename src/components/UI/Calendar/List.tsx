@@ -1,7 +1,9 @@
 import React, { FC, useEffect, useReducer, useRef } from "react";
 import { Dimensions, FlatList, View } from "react-native";
 import { useSelector } from "react-redux";
-import { getTasks } from "../../../redux/selectors/taskSelector";
+import {
+  taskStateSelector,
+} from "../../../redux/selectors/taskSelector";
 import DateItem from "./DateItem";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, DateBusynessType, ListPropType } from "./types";
@@ -13,10 +15,10 @@ const List: FC<ListPropType> = ({
   reference,
   setDate,
   isCardBackgroundColor,
-  pastDatesShown
+  pastDatesShown,
 }) => {
   const { width: WIDTH } = Dimensions.get("screen");
-  const tasks = useSelector(getTasks);
+  const { tasks } = useSelector(taskStateSelector);
 
   const datesObject = useRef<{
     [key: string]: DateBusynessType | undefined;
@@ -44,7 +46,11 @@ const List: FC<ListPropType> = ({
           hasCompleted: false,
           hasExpired: false,
         };
-      } else if (task.isCompleted && !currObj.hasExpired && !currObj.hasUncompleted) {
+      } else if (
+        task.isCompleted &&
+        !currObj.hasExpired &&
+        !currObj.hasUncompleted
+      ) {
         datesObject.current[key] = {
           ...currObj,
           hasCompleted: true,
@@ -73,7 +79,9 @@ const List: FC<ListPropType> = ({
                     object.date.toLocaleDateString() ===
                     date.toLocaleDateString()
                   }
-                  busyness={datesObject.current[object.date.toLocaleDateString()]}
+                  busyness={
+                    datesObject.current[object.date.toLocaleDateString()]
+                  }
                   onClick={setDate}
                   key={object.date.valueOf()}
                   data={object}

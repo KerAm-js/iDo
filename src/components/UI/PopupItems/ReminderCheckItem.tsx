@@ -1,8 +1,8 @@
 import React, { FC, useCallback } from "react";
 import { Pressable, Text } from "react-native";
 import { useSelector } from "react-redux";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
-import { getNewTaskData } from "../../../redux/selectors/taskSelector";
+import { popupsSelector } from "../../../redux/selectors/popupsSelector";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { buttonColors } from "../../../styles/global/colors";
 import {
   text14LineHeight,
@@ -26,16 +26,17 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   onPress,
   isChecked,
 }) => {
-  const newTaskData = useSelector(getNewTaskData);
-  const language = useSelector(getLanguage);
-  const date = newTaskData.time ? new Date(newTaskData.time) : new Date();
-  let titleString = newTaskData.timeType === 'day'
-    ? languageTexts.periods.midnight[language]
-    : toLocaleStateString({
-        dateValue: date.valueOf(),
-        timeType: newTaskData.timeType,
-        language,
-      });
+  const { taskData } = useSelector(popupsSelector);
+  const { language } = useSelector(prefsSelector);
+  const date = taskData?.time ? new Date(taskData.time) : new Date();
+  let titleString =
+    taskData?.timeType === "day"
+      ? languageTexts.periods.midnight[language]
+      : toLocaleStateString({
+          dateValue: date.valueOf(),
+          timeType: taskData?.timeType,
+          language,
+        });
 
   let remindDate = date;
 
@@ -54,12 +55,12 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
   }
 
   const disabled =
-    (newTaskData.isRegular && Boolean(days || weeks)) ||
-    (!newTaskData.isRegular && new Date().valueOf() >= remindDate.valueOf());
+    (taskData?.isRegular && Boolean(days || weeks)) ||
+    (!taskData?.isRegular && new Date().valueOf() >= remindDate.valueOf());
 
   const onPressHandler = useCallback(() => {
     onPress(id, remindDate);
-  }, [newTaskData.time]);
+  }, [taskData?.time]);
 
   return (
     <Pressable disabled={disabled} onPress={onPressHandler}>
@@ -74,7 +75,7 @@ const ReminderCheckItem: FC<ReminderCheckItemPropType> = ({
         >
           {titleString}
         </ThemeText>
-        {id === "0" && !newTaskData.isRegular && (
+        {id === "0" && !taskData?.isRegular && (
           <Text style={[text14LineHeight, textGrey]}>
             {languageTexts.popupTitles.dateOfCompletion[language]}
           </Text>

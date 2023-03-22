@@ -8,6 +8,4 @@ export type rootTabNavigatorParamList = {
 };
 
 export type TabNavigatorPropTypes = {
-  openAddTaskModal: () => void;
-  openLanguageModal: () => void;
 };

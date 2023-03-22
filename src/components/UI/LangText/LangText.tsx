@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Text } from "react-native";
 import { useSelector } from "react-redux";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { LangTextPropTypes } from "./types";
 
@@ -11,7 +11,7 @@ const LangText = ({
   handleTheme = true,
   ...textProps
 }: LangTextPropTypes) => {
-  const language = useSelector(getLanguage);
+  const { language } = useSelector(prefsSelector);
   let text = "";
   if (typeof title === "function") {
     text = title(language);

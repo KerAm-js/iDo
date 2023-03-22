@@ -3,5 +3,4 @@ export type PrefsStackNavigatorParamsList = {
 };
 
 export type PrefsNavigatorPropType = {
-  openLanguageModal: () => void
 }

@@ -1,3 +1,1 @@
-export type PrefsPropType = {
-  openLanguageModal: () => void,
-}
+export type PrefsPropType = {}

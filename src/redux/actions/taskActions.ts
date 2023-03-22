@@ -1,17 +1,12 @@
-import { TaskType, TimeType } from "./../types/task";
+import { TaskType } from "./../types/task";
 import {
-  CHOOSE_TASK_TO_EDIT,
   COMPLETE_TASK,
   DELETE_TASK,
   EDIT_TASK,
-  UPDATE_TASK_TIME,
-  UPDATE_TASK_REMIND_TIME,
   SET_TASK_EXPIRATION,
   UPDATE_TASKS,
-  SET_DEFAULT_NEW_TASK_DATA,
   CALENDAR_CHOOSED_DATE,
   UPDATE_POSITIONS,
-  SET_IS_NEW_TASK_REGULAR,
 } from "./../constants/task";
 import { Dispatch } from "@reduxjs/toolkit";
 import { ADD_TASK } from "../constants/task";
@@ -282,46 +277,9 @@ export const deleteTaskAction =
     }
   };
 
-export const updateNewTaskTimeAction =
-  (time: number, timeType: TimeType) => (dispatch: Dispatch) => {
-    dispatch({
-      type: UPDATE_TASK_TIME,
-      time,
-      timeType,
-      autoReminder: getAutoReminderSetting(),
-    });
-  };
-
-export const setIsNewTaskRegularAction =
-  (isRegular: boolean) => (dispatch: Dispatch) => {
-    dispatch({ type: SET_IS_NEW_TASK_REGULAR, isRegular });
-  };
-
-export const updateNewTaskRemindTimeAction =
-  (remindTime: number | undefined) => (dispatch: Dispatch) => {
-    dispatch({ type: UPDATE_TASK_REMIND_TIME, remindTime });
-  };
-
-export const setDefaultNewTaskDataAction =
-  (autoReminder?: boolean) => (dispatch: Dispatch) => {
-    dispatch({
-      type: SET_DEFAULT_NEW_TASK_DATA,
-      autoReminder: autoReminder || getAutoReminderSetting(),
-    });
-  };
-
 export const chooseCalendarDate =
   (value: number | undefined) => (dispatch: Dispatch) => {
     dispatch({ type: CALENDAR_CHOOSED_DATE, calendarChoosedDate: value });
-  };
-
-export const chooseTaskToEditAction =
-  (task: TaskType | undefined) => (dispatch: Dispatch) => {
-    dispatch({
-      type: CHOOSE_TASK_TO_EDIT,
-      task,
-      autoReminder: getAutoReminderSetting(),
-    });
   };
 
 export const checkNotificationDisabling = async (

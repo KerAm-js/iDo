@@ -5,8 +5,7 @@ import { PrefsNavigatorPropType, PrefsStackNavigatorParamsList } from "./types";
 
 const NativaStack = createStackNavigator<PrefsStackNavigatorParamsList>();
 
-const PrefsNavigator: FC<PrefsNavigatorPropType> = ({ openLanguageModal }) => {
-  const RenderPrefs = () => <Prefs openLanguageModal={openLanguageModal} />;
+const PrefsNavigator: FC<PrefsNavigatorPropType> = () => {
   return (
     <NativaStack.Navigator
       screenOptions={{
@@ -19,7 +18,7 @@ const PrefsNavigator: FC<PrefsNavigatorPropType> = ({ openLanguageModal }) => {
           headerTransparent: true,
         }}
       >
-        <NativaStack.Screen name="Main" component={RenderPrefs} />
+        <NativaStack.Screen name="Main" component={Prefs} />
       </NativaStack.Group>
     </NativaStack.Navigator>
   );

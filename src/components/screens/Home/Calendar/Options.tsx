@@ -2,13 +2,13 @@ import { useNavigation, useTheme } from "@react-navigation/native";
 import React, { useEffect } from "react";
 import { View } from "react-native";
 import { useSelector } from "react-redux";
-import { getLanguage } from "../../../../redux/selectors/prefsSelectors";
+import { prefsSelector } from "../../../../redux/selectors/prefsSelectors";
 import { toMonthYearString } from "../../../../utils/date";
 import { languageTexts } from "../../../../utils/languageTexts";
 
 const Options = () => {
   const navigation = useNavigation();
-  const language = useSelector(getLanguage);
+  const { language } = useSelector(prefsSelector);
   const theme = useTheme();
   useEffect(() => {
     navigation.setOptions({

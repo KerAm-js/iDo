@@ -5,14 +5,12 @@ import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  updateNewTaskTimeAction,
-  setDefaultNewTaskDataAction,
-  chooseCalendarDate,
-} from "../../../../redux/actions/taskActions";
-import {
-  getPositions,
-  getTasks,
-} from "../../../../redux/selectors/taskSelector";
+  setDefaultTaskDataAction,
+  setTaskTimeAction,
+} from "../../../../redux/actions/popupsActions";
+import { chooseCalendarDate } from "../../../../redux/actions/taskActions";
+import { prefsSelector } from "../../../../redux/selectors/prefsSelectors";
+import { taskStateSelector } from "../../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../../redux/types/appDispatch";
 import { TaskType } from "../../../../redux/types/task";
 import { ListObject } from "../../../../types/global/ListObject";
@@ -26,8 +24,8 @@ import Options from "./Options";
 const CalendarScreen = () => {
   const navigation = useNavigation();
   const dispatch: AppDispatch = useDispatch();
-  const positions = useSelector(getPositions);
-  const tasks = useSelector(getTasks);
+  const { autoReminder } = useSelector(prefsSelector);
+  const { tasks, positions } = useSelector(taskStateSelector);
   const [date, setDate] = useState(new Date());
   const tabBarHeight = useBottomTabBarHeight();
 
@@ -42,10 +40,10 @@ const CalendarScreen = () => {
   useEffect(() => {
     const newDate = new Date(date.valueOf()).setHours(23, 59, 59, 999);
     dispatch(chooseCalendarDate(newDate));
-    dispatch(updateNewTaskTimeAction(newDate, "day"));
+    dispatch(setTaskTimeAction(newDate, "day", autoReminder));
     return () => {
       dispatch(chooseCalendarDate(undefined));
-      dispatch(setDefaultNewTaskDataAction());
+      dispatch(setDefaultTaskDataAction());
     };
   }, [date]);
 

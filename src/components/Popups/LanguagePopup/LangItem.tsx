@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { getLanguage } from "../../../redux/selectors/prefsSelectors";
+import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 import { LanguageType } from "../../../redux/types/prefs";
 import { languageTexts } from "../../../utils/languageTexts";
 import CheckItem from "../../UI/PopupItems/CheckItem";
@@ -11,7 +11,7 @@ const LangItem = ({
   lang: LanguageType;
   onCheck: (language: LanguageType) => void;
 }) => {
-  const language = useSelector(getLanguage);
+  const { language } = useSelector(prefsSelector);
   return (
     <CheckItem
       key={lang}
