@@ -40,7 +40,6 @@ import {
   isDayEnd,
   isToday,
   isTomorrow,
-  isWeeklyTime,
   isYesterday,
 } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -57,7 +56,7 @@ const Task: FC<TaskPropTypes> = ({
   rStyle,
   completeTask,
 }) => {
-  const { folders } = useSelector(folderSelector);
+  // const { folders } = useSelector(folderSelector);
   const {
     task,
     time,
@@ -102,9 +101,9 @@ const Task: FC<TaskPropTypes> = ({
     }
   };
 
-  const folderIconXml: string = folderId
-    ? folders.find((item) => item.id === folderId)?.title || ""
-    : "";
+  // const folderIconXml: string = folderId
+  //   ? folders.find((item) => item.id === folderId)?.title || ""
+  //   : "";
 
   let timeTitle: LangObjectType | TextGetterType | undefined;
   let timeString: string | undefined;

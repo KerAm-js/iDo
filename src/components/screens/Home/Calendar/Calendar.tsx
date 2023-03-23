@@ -5,10 +5,10 @@ import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  setCalendarChoosedDateAction,
   setDefaultTaskDataAction,
   setTaskTimeAction,
 } from "../../../../redux/actions/popupsActions";
-import { chooseCalendarDate } from "../../../../redux/actions/taskActions";
 import { prefsSelector } from "../../../../redux/selectors/prefsSelectors";
 import { taskStateSelector } from "../../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../../redux/types/appDispatch";
@@ -39,11 +39,9 @@ const CalendarScreen = () => {
 
   useEffect(() => {
     const newDate = new Date(date.valueOf()).setHours(23, 59, 59, 999);
-    dispatch(chooseCalendarDate(newDate));
-    dispatch(setTaskTimeAction(newDate, "day", autoReminder));
+    dispatch(setCalendarChoosedDateAction(newDate));
     return () => {
-      dispatch(chooseCalendarDate(undefined));
-      dispatch(setDefaultTaskDataAction());
+      dispatch(setCalendarChoosedDateAction(undefined));
     };
   }, [date]);
 

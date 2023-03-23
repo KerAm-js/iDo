@@ -10,6 +10,7 @@ const Options = () => {
   const navigation = useNavigation();
   const { language } = useSelector(prefsSelector);
   const theme = useTheme();
+  
   useEffect(() => {
     navigation.setOptions({
       title: toMonthYearString({ date: new Date(), language }),

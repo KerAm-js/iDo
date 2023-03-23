@@ -5,7 +5,6 @@ import {
   UPDATE_TASKS,
   COMPLETE_TASK,
   SET_TASK_EXPIRATION,
-  CALENDAR_CHOOSED_DATE,
   UPDATE_POSITIONS,
 } from "./../constants/task";
 import { ADD_TASK } from "../constants/task";
@@ -16,7 +15,6 @@ const initialState: TaskState = {
   tasks: [],
   positions: {},
   isTaskAddingAnimated: false,
-  calendarChoosedDate: undefined,
 };
 
 export const taskReducer = (
@@ -26,9 +24,6 @@ export const taskReducer = (
   switch (action.type) {
     case ADD_TASK: {
       const tasks = [action.task, ...state.tasks];
-      const time = state.calendarChoosedDate
-        ? new Date(state.calendarChoosedDate).setHours(23, 59, 59, 999)
-        : new Date().setHours(23, 59, 59, 999);
       return {
         ...state,
         tasks,
@@ -56,9 +51,6 @@ export const taskReducer = (
       const tasks = state.tasks.map((task) =>
         task.id === action.task.id ? action.task : task
       );
-      const time = state.calendarChoosedDate
-        ? new Date(state.calendarChoosedDate).setHours(23, 59, 59, 999)
-        : undefined;
       return {
         ...state,
         tasks,
@@ -112,12 +104,6 @@ export const taskReducer = (
       return {
         ...state,
         tasks,
-      };
-    }
-    case CALENDAR_CHOOSED_DATE: {
-      return {
-        ...state,
-        calendarChoosedDate: action.calendarChoosedDate,
       };
     }
     default:

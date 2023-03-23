@@ -125,11 +125,11 @@ export class LocalDB {
     });
   }
 
-  static getTasks(): Promise<Array<TaskType>> {
+  static getTasks(lowerBoundOfDate: number): Promise<Array<TaskType>> {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `SELECT * FROM tasks`,
+          `SELECT * FROM tasks WHERE ${TIME} >= ${lowerBoundOfDate} OR (${IS_EXPIRED} == 1 AND ${IS_COMPLETED} == 0)`,
           [],
           (_: SQLTransaction, result: SQLResultSet) =>
             resolve(result.rows._array),
@@ -395,12 +395,28 @@ export class LocalDB {
     });
   }
 
+  // static setDefaultFolders() {
+  //   return new Promise((resolve, reject) => {
+  //     db.transaction((tx) => {
+  //       tx.executeSql(
+  //         `INSERT INTO folders (${TITLE}, ${ICON_XML}) VALUES (?, ?), (?, ?)`,
+  //         ["goals", "award", "regularly", "repeat"],
+  //         (_: SQLTransaction, result: SQLResultSet) => resolve(result),
+  //         (_: SQLTransaction, error: SQLError) => {
+  //           reject(error);
+  //           return false;
+  //         }
+  //       );
+  //     });
+  //   });
+  // }
+
   static setDefaultFolders() {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `INSERT INTO folders (${TITLE}, ${ICON_XML}) VALUES (?, ?), (?, ?)`,
-          ["goals", "award", "regularly", "repeat"],
+          `DELETE FROM folders`,
+          [],
           (_: SQLTransaction, result: SQLResultSet) => resolve(result),
           (_: SQLTransaction, error: SQLError) => {
             reject(error);

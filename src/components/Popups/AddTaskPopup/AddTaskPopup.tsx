@@ -10,7 +10,6 @@ import {
   addTaskAction,
   editTaskAction,
 } from "../../../redux/actions/taskActions";
-import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { textColors, themeColors } from "../../../styles/global/colors";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -24,7 +23,6 @@ import { repeat } from "../../../../assets/icons/repeat";
 import ModalLayout from "../../Layouts/Modal/ModalLayout";
 import { popupsSelector } from "../../../redux/selectors/popupsSelector";
 import {
-  setDefaultTaskDataAction,
   toggleIsTaskRegularAction,
   setTaskPopupVisibleAction,
   setTimePopupVisibleAction,
@@ -32,7 +30,6 @@ import {
 } from "../../../redux/actions/popupsActions";
 
 const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
-  const { calendarChoosedDate } = useSelector(taskStateSelector);
   const { addTaskPopupVisibilities, taskToEdit, taskData } =
     useSelector(popupsSelector);
   const visible = !!addTaskPopupVisibilities?.task;
@@ -113,11 +110,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
   useEffect(() => {
     if (visible && !taskToEdit) {
       taskInput.current?.focus();
-      console.log("ok");
-    }
-    if (!visible && !addTaskPopupVisibilities) {
-      setDefaults();
-      if (!calendarChoosedDate) dispatch(setDefaultTaskDataAction());
     }
   }, [visible]);
 
@@ -126,6 +118,8 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
       setTask(taskToEdit?.task || "");
       setDescription(taskToEdit?.description || "");
       setChoosedFolder(taskToEdit?.folderId || undefined);
+    } else {
+      setDefaults();
     }
   }, [taskToEdit]);
 

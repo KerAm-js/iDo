@@ -8,7 +8,7 @@ export const calendarStyles = StyleSheet.create({
     minWidth: 34,
     minHeight: 34,
     borderRadius: 17,
-    borderColor: textColors.blue,
+    // borderColor: textColors.blue,
     justifyContent: 'center',
     alignItems: 'center'
   },

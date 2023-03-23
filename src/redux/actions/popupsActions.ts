@@ -1,6 +1,6 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import {
-  ADD_TASK_TO_EDIT,
+  SET_TASK_TO_EDIT,
   SET_DEFAULT_TASK_DATA,
   TOGGLE_IS_TASK_REGULAR,
   SET_TASK_REMINDER,
@@ -9,6 +9,7 @@ import {
   SET_TIME_POPUP_VISIBLE,
   SET_REMINDER_POPUP_VISIBLE,
   SET_LANGUAGE_POPUP_VISIBLE,
+  SET_CALENDAR_CHOOSED_DATE,
 } from "../constants/popups";
 import { TaskType, TimeType } from "../types/task";
 
@@ -32,11 +33,15 @@ export const toggleIsTaskRegularAction = () => (dispatch: Dispatch) => {
   dispatch({ type: TOGGLE_IS_TASK_REGULAR });
 };
 
+export const setCalendarChoosedDateAction = (date: number | undefined) => (dispatch: Dispatch) => {
+  dispatch({ type: SET_CALENDAR_CHOOSED_DATE, date });
+}
+
 export const setTaskToEditAction =
   (task: TaskType | undefined) =>
   (dispatch: Dispatch) => {
     dispatch({
-      type: ADD_TASK_TO_EDIT,
+      type: SET_TASK_TO_EDIT,
       task,
     });
   };
@@ -55,7 +60,7 @@ export const setDefaultTaskDataAction =
   };
 
 export const setTaskTimeAction =
-  (time: number, timeType: TimeType, autoReminder: boolean) =>
+  (time: number, timeType: TimeType | null, autoReminder: boolean) =>
   (dispatch: Dispatch) => {
     dispatch({
       type: SET_TASK_TIME,

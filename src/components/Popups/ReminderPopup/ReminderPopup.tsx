@@ -255,7 +255,7 @@ const ReminderPopup: FC<ReminderPopupPropType> = ({ hasDeleteButton }) => {
       <BottomPopup
         visible={visible}
         title={languageTexts.popupTitles.reminder}
-        handleKeyboard={true}
+        handleKeyboard={false}
         rightButtonTitle={
           hasDeleteButton && isReminderSetted && languageTexts.words.delete
         }

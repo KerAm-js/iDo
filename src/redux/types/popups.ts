@@ -21,14 +21,16 @@ export type PopupsState = {
   languagePopupVisible: boolean,
   taskToEdit?: TaskType,
   taskData?: TaskData,
+  calendarChoosedDate?: number,
 }
 
 export interface PopupsActionType extends Action {
-  taskToEdit: undefined | TaskType,
+  task: undefined | TaskType,
   taskData: undefined | TaskData,
   time: number,
-  timeType: TimeType,
+  timeType: TimeType | null,
   remindTime: number,
   isRegular: boolean,
   visible: boolean,
+  date: number | undefined,
 }

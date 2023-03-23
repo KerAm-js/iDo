@@ -5,7 +5,6 @@ import {
   EDIT_TASK,
   SET_TASK_EXPIRATION,
   UPDATE_TASKS,
-  CALENDAR_CHOOSED_DATE,
   UPDATE_POSITIONS,
 } from "./../constants/task";
 import { Dispatch } from "@reduxjs/toolkit";
@@ -93,7 +92,8 @@ export const scheduleTaskExpiration = (
 
 export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
   try {
-    const tasks = await LocalDB.getTasks();
+    const lowerBoundOfDate = new Date().setDate(1);
+    const tasks = await LocalDB.getTasks(lowerBoundOfDate);
     await deleteAllNotifications();
     const notificationsUpdatedTasks = await Promise.all(
       tasks.map(async (task) => {
@@ -275,11 +275,6 @@ export const deleteTaskAction =
     } catch (error) {
       console.log("deleteTaskAction", error);
     }
-  };
-
-export const chooseCalendarDate =
-  (value: number | undefined) => (dispatch: Dispatch) => {
-    dispatch({ type: CALENDAR_CHOOSED_DATE, calendarChoosedDate: value });
   };
 
 export const checkNotificationDisabling = async (

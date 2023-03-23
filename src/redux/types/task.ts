@@ -14,7 +14,6 @@ export type TaskState = {
   tasks: Array<TaskType>;
   isTaskAddingAnimated: boolean | undefined;
   positions: ListObject;
-  calendarChoosedDate: number | undefined;
 };
 
 export interface TaskAction extends Action {
@@ -30,7 +29,6 @@ export interface TaskAction extends Action {
   isCompleted: number;
   isExpired: number;
   id: number;
-  calendarChoosedDate: number | undefined;
   isTaskAddingAnimated: boolean | undefined;
 }
 

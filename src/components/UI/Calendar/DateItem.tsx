@@ -6,7 +6,7 @@ import {
   textColors,
   themeColors,
 } from "../../../styles/global/colors";
-import { text17, textGrey } from "../../../styles/global/texts";
+import { text17, textGrey, title18 } from "../../../styles/global/texts";
 import { isToday } from "../../../utils/date";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { calendarStyles } from "./styles";
@@ -45,7 +45,6 @@ const DateItem: FC<DateItemPropType> = React.memo(
         style={[
           calendarStyles.calendarItem,
           {
-            borderWidth: isToday(date) ? 1 : 0,
             backgroundColor:
               isSelected && isCurrentMonth
                 ? buttonColors.blue
@@ -60,6 +59,7 @@ const DateItem: FC<DateItemPropType> = React.memo(
           style={[
             calendarStyles.item,
             text17,
+            isToday(date) ? { color: textColors.blue, ...title18 } : null,
             isSelected ? { color: themeColors.dark.colors.text } : null,
             !isCurrentMonth || isExpired ? textGrey : null,
           ]}

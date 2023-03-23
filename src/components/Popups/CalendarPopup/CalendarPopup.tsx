@@ -7,7 +7,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { useDispatch, useSelector } from "react-redux";
 import { clock } from "../../../../assets/icons/clock";
-import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { TimeType } from "../../../redux/types/task";
 import { CHOOSE, TODAY, TOMORROW } from "../../../utils/constants/periods";
@@ -44,7 +43,6 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({ hasDeleteButton }) => {
   const { addTaskPopupVisibilities, taskToEdit, taskData } =
     useSelector(popupsSelector);
   const visible = !!addTaskPopupVisibilities?.time;
-  const { calendarChoosedDate } = useSelector(taskStateSelector);
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime, onTimeChange, isTimeValid, isTimeExpired] =
     useTimeValidation(date);
@@ -207,8 +205,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({ hasDeleteButton }) => {
       visible &&
       !taskToEdit &&
       taskData?.time &&
-      taskData?.timeType &&
-      calendarChoosedDate
+      taskData?.timeType
     ) {
       setDefaults(new Date(taskData?.time), taskData?.timeType);
     }
@@ -255,7 +252,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({ hasDeleteButton }) => {
       <BottomPopup
         visible={visible}
         title={languageTexts.popupTitles.dateOfCompletion}
-        handleKeyboard={true}
+        handleKeyboard={false}
         rightButtonTitle={
           hasDeleteButton && isReminderSetted && languageTexts.words.delete
         }

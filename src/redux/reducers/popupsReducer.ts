@@ -1,5 +1,5 @@
 import {
-  ADD_TASK_TO_EDIT,
+  SET_TASK_TO_EDIT,
   SET_TASK_TIME,
   SET_TASK_REMINDER,
   SET_DEFAULT_TASK_DATA,
@@ -9,6 +9,7 @@ import {
   SET_TIME_POPUP_VISIBLE,
   SET_REMINDER_POPUP_VISIBLE,
   SET_LANGUAGE_POPUP_VISIBLE,
+  SET_CALENDAR_CHOOSED_DATE,
 } from "./../constants/popups";
 import { PopupsActionType, PopupsState, TaskData } from "../types/popups";
 
@@ -17,6 +18,7 @@ const initialState: PopupsState = {
   languagePopupVisible: false,
   taskToEdit: undefined,
   taskData: undefined,
+  calendarChoosedDate: undefined,
 };
 
 export const popupsReducer = (
@@ -24,10 +26,10 @@ export const popupsReducer = (
   action: PopupsActionType
 ): PopupsState => {
   switch (action.type) {
-    case ADD_TASK_TO_EDIT: {
+    case SET_TASK_TO_EDIT: {
       let taskData: TaskData | undefined = undefined;
-      if (action.taskToEdit) {
-        const { time, timeType, isRegular, remindTime } = action.taskToEdit;
+      if (action.task) {
+        const { time, timeType, isRegular, remindTime } = action.task;
         taskData = {
           time,
           timeType,
@@ -37,8 +39,13 @@ export const popupsReducer = (
       }
       return {
         ...state,
-        taskToEdit: action.taskToEdit,
+        taskToEdit: action.task,
         taskData,
+        addTaskPopupVisibilities: {
+          task: true,
+          time: false,
+          reminder: false,
+        },
       };
     }
     case SET_TASK_TIME: {
@@ -47,7 +54,7 @@ export const popupsReducer = (
         taskData: {
           ...state.taskData,
           time: action.time,
-          timeType: action.timeType,
+          timeType: action.timeType || state.taskData?.timeType || "day",
         },
       };
     }
@@ -84,13 +91,25 @@ export const popupsReducer = (
         },
       };
     }
+    case SET_CALENDAR_CHOOSED_DATE: {
+      return {
+        ...state,
+        calendarChoosedDate: action.date,
+        taskData: action.date
+          ? { ...state.taskData, time: action.date, timeType: "day" }
+          : undefined,
+      };
+    }
     case SET_TASK_POPUP_VISIBLE: {
-      const taskData: TaskData | undefined = action.visible
+      const taskData: TaskData | undefined = state.calendarChoosedDate
+        ? state.taskData
+        : action.visible
         ? { time: new Date().setHours(23, 59, 59, 999), timeType: "day" }
         : undefined;
       return {
         ...state,
         taskData,
+        taskToEdit: undefined,
         addTaskPopupVisibilities: action.visible
           ? {
               task: true,

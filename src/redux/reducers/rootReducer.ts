@@ -7,7 +7,7 @@ import { taskReducer } from "./taskReducer";
 
 export const rootReducer = combineReducers({
   tasks: taskReducer,
-  folders: folderReducer,
+  // folders: folderReducer,
   prefs: prefsReducer,
   interface: interfaceReducer,
   popups: popupsReducer, 
