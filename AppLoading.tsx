@@ -17,7 +17,6 @@ import { loadSectionsVisibilitiesFromASAction } from "./src/redux/actions/interf
 import { store } from "./src/redux/store";
 import { savePositions } from "./src/backend/asyncStorage/positions";
 import {
-  FOLDER_ID,
   IS_REGULAR,
   NOTIFICATION_ID,
 } from "./src/backend/sqlite/constants/taskProps";

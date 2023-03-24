@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useRef } from "react";
 import { Dimensions, Keyboard, LayoutChangeEvent, View } from "react-native";
 import {
+  runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
@@ -23,6 +24,7 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
     rightButtonColor,
     rightButtonTitle,
     onRightButtonPress,
+    onCloseAnimationEnd,
   }) => {
     const { height: SCREEN_HEIGHT } = Dimensions.get("screen");
     const { bottom } = useSafeAreaInsets();
@@ -44,7 +46,7 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
       const { height } = event.nativeEvent.layout;
       HEIGHT.current = height;
       if (!visible) {
-        translateY.value = height;
+        translateY.value = withTiming(height);
       }
     };
 
@@ -54,9 +56,16 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
           ? 0 - keyboardHeight + bottom
           : 0
         : HEIGHT.current;
-      translateY.value = withTiming(newTranslateY, {
-        duration: keyboardHeight > 0 ? 340 : 280,
-      });
+      translateY.value = withTiming(
+        newTranslateY,
+        {
+          duration: keyboardHeight > 0 ? 320 : 260,
+        },
+        (isFinished) => {
+          if (isFinished && !visible && onCloseAnimationEnd)
+            runOnJS(onCloseAnimationEnd)();
+        }
+      );
     }, [visible, keyboardHeight]);
 
     useEffect(() => {

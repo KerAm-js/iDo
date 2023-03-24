@@ -39,6 +39,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
   const [circleButtonDisabled, setCircleButtonDisabled] =
     useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
+  const [submitButtonXml, setSubmitButtonXml] = useState(arrowUp(themeColors.dark.colors.text));
   const taskInput = useRef<TextInput | null>(null);
 
   const updateTask = useCallback((text: string) => setTask(text), []);
@@ -102,8 +103,12 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
   };
 
   useEffect(() => {
-    if (visible && !taskToEdit) {
+    if (!visible) return;
+    if (taskToEdit) {
+      setSubmitButtonXml(penFill(themeColors.dark.colors.text));
+    } else {
       taskInput.current?.focus();
+      setSubmitButtonXml(arrowUp(themeColors.dark.colors.text));
     }
   }, [visible]);
 
@@ -111,12 +116,11 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
     if (taskToEdit) {
       setTask(taskToEdit?.task || "");
       setDescription(taskToEdit?.description || "");
-    } else {
-      setDefaults();
     }
   }, [taskToEdit]);
 
   useEffect(() => {
+    if (!visible) return;
     if (taskToEdit) {
       const isTaskIsNotEdited =
         task === taskToEdit.task &&
@@ -137,22 +141,19 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
         setCircleButtonDisabled(true);
       }
     }
-  }, [
-    task,
-    description,
-    taskData,
-    taskData?.isRegular,
-    taskToEdit,
-  ]);
+  }, [task, description, taskData, taskData?.isRegular]);
 
   const close = () => {
-    dispatch(setTaskPopupVisibleAction(false))
-    setDefaults();
+    dispatch(setTaskPopupVisibleAction(false));
   };
 
   return (
     <ModalLayout visible={visible} close={close}>
-      <BottomPopup visible={visible} handleKeyboard={true}>
+      <BottomPopup
+        visible={visible}
+        handleKeyboard={true}
+        onCloseAnimationEnd={setDefaults}
+      >
         <ThemeInput
           value={task}
           onChangeText={updateTask}
@@ -221,11 +222,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
           </View>
           <View style={[addTaskPopupStyles.buttonsGroup]}>
             <CircleButton
-              xml={
-                !!taskToEdit
-                  ? penFill(themeColors.dark.colors.text)
-                  : arrowUp(themeColors.dark.colors.text)
-              }
+              xml={submitButtonXml}
               size="small"
               disabled={circleButtonDisabled}
               onClick={onSubmit}

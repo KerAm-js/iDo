@@ -8,4 +8,5 @@ export interface BottomPopupPropType {
   rightButtonTitle?: LangObjectType | false,
   rightButtonColor?: string,
   onRightButtonPress?: (() => void) | false,
+  onCloseAnimationEnd?: () => void,
 }
