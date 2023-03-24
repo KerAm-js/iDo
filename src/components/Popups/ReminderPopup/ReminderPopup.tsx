@@ -33,14 +33,17 @@ import {
 } from "../../../types/global/LangObject";
 import { LanguageType } from "../../../redux/types/prefs";
 import ModalLayout from "../../Layouts/Modal/ModalLayout";
-import { setReminderPopupVisibleAction, setTaskRemindTimeAction } from "../../../redux/actions/popupsActions";
+import {
+  setReminderPopupVisibleAction,
+  setTaskRemindTimeAction,
+} from "../../../redux/actions/popupsActions";
 import { popupsSelector } from "../../../redux/selectors/popupsSelector";
 
-
-const ReminderPopup: FC<ReminderPopupPropType> = ({ hasDeleteButton }) => {
+const ReminderPopup: FC<ReminderPopupPropType> = () => {
   const theme = useTheme();
   const dispatch: AppDispatch = useDispatch();
-  const { addTaskPopupVisibilities, taskToEdit, taskData } = useSelector(popupsSelector);
+  const { addTaskPopupVisibilities, taskToEdit, taskData } =
+    useSelector(popupsSelector);
   const visible = !!addTaskPopupVisibilities?.reminder;
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime, onTimeChange, isTimeValid, isTimeExpired] =
@@ -103,10 +106,7 @@ const ReminderPopup: FC<ReminderPopupPropType> = ({ hasDeleteButton }) => {
 
   const setDefaults = (defaultTaskTime?: Date) => {
     if (taskData?.remindTime && defaultTaskTime) {
-      const state = extractReminderState(
-        defaultTaskTime,
-        taskData?.remindTime
-      );
+      const state = extractReminderState(defaultTaskTime, taskData?.remindTime);
       setState(state);
       setDate(new Date(taskData?.remindTime));
       if (state === CHOOSE) {
@@ -200,10 +200,7 @@ const ReminderPopup: FC<ReminderPopupPropType> = ({ hasDeleteButton }) => {
   }, [visible]);
 
   useEffect(() => {
-    if (
-      !taskData?.remindTime ||
-      (!taskData?.time && !taskData?.timeType)
-    ) {
+    if (!taskData?.remindTime || (!taskData?.time && !taskData?.timeType)) {
       setDefaults();
     }
     if (taskData?.remindTime && taskData?.time) {
@@ -234,7 +231,7 @@ const ReminderPopup: FC<ReminderPopupPropType> = ({ hasDeleteButton }) => {
 
   useEffect(() => {
     if (!addTaskPopupVisibilities) setDefaults();
-  }, [addTaskPopupVisibilities])
+  }, [addTaskPopupVisibilities]);
 
   const isReminderSetted =
     state !== "" || time !== "" || !!taskToEdit?.remindTime;
@@ -256,13 +253,9 @@ const ReminderPopup: FC<ReminderPopupPropType> = ({ hasDeleteButton }) => {
         visible={visible}
         title={languageTexts.popupTitles.reminder}
         handleKeyboard={false}
-        rightButtonTitle={
-          hasDeleteButton && isReminderSetted && languageTexts.words.delete
-        }
+        rightButtonTitle={isReminderSetted && languageTexts.words.delete}
         rightButtonColor={textColors.red}
-        onRightButtonPress={
-          hasDeleteButton && isReminderSetted && deleteButtonHandler
-        }
+        onRightButtonPress={isReminderSetted && deleteButtonHandler}
       >
         <Animated.View style={[reminderPopupStyles.container, containerStyle]}>
           <Animated.View style={[reminderPopupStyles.screen, scrollViewsStyle]}>

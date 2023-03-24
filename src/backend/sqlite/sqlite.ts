@@ -378,6 +378,22 @@ export class LocalDB {
     });
   }
 
+  static deleteFoldersTable() {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `DROP TABLE folders`,
+          [],
+          (_: SQLTransaction, result: SQLResultSet) => resolve(result),
+          (_: SQLTransaction, error: SQLError) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+  }
+
   static getFolders() {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
@@ -395,23 +411,23 @@ export class LocalDB {
     });
   }
 
-  // static setDefaultFolders() {
-  //   return new Promise((resolve, reject) => {
-  //     db.transaction((tx) => {
-  //       tx.executeSql(
-  //         `INSERT INTO folders (${TITLE}, ${ICON_XML}) VALUES (?, ?), (?, ?)`,
-  //         ["goals", "award", "regularly", "repeat"],
-  //         (_: SQLTransaction, result: SQLResultSet) => resolve(result),
-  //         (_: SQLTransaction, error: SQLError) => {
-  //           reject(error);
-  //           return false;
-  //         }
-  //       );
-  //     });
-  //   });
-  // }
-
   static setDefaultFolders() {
+    return new Promise((resolve, reject) => {
+      db.transaction((tx) => {
+        tx.executeSql(
+          `INSERT INTO folders (${TITLE}, ${ICON_XML}) VALUES (?, ?), (?, ?)`,
+          ["goals", "award", "regularly", "repeat"],
+          (_: SQLTransaction, result: SQLResultSet) => resolve(result),
+          (_: SQLTransaction, error: SQLError) => {
+            reject(error);
+            return false;
+          }
+        );
+      });
+    });
+  }
+
+  static deleteAllFolders() {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(

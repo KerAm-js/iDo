@@ -13,11 +13,16 @@ import {
 } from "./../constants/popups";
 import { PopupsActionType, PopupsState, TaskData } from "../types/popups";
 
+const getDefaultTaskData = (): TaskData => ({
+  time: new Date().setHours(23, 59, 59, 999),
+  timeType: "day",
+});
+
 const initialState: PopupsState = {
   addTaskPopupVisibilities: undefined,
   languagePopupVisible: false,
   taskToEdit: undefined,
-  taskData: undefined,
+  taskData: getDefaultTaskData(),
   calendarChoosedDate: undefined,
 };
 
@@ -27,7 +32,7 @@ export const popupsReducer = (
 ): PopupsState => {
   switch (action.type) {
     case SET_TASK_TO_EDIT: {
-      let taskData: TaskData | undefined = undefined;
+      let taskData: TaskData = getDefaultTaskData();
       if (action.task) {
         const { time, timeType, isRegular, remindTime } = action.task;
         taskData = {
@@ -70,7 +75,11 @@ export const popupsReducer = (
     case SET_DEFAULT_TASK_DATA: {
       return {
         ...state,
-        taskData: undefined,
+        taskData: {
+          time:
+            state.calendarChoosedDate || new Date().setHours(23, 59, 59, 999),
+          timeType: "day",
+        },
       };
     }
     case TOGGLE_IS_TASK_REGULAR: {
@@ -92,20 +101,22 @@ export const popupsReducer = (
       };
     }
     case SET_CALENDAR_CHOOSED_DATE: {
+      const date = action.date
+        ? new Date(action.date).setHours(23, 59, 59, 999)
+        : undefined;
       return {
         ...state,
-        calendarChoosedDate: action.date,
-        taskData: action.date
-          ? { ...state.taskData, time: action.date, timeType: "day" }
-          : undefined,
+        calendarChoosedDate: date,
+        taskData: {
+          time: date || new Date().setHours(23, 59, 59, 999),
+          timeType: "day",
+        },
       };
     }
     case SET_TASK_POPUP_VISIBLE: {
-      const taskData: TaskData | undefined = state.calendarChoosedDate
+      const taskData: TaskData = state.calendarChoosedDate
         ? state.taskData
-        : action.visible
-        ? { time: new Date().setHours(23, 59, 59, 999), timeType: "day" }
-        : undefined;
+        : getDefaultTaskData();
       return {
         ...state,
         taskData,

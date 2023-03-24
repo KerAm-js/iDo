@@ -6,10 +6,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
 import {
   setCalendarChoosedDateAction,
-  setDefaultTaskDataAction,
-  setTaskTimeAction,
 } from "../../../../redux/actions/popupsActions";
-import { prefsSelector } from "../../../../redux/selectors/prefsSelectors";
 import { taskStateSelector } from "../../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../../redux/types/appDispatch";
 import { TaskType } from "../../../../redux/types/task";
@@ -24,7 +21,6 @@ import Options from "./Options";
 const CalendarScreen = () => {
   const navigation = useNavigation();
   const dispatch: AppDispatch = useDispatch();
-  const { autoReminder } = useSelector(prefsSelector);
   const { tasks, positions } = useSelector(taskStateSelector);
   const [date, setDate] = useState(new Date());
   const tabBarHeight = useBottomTabBarHeight();
@@ -38,8 +34,7 @@ const CalendarScreen = () => {
   );
 
   useEffect(() => {
-    const newDate = new Date(date.valueOf()).setHours(23, 59, 59, 999);
-    dispatch(setCalendarChoosedDateAction(newDate));
+    dispatch(setCalendarChoosedDateAction(date.valueOf()));
     return () => {
       dispatch(setCalendarChoosedDateAction(undefined));
     };
@@ -63,6 +58,7 @@ const CalendarScreen = () => {
         setDate={setDate}
         setGlobalTitle={updateScreenTitle}
         pastDatesShown
+        busynessShown
       />
       <ThemeBorder style={borderStyle} />
       <Options />

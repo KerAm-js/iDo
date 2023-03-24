@@ -20,12 +20,13 @@ const DateItem: FC<DateItemPropType> = React.memo(
     busyness,
     isCardBackgroundColor,
     pastDatesShown,
+    busynessShown,
   }) => {
     const theme = useTheme();
     const isExpired =
       new Date().getMonth() === date.getMonth() &&
-      (new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24 &&
-        !pastDatesShown);
+      new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24 &&
+      !pastDatesShown;
     const onClickHandler = () => {
       onClick(date);
     };
@@ -66,7 +67,7 @@ const DateItem: FC<DateItemPropType> = React.memo(
         >
           {date.getDate()}
         </ThemeText>
-        {busyness && !isSelected && (
+        {busynessShown && busyness && !isSelected && (
           <View
             style={{
               width: 4,

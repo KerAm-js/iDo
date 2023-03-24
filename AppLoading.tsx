@@ -28,22 +28,17 @@ const loadApp = async () => {
   try {
     await LocalDB.initTasksTable();
     await LocalDB.initFoldersTable();
-    await LocalDB.setDefaultFolders();
+    await LocalDB.deleteAllFolders();
     const result = await LocalDB.getTableColumns("tasks");
 
     if (result) {
       let hasNotificationId = false;
-      let hasFolderColumn = false;
       let hasIsRegular = false;
 
       result.forEach((columnData) => {
         switch (columnData.name) {
           case NOTIFICATION_ID: {
             hasNotificationId = true;
-            break;
-          }
-          case FOLDER_ID: {
-            hasFolderColumn = true;
             break;
           }
           case IS_REGULAR: {
@@ -58,14 +53,6 @@ const loadApp = async () => {
           table: "tasks",
           columnName: NOTIFICATION_ID,
           columnType: "TEXT",
-          defaultValue: "NULL",
-        });
-      }
-      if (!hasFolderColumn) {
-        await LocalDB.addColumn({
-          table: "tasks",
-          columnName: FOLDER_ID,
-          columnType: "INTEGER",
           defaultValue: "NULL",
         });
       }

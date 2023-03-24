@@ -27,6 +27,7 @@ import {
   setTaskPopupVisibleAction,
   setTimePopupVisibleAction,
   setReminderPopupVisibleAction,
+  setDefaultTaskDataAction,
 } from "../../../redux/actions/popupsActions";
 
 const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
@@ -35,9 +36,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
   const visible = !!addTaskPopupVisibilities?.task;
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
-  const [choosedFolder, setChoosedFolder] = useState<number | undefined>(
-    undefined
-  );
   const [circleButtonDisabled, setCircleButtonDisabled] =
     useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
@@ -52,16 +50,15 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
   const setDefaults = () => {
     setTask("");
     setDescription("");
-    setChoosedFolder(undefined);
   };
 
   const onSubmit = () => {
-    const time =
-      taskData?.time || new Date().setHours(23, 59, 59, 999).valueOf();
-    const timeType = taskData?.timeType || "day";
-    const remindTime = taskData?.remindTime;
-    const isExpired = new Date(time) <= new Date();
     if (task.length > 0) {
+      const time =
+        taskData?.time || new Date().setHours(23, 59, 59, 999).valueOf();
+      const timeType = taskData?.timeType || "day";
+      const remindTime = taskData?.remindTime;
+      const isExpired = new Date(time) <= new Date();
       dispatch(
         taskToEdit
           ? editTaskAction(
@@ -71,7 +68,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
                 task,
                 description,
                 completionTime: taskToEdit.completionTime,
-                folderId: choosedFolder,
                 time,
                 timeType,
                 isExpired: isExpired ? 1 : 0,
@@ -85,7 +81,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
               isCompleted: 0,
               task,
               description,
-              folderId: choosedFolder,
               time,
               isExpired: isExpired ? 1 : 0,
               timeType,
@@ -93,17 +88,16 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
               isRegular: taskData?.isRegular ? 1 : 0,
             })
       );
+      dispatch(setDefaultTaskDataAction());
+      if (taskToEdit) {
+        dispatch(setTaskPopupVisibleAction(false));
+      }
       setDefaults();
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };
 
-  const updateFolder = (id: number | undefined) => {
-    setChoosedFolder(choosedFolder === id ? undefined : id);
-  };
-
   const toggleIsTaskRegular = () => {
-    updateFolder(taskData?.isRegular ? undefined : 2);
     dispatch(toggleIsTaskRegularAction());
   };
 
@@ -117,7 +111,6 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
     if (taskToEdit) {
       setTask(taskToEdit?.task || "");
       setDescription(taskToEdit?.description || "");
-      setChoosedFolder(taskToEdit?.folderId || undefined);
     } else {
       setDefaults();
     }
@@ -144,9 +137,18 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
         setCircleButtonDisabled(true);
       }
     }
-  }, [task, description, choosedFolder, taskData, taskData?.isRegular]);
+  }, [
+    task,
+    description,
+    taskData,
+    taskData?.isRegular,
+    taskToEdit,
+  ]);
 
-  const close = () => dispatch(setTaskPopupVisibleAction(false));
+  const close = () => {
+    dispatch(setTaskPopupVisibleAction(false))
+    setDefaults();
+  };
 
   return (
     <ModalLayout visible={visible} close={close}>

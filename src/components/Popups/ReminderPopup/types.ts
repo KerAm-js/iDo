@@ -1,3 +1,1 @@
-export type ReminderPopupPropType = {
-  hasDeleteButton?: boolean,
-}
+export type ReminderPopupPropType = {};

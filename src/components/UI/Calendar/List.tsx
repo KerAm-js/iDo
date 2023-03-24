@@ -1,9 +1,7 @@
 import React, { FC, useEffect, useReducer, useRef } from "react";
 import { Dimensions, FlatList, View } from "react-native";
 import { useSelector } from "react-redux";
-import {
-  taskStateSelector,
-} from "../../../redux/selectors/taskSelector";
+import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import DateItem from "./DateItem";
 import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, DateBusynessType, ListPropType } from "./types";
@@ -16,6 +14,7 @@ const List: FC<ListPropType> = ({
   setDate,
   isCardBackgroundColor,
   pastDatesShown,
+  busynessShown,
 }) => {
   const { width: WIDTH } = Dimensions.get("screen");
   const { tasks } = useSelector(taskStateSelector);
@@ -75,6 +74,7 @@ const List: FC<ListPropType> = ({
             >
               {line.map((object) => (
                 <DateItem
+                  busynessShown={busynessShown}
                   isSelected={
                     object.date.toLocaleDateString() ===
                     date.toLocaleDateString()

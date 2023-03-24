@@ -10,7 +10,7 @@ const RootContent = () => {
     <React.Fragment>
       <AddTaskPopup />
       <CalendarPopup />
-      <ReminderPopup hasDeleteButton />
+      <ReminderPopup />
       <LanguagePopup />
       <TabNavigator />
     </React.Fragment>

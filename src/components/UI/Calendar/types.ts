@@ -14,6 +14,7 @@ export type DateItemPropType = {
   data: DateItemType;
   isSelected: boolean;
   busyness?: DateBusynessType;
+  busynessShown?: boolean;
   isCardBackgroundColor?: boolean;
   onClick: (date: Date) => void;
   pastDatesShown?: boolean;
@@ -30,6 +31,7 @@ export type CalendarPropType = {
   setGlobalTitle?: (title: string) => void;
   isCardBackgroundColor?: boolean;
   pastDatesShown?: boolean;
+  busynessShown?: boolean;
 };
 
 export type ListPropType = {
@@ -40,6 +42,7 @@ export type ListPropType = {
   onScrollEnd: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   isCardBackgroundColor?: boolean;
   pastDatesShown?: boolean;
+  busynessShown?: boolean;
 };
 
 export type CalendarMonthItemType = Array<Array<DateItemType>>;

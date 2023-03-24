@@ -293,6 +293,7 @@ const CalendarPopup: FC<CalendarPopupPropType> = ({ hasDeleteButton }) => {
                   date={date}
                   setDate={onDateItemClick}
                   pastDatesShown
+                  busynessShown
                 />
               </Animated.View>
             )}

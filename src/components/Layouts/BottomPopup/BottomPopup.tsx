@@ -55,7 +55,7 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
           : 0
         : HEIGHT.current;
       translateY.value = withTiming(newTranslateY, {
-        duration: keyboardHeight > 0 ? 400 : 300,
+        duration: keyboardHeight > 0 ? 340 : 280,
       });
     }, [visible, keyboardHeight]);
 

@@ -20,7 +20,7 @@ export type PopupsState = {
   addTaskPopupVisibilities: AddTaskPopupVisibleType | undefined,
   languagePopupVisible: boolean,
   taskToEdit?: TaskType,
-  taskData?: TaskData,
+  taskData: TaskData,
   calendarChoosedDate?: number,
 }
 

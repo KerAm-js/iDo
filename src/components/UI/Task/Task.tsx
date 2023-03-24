@@ -1,13 +1,11 @@
 import React, { FC, useEffect, useState } from "react";
 import { Alert, Text, View } from "react-native";
 import { SvgXml } from "react-native-svg";
-import { useSelector } from "react-redux";
 import { bell } from "../../../../assets/icons/bell";
 import { bellSlash } from "../../../../assets/icons/bellSlash";
 import { calendarEvent } from "../../../../assets/icons/calendar";
 import { clock } from "../../../../assets/icons/clock";
 import { repeat } from "../../../../assets/icons/repeat";
-import { folderSelector } from "../../../redux/selectors/folderSelector";
 import { store } from "../../../redux/store";
 import { LanguageType } from "../../../redux/types/prefs";
 import { regularBorderRadius } from "../../../styles/global/borderRadiuses";
@@ -49,6 +47,7 @@ import CheckButton from "../buttons/CheckButton/CheckButton";
 import LangText from "../LangText/LangText";
 import { taskStyles } from "./styles";
 import { TaskPropTypes } from "./types";
+import { pen } from "../../../../assets/icons/pen";
 
 const Task: FC<TaskPropTypes> = ({
   taskObject,
@@ -56,7 +55,6 @@ const Task: FC<TaskPropTypes> = ({
   rStyle,
   completeTask,
 }) => {
-  // const { folders } = useSelector(folderSelector);
   const {
     task,
     time,
@@ -65,6 +63,7 @@ const Task: FC<TaskPropTypes> = ({
     folderId,
     isExpired,
     remindTime,
+    description,
     isRegular,
   } = taskObject;
 
@@ -100,10 +99,6 @@ const Task: FC<TaskPropTypes> = ({
       setIsChecked((value) => !value);
     }
   };
-
-  // const folderIconXml: string = folderId
-  //   ? folders.find((item) => item.id === folderId)?.title || ""
-  //   : "";
 
   let timeTitle: LangObjectType | TextGetterType | undefined;
   let timeString: string | undefined;
@@ -183,6 +178,14 @@ const Task: FC<TaskPropTypes> = ({
     }
   }, [remindTime]);
 
+  const isDescriptionShowed = !(
+    timeTitle ||
+    timeString ||
+    reminderTitle ||
+    reminderTimeString ||
+    isRegular
+  );
+
   return (
     <ListItem
       isCardColor
@@ -234,7 +237,9 @@ const Task: FC<TaskPropTypes> = ({
                 }
                 width={12}
                 height={12}
-                style={{ marginRight: 5 }}
+                style={{
+                  marginRight: reminderTitle || reminderTimeString ? 5 : 0,
+                }}
               />
               {reminderTitle && (
                 <LangText
@@ -283,14 +288,29 @@ const Task: FC<TaskPropTypes> = ({
               <SvgXml xml={repeat(textColors.grey)} width={12} height={12} />
             </View>
           )}
-          {/* {folderIconXml && (
+          {description && (
             <View style={[taskStyles.infoBlock]}>
-              {timeString && <Text style={[textGrey]}>・</Text>}
-              <Text numberOfLines={1} style={[text12LineHeight, textGrey]}>
-                {folderIconXml}
-              </Text>
+              {!isDescriptionShowed && <Text style={[textGrey]}>・</Text>}
+              <SvgXml
+                width={12}
+                height={12}
+                xml={pen(textColors.grey)}
+                style={{ marginRight: isDescriptionShowed ? 5 : 0 }}
+              />
+              {isDescriptionShowed && (
+                <Text
+                  numberOfLines={1}
+                  style={[
+                    text12LineHeight,
+                    textGrey,
+                    { maxWidth: "100%", paddingRight: 15 },
+                  ]}
+                >
+                  {description}
+                </Text>
+              )}
             </View>
-          )} */}
+          )}
         </View>
       </View>
     </ListItem>
