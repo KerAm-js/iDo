@@ -39,7 +39,9 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
   const [circleButtonDisabled, setCircleButtonDisabled] =
     useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
-  const [submitButtonXml, setSubmitButtonXml] = useState(arrowUp(themeColors.dark.colors.text));
+  const [submitButtonXml, setSubmitButtonXml] = useState(
+    arrowUp(themeColors.dark.colors.text)
+  );
   const taskInput = useRef<TextInput | null>(null);
 
   const updateTask = useCallback((text: string) => setTask(text), []);
@@ -147,12 +149,16 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
     dispatch(setTaskPopupVisibleAction(false));
   };
 
+  const onCloseAnimationEnd = () => {
+    if (!addTaskPopupVisibilities) setDefaults();
+  };
+
   return (
     <ModalLayout visible={visible} close={close}>
       <BottomPopup
         visible={visible}
         handleKeyboard={true}
-        onCloseAnimationEnd={setDefaults}
+        onCloseAnimationEnd={onCloseAnimationEnd}
       >
         <ThemeInput
           value={task}

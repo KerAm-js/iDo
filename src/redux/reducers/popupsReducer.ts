@@ -1,3 +1,4 @@
+import { TaskType } from './../types/task';
 import {
   SET_TASK_TO_EDIT,
   SET_TASK_TIME,

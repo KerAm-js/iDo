@@ -13,36 +13,40 @@ import {
 } from "../constants/popups";
 import { TaskType, TimeType } from "../types/task";
 
-export const setTaskPopupVisibleAction = (visible: boolean) => (dispatch: Dispatch) => {
-  dispatch({ type: SET_TASK_POPUP_VISIBLE, visible });
-};
+export const setTaskPopupVisibleAction =
+  (visible: boolean) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_TASK_POPUP_VISIBLE, visible });
+  };
 
-export const setTimePopupVisibleAction = (visible: boolean) => (dispatch: Dispatch) => {
-  dispatch({ type: SET_TIME_POPUP_VISIBLE, visible });
-};
+export const setTimePopupVisibleAction =
+  (visible: boolean) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_TIME_POPUP_VISIBLE, visible });
+  };
 
-export const setReminderPopupVisibleAction = (visible: boolean) => (dispatch: Dispatch) => {
-  dispatch({ type: SET_REMINDER_POPUP_VISIBLE, visible });
-};
+export const setReminderPopupVisibleAction =
+  (visible: boolean) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_REMINDER_POPUP_VISIBLE, visible });
+  };
 
-export const setLanguagePopupVisibleAction = (visible: boolean) => (dispatch: Dispatch) => {
-  dispatch({ type: SET_LANGUAGE_POPUP_VISIBLE, visible });
-};
+export const setLanguagePopupVisibleAction =
+  (visible: boolean) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_LANGUAGE_POPUP_VISIBLE, visible });
+  };
 
 export const toggleIsTaskRegularAction = () => (dispatch: Dispatch) => {
   dispatch({ type: TOGGLE_IS_TASK_REGULAR });
 };
 
-export const setCalendarChoosedDateAction = (date: number | undefined) => (dispatch: Dispatch) => {
-  dispatch({ type: SET_CALENDAR_CHOOSED_DATE, date });
-}
+export const setCalendarChoosedDateAction =
+  (date: number | undefined) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_CALENDAR_CHOOSED_DATE, date });
+  };
 
 export const setTaskToEditAction =
-  (task: TaskType | undefined) =>
-  (dispatch: Dispatch) => {
+  (task: TaskType | undefined) => (dispatch: Dispatch) => {
     dispatch({
       type: SET_TASK_TO_EDIT,
-      task,
+      task: { ...task, remindTime: task?.remindTime || undefined },
     });
   };
 
