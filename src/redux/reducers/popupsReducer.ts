@@ -1,4 +1,4 @@
-import { TaskType } from './../types/task';
+import { TaskType } from "./../types/task";
 import {
   SET_TASK_TO_EDIT,
   SET_TASK_TIME,
@@ -13,6 +13,8 @@ import {
   SET_CALENDAR_CHOOSED_DATE,
 } from "./../constants/popups";
 import { PopupsActionType, PopupsState, TaskData } from "../types/popups";
+import { extractReminderState, reminderStateObject } from "../../utils/date";
+import { CHOOSE } from "../../utils/constants/periods";
 
 const getDefaultTaskData = (): TaskData => ({
   time: new Date().setHours(23, 59, 59, 999),
@@ -35,7 +37,8 @@ export const popupsReducer = (
     case SET_TASK_TO_EDIT: {
       let taskData: TaskData = getDefaultTaskData();
       if (action.task) {
-        const { time, timeType, isRegular, remindTime } = action.task;
+        const { time, timeType, isRegular, remindTime } =
+          action.task;
         taskData = {
           time,
           timeType,
@@ -55,12 +58,23 @@ export const popupsReducer = (
       };
     }
     case SET_TASK_TIME: {
+      let remindTime = state.taskData?.remindTime;
+      if (action.time && state.taskData?.time && remindTime) {
+        const remindState = extractReminderState(
+          new Date(state.taskData.time),
+          remindTime
+        );
+        if (remindState.id !== CHOOSE) {
+          remindTime = action.time - remindState.diff;
+        }
+      }
       return {
         ...state,
         taskData: {
           ...state.taskData,
           time: action.time,
           timeType: action.timeType || state.taskData?.timeType || "day",
+          remindTime,
         },
       };
     }

@@ -12,7 +12,7 @@ import { TimeType } from "../../../redux/types/task";
 import { CHOOSE } from "../../../utils/constants/periods";
 import {
   extractReminderState,
-  reminderStateList,
+  reminderStateObject,
   toLocaleStateString,
 } from "../../../utils/date";
 import { languageTexts } from "../../../utils/languageTexts";
@@ -106,10 +106,13 @@ const ReminderPopup: FC<ReminderPopupPropType> = () => {
 
   const setDefaults = (defaultTaskTime?: Date) => {
     if (taskData?.remindTime && defaultTaskTime) {
-      const state = extractReminderState(defaultTaskTime, taskData?.remindTime);
-      setState(state);
+      const reminderState = extractReminderState(
+        defaultTaskTime,
+        taskData?.remindTime
+      );
+      setState(reminderState.id);
       setDate(new Date(taskData?.remindTime));
-      if (state === CHOOSE) {
+      if (reminderState.id === CHOOSE) {
         setChooseItemTitleDate(new Date(taskData?.remindTime));
         setTime(new Date(taskData?.remindTime).toTimeString().slice(0, 5));
       } else {
@@ -150,7 +153,10 @@ const ReminderPopup: FC<ReminderPopupPropType> = () => {
     close();
   };
 
-  const onItemClick = (newState: string, newDate?: Date) => {
+  const onItemClick = (
+    newState: string,
+    newDate: Date | undefined,
+  ) => {
     if (newState === CHOOSE) {
       if (calendarShown) {
         setCalendarShown(false);
@@ -259,12 +265,13 @@ const ReminderPopup: FC<ReminderPopupPropType> = () => {
       >
         <Animated.View style={[reminderPopupStyles.container, containerStyle]}>
           <Animated.View style={[reminderPopupStyles.screen, scrollViewsStyle]}>
-            {reminderStateList.map((item) => (
+            {Object.entries(reminderStateObject).map((item) => (
               <ReminderCheckItem
-                key={item.id}
+                key={item[0]}
+                id={item[0]}
                 onPress={onItemClick}
-                isChecked={state === item.id}
-                {...item}
+                isChecked={state === item[0]}
+                {...item[1]}
               />
             ))}
             {!taskData?.isRegular && (

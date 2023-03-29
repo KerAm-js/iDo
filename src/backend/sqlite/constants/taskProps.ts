@@ -9,6 +9,7 @@ export const COMPLETION_TIME = 'completionTime';
 export const REMIND_TIME = 'remindTime';
 export const NOTIFICATION_ID = 'notificationId';
 export const FOLDER_ID = 'folderId';
+export const REMIND_TYPE = 'remindType';
 export const IS_REGULAR = 'isRegular';
 
 export const TITLE = 'title';

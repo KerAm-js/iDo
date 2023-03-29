@@ -3,12 +3,6 @@ import { ListObject } from "../../types/global/ListObject";
 
 export type TimeType = "day" | "time";
 
-export type TaskData = {
-  time?: number;
-  timeType?: TimeType;
-  remindTime?: number;
-  isRegular?: boolean;
-};
 
 export type TaskState = {
   tasks: Array<TaskType>;

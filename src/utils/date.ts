@@ -1,36 +1,17 @@
 import { CalendarMonthItemType } from "../components/UI/Calendar/types";
 import { LanguageType } from "../redux/types/prefs";
 import { TimeType } from "../redux/types/task";
-import { LangObjectType } from "../types/global/LangObject";
 import { CHOOSE, TODAY, TOMORROW, YESTERDAY } from "./constants/periods";
 import { languageTexts } from "./languageTexts";
 
-export const reminderStateList = [
-  {
-    id: "0",
-    minutes: 0,
-  },
-  {
-    id: "1",
-    minutes: 15,
-  },
-  {
-    id: "2",
-    minutes: 30,
-  },
-  {
-    id: "3",
-    hours: 1,
-  },
-  {
-    id: "5",
-    days: 1,
-  },
-  {
-    id: "6",
-    weeks: 1,
-  },
-];
+export const reminderStateObject = {
+  "0": { minutes: 0 },
+  "1": { minutes: 15 },
+  "2": { minutes: 30 },
+  "3": { hours: 1 },
+  "4": { days: 1 },
+  "5": { weeks: 1 },
+};
 
 export const getDate = (
   lang: LanguageType,
@@ -194,11 +175,11 @@ export const toLocaleStateString = ({
 };
 
 export const extractReminderState = (defaultDate: Date, remindDate: number) => {
-  const defaultState = reminderStateList[0].id;
+  const defaultState = '0';
   const diff = defaultDate.valueOf() - remindDate;
 
   if (diff <= 0) {
-    return defaultState;
+    return {id: "0", diff};
   }
 
   const days = diff / (1000 * 3600 * 24);
@@ -206,39 +187,19 @@ export const extractReminderState = (defaultDate: Date, remindDate: number) => {
   const minutes = diff / (1000 * 60);
 
   if (days === 7) {
-    return (
-      reminderStateList.find((item) => item.weeks === 1)?.id ||
-      reminderStateList[0].id
-    );
+    return {id: "5", diff};
   } else if (days === 1) {
-    return (
-      reminderStateList.find((item) => item.days === 1)?.id ||
-      reminderStateList[0].id
-    );
+    return {id: "4", diff};
   } else if (hours === 1) {
-    return (
-      reminderStateList.find((item) => item.hours === 1)?.id ||
-      reminderStateList[0].id
-    );
-  } else if (hours === 3) {
-    return (
-      reminderStateList.find((item) => item.hours === 3)?.id ||
-      reminderStateList[0].id
-    );
+    return {id: "3", diff};
   } else if (minutes === 30) {
-    return (
-      reminderStateList.find((item) => item.minutes === 30)?.id ||
-      reminderStateList[0].id
-    );
+    return {id: "2", diff};
   } else if (minutes === 15) {
-    return (
-      reminderStateList.find((item) => item.minutes === 15)?.id ||
-      reminderStateList[0].id
-    );
+    return {id: "1", diff};
   } else if (minutes === 0) {
-    return reminderStateList[0].id;
+    return {id: "0", diff};
   } else {
-    return CHOOSE;
+    return {id: CHOOSE, diff};
   }
 };
 

@@ -1,7 +1,5 @@
 import { Action } from "@reduxjs/toolkit";
-import { TaskType } from "./task";
-
-export type TimeType = "day" | "time";
+import { TaskType, TimeType } from "./task";
 
 export type TaskData = {
   time?: number;
@@ -11,26 +9,26 @@ export type TaskData = {
 };
 
 export type AddTaskPopupVisibleType = {
-  task: boolean,
-  time: boolean,
-  reminder: boolean,
-}
+  task: boolean;
+  time: boolean;
+  reminder: boolean;
+};
 
 export type PopupsState = {
-  addTaskPopupVisibilities: AddTaskPopupVisibleType | undefined,
-  languagePopupVisible: boolean,
-  taskToEdit?: TaskType,
-  taskData: TaskData,
-  calendarChoosedDate?: number,
-}
+  addTaskPopupVisibilities: AddTaskPopupVisibleType | undefined;
+  languagePopupVisible: boolean;
+  taskToEdit?: TaskType;
+  taskData: TaskData;
+  calendarChoosedDate?: number;
+};
 
 export interface PopupsActionType extends Action {
-  task: undefined | TaskType,
-  taskData: undefined | TaskData,
-  time: number,
-  timeType: TimeType | null,
-  remindTime: number,
-  isRegular: boolean,
-  visible: boolean,
-  date: number | undefined,
+  task: undefined | TaskType;
+  taskData: undefined | TaskData;
+  time: number;
+  timeType: TimeType | null;
+  remindTime: number;
+  isRegular: boolean;
+  visible: boolean;
+  date: number | undefined;
 }
