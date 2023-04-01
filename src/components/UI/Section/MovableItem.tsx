@@ -306,11 +306,12 @@ const MovableItem: FC<MovableItemProps> = ({
   const openEditTaskPopup = () =>
     dispatch(setTaskToEditAction({ ...taskObject }));
 
+  console.log(taskObject.task, translateX.value)
+
   return (
     <Animated.View
       entering={
         isInsertingAnimated &&
-        !positions.value[id] &&
         sectionTitle !== CALENDAR_DAY
           ? SlideInRight.springify().damping(12).delay(100)
           : undefined

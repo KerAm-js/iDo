@@ -54,6 +54,7 @@ export const taskReducer = (
       return {
         ...state,
         tasks,
+        isTaskAddingAnimated: false,
       };
     }
     case COMPLETE_TASK: {

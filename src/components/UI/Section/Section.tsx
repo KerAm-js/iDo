@@ -56,7 +56,6 @@ const Section: FC<SectionProps> = ({
     initPositions
   );
   const positions = useSharedValue<ListObject>(taskListToObject(sortedTasks));
-  const [isDeleting, setIsDeleting] = useState(false);
   const areAnimationsDisabled = useRef(false);
   const upperBound = useRef<number>(0);
   upperBound.current = sortedTasks.length - 1 - completedTasksLength;
@@ -109,7 +108,7 @@ const Section: FC<SectionProps> = ({
 
   const listContainerOpacityStyle = useAnimatedStyle(() => {
     return {
-      opacity: 1,
+      opacity: opacity.value,
     };
   }, [opacity.value]);
 
@@ -194,7 +193,6 @@ const Section: FC<SectionProps> = ({
 
   const deleteTask = useCallback(
     (task: TaskType) => {
-      setIsDeleting(true);
       dispatch(deleteTaskAction(task));
     },
     [dispatch]
@@ -266,14 +264,12 @@ const Section: FC<SectionProps> = ({
     positions.value = taskListToObject(sortedTasks);
     runEffectAnimations(areAnimationsDisabled.current);
     areAnimationsDisabled.current = false;
+    console.log(title, list.length);
   }, [list]);
 
   useEffect(() => {
-    if (sortedTasks.length > 0 && !isDeleting) {
+    if (sortedTasks.length > 0) {
       emptyListImageOpacity.value = 0;
-    }
-    if (isDeleting) {
-      setIsDeleting(false);
     }
   }, [list.length]);
 

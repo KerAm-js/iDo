@@ -129,7 +129,7 @@ export class LocalDB {
     return new Promise((resolve, reject) => {
       db.transaction((tx) => {
         tx.executeSql(
-          `SELECT * FROM tasks WHERE ${TIME} >= ${lowerBoundOfDate} OR (${IS_EXPIRED} == 1 AND ${IS_COMPLETED} == 0)`,
+          `SELECT * FROM tasks WHERE ${TIME} >= ${lowerBoundOfDate} OR ${IS_COMPLETED} == 0`,
           [],
           (_: SQLTransaction, result: SQLResultSet) =>
             resolve(result.rows._array),
