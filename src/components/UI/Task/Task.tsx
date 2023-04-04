@@ -60,7 +60,6 @@ const Task: FC<TaskPropTypes> = ({
     time,
     isCompleted,
     timeType,
-    folderId,
     isExpired,
     remindTime,
     description,
@@ -115,7 +114,7 @@ const Task: FC<TaskPropTypes> = ({
       timeTitle = languageTexts.periods[TOMORROW];
     } else {
       timeTitle = (lang: LanguageType) =>
-        getDate(lang, { date: taskTime }).weekDay;
+        getDate(lang, { date: taskTime, isShort: true }).weekDay;
     }
     xml = calendarEvent(textColors.grey);
   } else if (sectionType === EXPIRED) {
@@ -123,7 +122,7 @@ const Task: FC<TaskPropTypes> = ({
       timeTitle = languageTexts.periods[YESTERDAY];
     } else {
       timeTitle = (lang: LanguageType) =>
-        getDate(lang, { date: taskTime }).date;
+        getDate(lang, { date: taskTime, isShort: true }).date;
     }
     xml = calendarEvent(textColors.red);
   } else {
@@ -148,7 +147,11 @@ const Task: FC<TaskPropTypes> = ({
         reminderTitle = languageTexts.periods.midnight;
       } else if (remindTime !== time) {
         reminderTitle = (lang: LanguageType) =>
-          toLocaleStateString({ dateValue: remindTime, language: lang });
+          toLocaleStateString({
+            dateValue: remindTime,
+            language: lang,
+            isShort: true,
+          });
       }
     }
     if (!isMidnight) {

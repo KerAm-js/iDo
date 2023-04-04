@@ -13,7 +13,7 @@ import {
   SET_CALENDAR_CHOOSED_DATE,
 } from "./../constants/popups";
 import { PopupsActionType, PopupsState, TaskData } from "../types/popups";
-import { extractReminderState, reminderStateObject } from "../../utils/date";
+import { extractReminderState } from "../../utils/date";
 import { CHOOSE } from "../../utils/constants/periods";
 
 const getDefaultTaskData = (): TaskData => ({

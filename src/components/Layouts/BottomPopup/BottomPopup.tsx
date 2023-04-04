@@ -1,13 +1,13 @@
 import React, { FC, useEffect, useRef } from "react";
 import { Dimensions, Keyboard, LayoutChangeEvent, View } from "react-native";
 import {
+  Easing,
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
   withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useKeyboard } from "../../../hooks/useKeyboard";
 import { title22 } from "../../../styles/global/texts";
 import TextButton from "../../UI/buttons/TextButton/TextButton";
 import LangText from "../../UI/LangText/LangText";
@@ -20,7 +20,7 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
     visible,
     title,
     children,
-    handleKeyboard,
+    keyboardHeight,
     rightButtonColor,
     rightButtonTitle,
     onRightButtonPress,
@@ -30,7 +30,6 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
     const { bottom } = useSafeAreaInsets();
     const { top } = useSafeAreaInsets();
     const HEIGHT = useRef(0);
-    const keyboardHeight = useKeyboard();
 
     const translateY = useSharedValue(0);
 
@@ -52,14 +51,14 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
 
     useEffect(() => {
       const newTranslateY = visible
-        ? handleKeyboard && keyboardHeight
+        ? keyboardHeight
           ? 0 - keyboardHeight + bottom
           : 0
         : HEIGHT.current;
       translateY.value = withTiming(
         newTranslateY,
         {
-          duration: keyboardHeight > 0 ? 320 : 260,
+          easing: Easing.bezierFn(0, 0, 0.5, 1),
         },
         (isFinished) => {
           if (isFinished && !visible && onCloseAnimationEnd)
@@ -69,7 +68,7 @@ const BottomPopup: FC<BottomPopupPropType> = React.memo(
     }, [visible, keyboardHeight]);
 
     useEffect(() => {
-      if (!visible && handleKeyboard) {
+      if (!visible && keyboardHeight !== undefined) {
         Keyboard.dismiss();
       }
     }, [visible]);

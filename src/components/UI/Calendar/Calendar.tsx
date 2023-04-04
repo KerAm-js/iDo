@@ -111,7 +111,7 @@ const Calendar: FC<CalendarPropType> = ({
   }, [language]);
 
   return (
-    <View style={[calendarStyles.container]}>
+    <View style={calendarStyles.container}>
       {!setGlobalTitle && (
         <ThemeText style={[calendarStyles.title, title18]}>{title}</ThemeText>
       )}

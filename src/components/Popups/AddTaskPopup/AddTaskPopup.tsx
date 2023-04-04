@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as Haptics from "expo-haptics";
 import { TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -18,10 +18,13 @@ import ThemeInput from "../../Layouts/Theme/Input/ThemeInput";
 import CircleButton from "../../UI/buttons/CircleButton/CircleButton";
 import IconButton from "../../UI/buttons/IconButton/IconButton";
 import { addTaskPopupStyles } from "./styles";
-import { AddTaskPopupPropType } from "./types";
 import { repeat } from "../../../../assets/icons/repeat";
 import ModalLayout from "../../Layouts/Modal/ModalLayout";
-import { popupsSelector } from "../../../redux/selectors/popupsSelector";
+import {
+  addTaskPopupVisibilitiesSelector,
+  taskDataSelector,
+  taskToEditSelector,
+} from "../../../redux/selectors/popupsSelector";
 import {
   toggleIsTaskRegularAction,
   setTaskPopupVisibleAction,
@@ -29,10 +32,35 @@ import {
   setReminderPopupVisibleAction,
   setDefaultTaskDataAction,
 } from "../../../redux/actions/popupsActions";
+import { useKeyboard } from "../../../hooks/useKeyboard";
 
-const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
-  const { addTaskPopupVisibilities, taskToEdit, taskData } =
-    useSelector(popupsSelector);
+const AddTaskPopup = () => {
+  const addTaskPopupVisibilities = useSelector(
+    addTaskPopupVisibilitiesSelector
+  );
+  const keyboardHeight = useKeyboard();
+  const dispatch: AppDispatch = useDispatch();
+  const visible = !!addTaskPopupVisibilities?.task;
+
+  const close = () => {
+    dispatch(setTaskPopupVisibleAction(false));
+  };
+
+  return (
+    <ModalLayout visible={visible} close={close}>
+      <BottomPopup visible={visible} keyboardHeight={keyboardHeight}>
+        <Content />
+      </BottomPopup>
+    </ModalLayout>
+  );
+};
+
+const Content = () => {
+  const addTaskPopupVisibilities = useSelector(
+    addTaskPopupVisibilitiesSelector
+  );
+  const taskData = useSelector(taskDataSelector);
+  const taskToEdit = useSelector(taskToEditSelector);
   const visible = !!addTaskPopupVisibilities?.task;
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
@@ -53,6 +81,7 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
   const setDefaults = () => {
     setTask("");
     setDescription("");
+    setSubmitButtonXml("");
   };
 
   const onSubmit = () => {
@@ -105,14 +134,21 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
   };
 
   useEffect(() => {
-    if (!visible) return;
-    if (taskToEdit) {
-      setSubmitButtonXml(penFill(themeColors.dark.colors.text));
-    } else {
-      taskInput.current?.focus();
-      setSubmitButtonXml(arrowUp(themeColors.dark.colors.text));
+    if (!addTaskPopupVisibilities) {
+      setTimeout(() => {
+        setDefaults();
+      }, 320);
     }
-  }, [visible]);
+    if (!taskToEdit && visible) taskInput.current?.focus();
+    if (submitButtonXml) {
+      return;
+    }
+    setSubmitButtonXml(
+      taskToEdit
+        ? penFill(themeColors.dark.colors.text)
+        : arrowUp(themeColors.dark.colors.text)
+    );
+  }, [addTaskPopupVisibilities]);
 
   useEffect(() => {
     if (taskToEdit) {
@@ -145,39 +181,26 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
     }
   }, [task, description, taskData, taskData?.isRegular]);
 
-  const close = () => {
-    dispatch(setTaskPopupVisibleAction(false));
-  };
-
-  const onCloseAnimationEnd = () => {
-    if (!addTaskPopupVisibilities) setDefaults();
-  };
-
   return (
-    <ModalLayout visible={visible} close={close}>
-      <BottomPopup
-        visible={visible}
-        handleKeyboard={true}
-        onCloseAnimationEnd={onCloseAnimationEnd}
-      >
-        <ThemeInput
-          value={task}
-          onChangeText={updateTask}
-          multiline
-          maxLength={150}
-          reference={taskInput}
-          langPlaceholder={languageTexts.words.task}
-          style={addTaskPopupStyles.taskInput}
-        />
-        <ThemeInput
-          value={description}
-          onChangeText={updateDescription}
-          multiline
-          maxLength={500}
-          langPlaceholder={languageTexts.words.description}
-          style={addTaskPopupStyles.input}
-        />
-        {/* <ScrollView
+    <>
+      <ThemeInput
+        value={task}
+        onChangeText={updateTask}
+        multiline
+        maxLength={150}
+        reference={taskInput}
+        langPlaceholder={languageTexts.words.task}
+        style={addTaskPopupStyles.taskInput}
+      />
+      <ThemeInput
+        value={description}
+        onChangeText={updateDescription}
+        multiline
+        maxLength={500}
+        langPlaceholder={languageTexts.words.description}
+        style={addTaskPopupStyles.input}
+      />
+      {/* <ScrollView
         style={[addTaskPopupStyles.foldersContainer]}
         horizontal
         showsHorizontalScrollIndicator={false}
@@ -194,49 +217,46 @@ const AddTaskPopup: FC<AddTaskPopupPropType> = () => {
           />
         ))}
       </ScrollView> */}
-        <View style={[addTaskPopupStyles.buttonsContainer]}>
-          <View style={[addTaskPopupStyles.buttonsGroup]}>
-            <IconButton
-              xml={clock(
-                (taskData?.time && taskData?.timeType) || taskToEdit
-                  ? textColors.blue
-                  : textColors.grey
-              )}
-              iconWidth={20}
-              iconHeight={20}
-              style={addTaskPopupStyles.iconButton}
-              onClick={() => dispatch(setTimePopupVisibleAction(true))}
-            />
-            <IconButton
-              xml={bell(
-                taskData?.remindTime ? textColors.blue : textColors.grey
-              )}
-              iconWidth={20}
-              iconHeight={20}
-              style={addTaskPopupStyles.iconButton}
-              onClick={() => dispatch(setReminderPopupVisibleAction(true))}
-            />
-            <IconButton
-              xml={repeat(
-                taskData?.isRegular ? textColors.blue : textColors.grey
-              )}
-              iconWidth={20}
-              iconHeight={20}
-              style={addTaskPopupStyles.iconButton}
-              onClick={toggleIsTaskRegular}
-            />
-          </View>
-          <View style={[addTaskPopupStyles.buttonsGroup]}>
-            <CircleButton
-              xml={submitButtonXml}
-              size="small"
-              disabled={circleButtonDisabled}
-              onClick={onSubmit}
-            />
-          </View>
+      <View style={[addTaskPopupStyles.buttonsContainer]}>
+        <View style={[addTaskPopupStyles.buttonsGroup]}>
+          <IconButton
+            xml={clock(
+              (taskData?.time && taskData?.timeType) || taskToEdit
+                ? textColors.blue
+                : textColors.grey
+            )}
+            iconWidth={20}
+            iconHeight={20}
+            style={addTaskPopupStyles.iconButton}
+            onClick={() => dispatch(setTimePopupVisibleAction(true))}
+          />
+          <IconButton
+            xml={bell(taskData?.remindTime ? textColors.blue : textColors.grey)}
+            iconWidth={20}
+            iconHeight={20}
+            style={addTaskPopupStyles.iconButton}
+            onClick={() => dispatch(setReminderPopupVisibleAction(true))}
+          />
+          <IconButton
+            xml={repeat(
+              taskData?.isRegular ? textColors.blue : textColors.grey
+            )}
+            iconWidth={20}
+            iconHeight={20}
+            style={addTaskPopupStyles.iconButton}
+            onClick={toggleIsTaskRegular}
+          />
         </View>
-      </BottomPopup>
-    </ModalLayout>
+        <View style={[addTaskPopupStyles.buttonsGroup]}>
+          <CircleButton
+            xml={submitButtonXml || arrowUp(themeColors.dark.colors.text)}
+            size="small"
+            disabled={circleButtonDisabled}
+            onClick={onSubmit}
+          />
+        </View>
+      </View>
+    </>
   );
 };
 

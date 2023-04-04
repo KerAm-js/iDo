@@ -610,6 +610,12 @@ export const languageTexts = {
       de:"RateAnwendung",
       ch:"Программин мах хадо",
     }, 
+    clear: {
+      ru:"Очистить",
+      en:"Clear",
+      de:"Klar",
+      ch:"ЦIандан",
+    },
     complete: {
       ru:"Выполнить",
       en:"Complete",

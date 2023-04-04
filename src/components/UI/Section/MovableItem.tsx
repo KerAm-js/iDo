@@ -52,7 +52,7 @@ const MovableItem: FC<MovableItemProps> = ({
   const [isDragged, setIsDragged] = useState(false);
   const dispatch: AppDispatch = useDispatch();
   const { width: SCREEN_WIDTH } = Dimensions.get("screen");
-  const translateThreshold = SCREEN_WIDTH * -0.4;
+  const translateThreshold = SCREEN_WIDTH * -0.35;
   const top = positions.value[id]
     ? itemHeight * positions?.value[id]?.position +
       (positions?.value[id]?.isCompleted ? 28 : 0)
@@ -277,7 +277,7 @@ const MovableItem: FC<MovableItemProps> = ({
       setIsDragged(true);
       zIndex.value = 10 * upperBound.current;
       scale.value = withTiming(1.04);
-      shadowOpacity.value = withTiming(1);
+      shadowOpacity.value = withTiming(0.8);
     }
   };
 
@@ -305,8 +305,6 @@ const MovableItem: FC<MovableItemProps> = ({
 
   const openEditTaskPopup = () =>
     dispatch(setTaskToEditAction({ ...taskObject }));
-
-  console.log(taskObject.task, translateX.value)
 
   return (
     <Animated.View

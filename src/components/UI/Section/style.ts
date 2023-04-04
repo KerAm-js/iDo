@@ -55,8 +55,10 @@ export const movableItemStyles = StyleSheet.create({
   },
   trashIconContainer: {
     position: "absolute",
-    right: 20,
-    width: 24,
-    height: 24,
+    right: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 40,
+    height: 40,
   },
 });

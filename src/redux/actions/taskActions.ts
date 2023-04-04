@@ -175,7 +175,7 @@ export const addRegularTask = async (
     };
     await addTask(dipatch, regularTask, !!isTaskAddingAnimated);
   } catch (error) {
-    console.log("addRegularTask");
+    console.log("addRegularTask", error);
   }
 };
 

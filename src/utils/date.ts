@@ -145,12 +145,14 @@ export const toLocaleStateString = ({
   timeType,
   hideStateDays,
   defaultDate,
+  isShort,
 }: {
   defaultDate?: number;
   dateValue: number;
   language: LanguageType;
   timeType?: TimeType;
   hideStateDays?: boolean;
+  isShort?: boolean;
 }) => {
   const { periods } = languageTexts;
   const date = new Date(dateValue);
@@ -165,21 +167,21 @@ export const toLocaleStateString = ({
   } else if (isTomorrow(date, defaultDate) && !hideStateDays) {
     dayString = periods.tomorrow[language];
   } else if (isWeeklyTime(date, defaultDate)) {
-    dayString = getDate(language, { date }).weekDay;
+    dayString = getDate(language, { date, isShort }).weekDay;
   } else {
     dayString =
-      getDate(language, { date }).date +
+      getDate(language, { date, isShort }).date +
       (!isCurrentYear ? " " + date.getFullYear() : "");
   }
   return dayString + (timeType === "time" ? ", " + time : "");
 };
 
 export const extractReminderState = (defaultDate: Date, remindDate: number) => {
-  const defaultState = '0';
+  const defaultState = "0";
   const diff = defaultDate.valueOf() - remindDate;
 
   if (diff <= 0) {
-    return {id: "0", diff};
+    return { id: "0", diff };
   }
 
   const days = diff / (1000 * 3600 * 24);
@@ -187,26 +189,24 @@ export const extractReminderState = (defaultDate: Date, remindDate: number) => {
   const minutes = diff / (1000 * 60);
 
   if (days === 7) {
-    return {id: "5", diff};
+    return { id: "5", diff };
   } else if (days === 1) {
-    return {id: "4", diff};
+    return { id: "4", diff };
   } else if (hours === 1) {
-    return {id: "3", diff};
+    return { id: "3", diff };
   } else if (minutes === 30) {
-    return {id: "2", diff};
+    return { id: "2", diff };
   } else if (minutes === 15) {
-    return {id: "1", diff};
+    return { id: "1", diff };
   } else if (minutes === 0) {
-    return {id: "0", diff};
+    return { id: "0", diff };
   } else {
-    return {id: CHOOSE, diff};
+    return { id: CHOOSE, diff };
   }
 };
 
 export const extractCalendarState = (date: Date) => {
-  if (isYesterday(date)) {
-    return YESTERDAY;
-  } else if (isToday(date)) {
+  if (isToday(date)) {
     return TODAY;
   } else if (isTomorrow(date)) {
     return TOMORROW;

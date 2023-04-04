@@ -32,6 +32,7 @@ export type CalendarPropType = {
   isCardBackgroundColor?: boolean;
   pastDatesShown?: boolean;
   busynessShown?: boolean;
+  bottomShadow?: boolean;
 };
 
 export type ListPropType = {

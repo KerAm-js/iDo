@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const TextButtonStyles = StyleSheet.create({
+export const textButtonStyles = StyleSheet.create({
   container: {
     minHeight: 30,
     alignItems: 'center',

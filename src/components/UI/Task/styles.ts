@@ -1,3 +1,4 @@
+import { shadowStyle } from './../../../styles/global/shadow';
 import { StyleSheet } from "react-native";
 
 export const taskStyles = StyleSheet.create({
@@ -7,6 +8,10 @@ export const taskStyles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 15,
     paddingLeft: 5,
+    ...shadowStyle,
+    shadowRadius: 6,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
   },
   infoContainer: {
     flexDirection: 'row',

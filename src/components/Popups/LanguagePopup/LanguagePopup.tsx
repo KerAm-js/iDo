@@ -3,7 +3,9 @@ import { View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { setLanguagePopupVisibleAction } from "../../../redux/actions/popupsActions";
 import { updateLanguageAction } from "../../../redux/actions/prefsActions";
-import { popupsSelector } from "../../../redux/selectors/popupsSelector";
+import {
+  languagePopupVisibleSelector,
+} from "../../../redux/selectors/popupsSelector";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { LanguageType } from "../../../redux/types/prefs";
 import { lagnuages, languageTexts } from "../../../utils/languageTexts";
@@ -14,17 +16,17 @@ import { CheckPopupPropType } from "./types";
 
 const LanguagePopup: FC<CheckPopupPropType> = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const { languagePopupVisible: visible } = useSelector(popupsSelector)
+  const visible = useSelector(languagePopupVisibleSelector);
   const onCheck = (lang: LanguageType) => {
     dispatch(updateLanguageAction(lang));
   };
 
   const close = () => {
     dispatch(setLanguagePopupVisibleAction(false));
-  }
+  };
 
   return (
-    <ModalLayout visible={visible} close={close} >
+    <ModalLayout visible={visible} close={close}>
       <BottomPopup title={languageTexts.popupTitles.language} visible={visible}>
         <View>
           {lagnuages.map((lang) => {

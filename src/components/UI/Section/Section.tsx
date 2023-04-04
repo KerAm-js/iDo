@@ -36,8 +36,8 @@ import { taskListToObject } from "../../../utils/section/positionsObject";
 import LangText from "../LangText/LangText";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 
-const TaskMargin = 8;
-const TaskHeight = 58 + TaskMargin;
+export const TaskMargin = 8;
+export const TaskHeight = 58 + TaskMargin;
 
 const emptyListHeight = 220;
 const baseHeight = 46;
@@ -264,7 +264,6 @@ const Section: FC<SectionProps> = ({
     positions.value = taskListToObject(sortedTasks);
     runEffectAnimations(areAnimationsDisabled.current);
     areAnimationsDisabled.current = false;
-    console.log(title, list.length);
   }, [list]);
 
   useEffect(() => {
