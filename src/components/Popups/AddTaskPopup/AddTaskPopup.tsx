@@ -33,6 +33,7 @@ import {
   setDefaultTaskDataAction,
 } from "../../../redux/actions/popupsActions";
 import { useKeyboard } from "../../../hooks/useKeyboard";
+import { autoReminderSelector } from "../../../redux/selectors/prefsSelectors";
 
 const AddTaskPopup = () => {
   const addTaskPopupVisibilities = useSelector(
@@ -61,6 +62,7 @@ const Content = () => {
   );
   const taskData = useSelector(taskDataSelector);
   const taskToEdit = useSelector(taskToEditSelector);
+  const autoReminder = useSelector(autoReminderSelector);
   const visible = !!addTaskPopupVisibilities?.task;
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
@@ -120,7 +122,7 @@ const Content = () => {
               isRegular: taskData?.isRegular ? 1 : 0,
             })
       );
-      dispatch(setDefaultTaskDataAction());
+      dispatch(setDefaultTaskDataAction(autoReminder));
       if (taskToEdit) {
         dispatch(setTaskPopupVisibleAction(false));
       }

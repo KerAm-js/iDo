@@ -4,9 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  setCalendarChoosedDateAction,
-} from "../../../../redux/actions/popupsActions";
+import { setCalendarChoosedDateAction } from "../../../../redux/actions/popupsActions";
 import { taskStateSelector } from "../../../../redux/selectors/taskSelector";
 import { AppDispatch } from "../../../../redux/types/appDispatch";
 import { TaskType } from "../../../../redux/types/task";
@@ -17,11 +15,13 @@ import Calendar from "../../../UI/Calendar/Calendar";
 import Section from "../../../UI/Section/Section";
 import ThemeBorder from "../../../UI/Theme/Border/ThemeBorder";
 import Options from "./Options";
+import { autoReminderSelector } from "../../../../redux/selectors/prefsSelectors";
 
 const CalendarScreen = () => {
   const navigation = useNavigation();
   const dispatch: AppDispatch = useDispatch();
   const { tasks, positions } = useSelector(taskStateSelector);
+  const autoReminder = useSelector(autoReminderSelector);
   const [date, setDate] = useState(new Date());
   const tabBarHeight = useBottomTabBarHeight();
 
@@ -34,9 +34,9 @@ const CalendarScreen = () => {
   );
 
   useEffect(() => {
-    dispatch(setCalendarChoosedDateAction(date.valueOf()));
+    dispatch(setCalendarChoosedDateAction(date.valueOf(), autoReminder));
     return () => {
-      dispatch(setCalendarChoosedDateAction(undefined));
+      dispatch(setCalendarChoosedDateAction(undefined, autoReminder));
     };
   }, [date]);
 

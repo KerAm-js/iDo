@@ -44,9 +44,7 @@ import {
 } from "../../../redux/selectors/popupsSelector";
 
 const ReminderPopup = () => {
-  const visible = useSelector(
-    taskReminderPopupVisibilitySelector
-  );
+  const visible = useSelector(taskReminderPopupVisibilitySelector);
   const dispatch: AppDispatch = useDispatch();
 
   const deleteButtonHandler = () => {
@@ -162,14 +160,10 @@ const Content = () => {
     const isTimeCorrect =
       !(isNaN(hours) && isNaN(minutes)) && time.length === 5;
 
-    const timeType: TimeType = time ? "time" : "day";
     const reminderTime: number =
       state === CHOOSE || (!state && taskData?.isRegular && isTimeCorrect)
         ? dateCopy.setHours(hours, minutes, 0, 0)
         : dateCopy.valueOf();
-    const timeValue: number = isTimeCorrect
-      ? dateCopy.setHours(hours, minutes, 0, 0)
-      : dateCopy.setHours(23, 59, 59, 999);
 
     dispatch(setTaskRemindTimeAction(state ? reminderTime : undefined));
   };

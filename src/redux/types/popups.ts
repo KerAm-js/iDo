@@ -31,4 +31,5 @@ export interface PopupsActionType extends Action {
   isRegular: boolean;
   visible: boolean;
   date: number | undefined;
+  autoReminder?: boolean;
 }

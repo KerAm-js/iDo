@@ -16,10 +16,19 @@ import { PopupsActionType, PopupsState, TaskData } from "../types/popups";
 import { extractReminderState } from "../../utils/date";
 import { CHOOSE } from "../../utils/constants/periods";
 
-const getDefaultTaskData = (): TaskData => ({
-  time: new Date().setHours(23, 59, 59, 999),
-  timeType: "day",
-});
+type props = {
+  defaultTime?: number;
+  isAutoReminder?: boolean;
+};
+
+const getDefaultTaskData = (args?: props): TaskData => {
+  const time = args?.defaultTime || new Date().setHours(23, 59, 59, 999);
+  return {
+    time,
+    timeType: "day",
+    remindTime: args?.isAutoReminder ? time - 1000 * 60 * 15 : undefined,
+  };
+};
 
 const initialState: PopupsState = {
   addTaskPopupVisibilities: undefined,
@@ -37,8 +46,7 @@ export const popupsReducer = (
     case SET_TASK_TO_EDIT: {
       let taskData: TaskData = getDefaultTaskData();
       if (action.task) {
-        const { time, timeType, isRegular, remindTime } =
-          action.task;
+        const { time, timeType, isRegular, remindTime } = action.task;
         taskData = {
           time,
           timeType,
@@ -90,11 +98,10 @@ export const popupsReducer = (
     case SET_DEFAULT_TASK_DATA: {
       return {
         ...state,
-        taskData: {
-          time:
-            state.calendarChoosedDate || new Date().setHours(23, 59, 59, 999),
-          timeType: "day",
-        },
+        taskData: getDefaultTaskData({
+          defaultTime: state?.calendarChoosedDate,
+          isAutoReminder: action.autoReminder,
+        }),
       };
     }
     case TOGGLE_IS_TASK_REGULAR: {
@@ -122,16 +129,16 @@ export const popupsReducer = (
       return {
         ...state,
         calendarChoosedDate: date,
-        taskData: {
-          time: date || new Date().setHours(23, 59, 59, 999),
-          timeType: "day",
-        },
+        taskData: getDefaultTaskData({
+          defaultTime: date,
+          isAutoReminder: action.autoReminder,
+        }),
       };
     }
     case SET_TASK_POPUP_VISIBLE: {
       const taskData: TaskData = state.calendarChoosedDate
         ? state.taskData
-        : getDefaultTaskData();
+        : getDefaultTaskData({ isAutoReminder: action.autoReminder });
       return {
         ...state,
         taskData,

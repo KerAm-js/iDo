@@ -14,8 +14,8 @@ import {
 import { TaskType, TimeType } from "../types/task";
 
 export const setTaskPopupVisibleAction =
-  (visible: boolean) => (dispatch: Dispatch) => {
-    dispatch({ type: SET_TASK_POPUP_VISIBLE, visible });
+  (visible: boolean, autoReminder?: boolean) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_TASK_POPUP_VISIBLE, visible, autoReminder });
   };
 
 export const setTimePopupVisibleAction =
@@ -38,8 +38,9 @@ export const toggleIsTaskRegularAction = () => (dispatch: Dispatch) => {
 };
 
 export const setCalendarChoosedDateAction =
-  (date: number | undefined) => (dispatch: Dispatch) => {
-    dispatch({ type: SET_CALENDAR_CHOOSED_DATE, date });
+  (date: number | undefined, autoReminder?: boolean) =>
+  (dispatch: Dispatch) => {
+    dispatch({ type: SET_CALENDAR_CHOOSED_DATE, date, autoReminder });
   };
 
 export const setTaskToEditAction =
