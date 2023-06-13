@@ -309,8 +309,7 @@ const MovableItem: FC<MovableItemProps> = ({
   return (
     <Animated.View
       entering={
-        isInsertingAnimated &&
-        sectionTitle !== CALENDAR_DAY
+        isInsertingAnimated && sectionTitle !== CALENDAR_DAY
           ? SlideInRight.springify().damping(12).delay(100)
           : undefined
       }

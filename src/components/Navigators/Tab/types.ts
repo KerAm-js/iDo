@@ -1,7 +1,5 @@
-import { HomePropType } from "../../screens/Home/types";
-
 export type rootTabNavigatorParamList = {
-  Home: HomePropType;
+  Home: undefined;
   Folders: undefined;
   Stats: undefined;
   Prefs: undefined;

@@ -3,11 +3,16 @@ import { View } from "react-native";
 import { getDate } from "../../../utils/date";
 import ScreenLayout from "../../Layouts/Screen/ScreenLayout";
 import Section from "../../UI/Section/Section";
-import { HomePropType, SectionsObjectType } from "./types";
 import { useDispatch, useSelector } from "react-redux";
 import { getSections } from "../../../utils/section/sections";
 import { useNavigation } from "@react-navigation/native";
-import { EXPIRED, PERIODS_LIST } from "../../../utils/constants/periods";
+import {
+  EXPIRED,
+  FOR_TODAY,
+  FOR_TOMORROW,
+  FOR_WEEK,
+  PERIODS_LIST,
+} from "../../../utils/constants/periods";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { loadSectionsVisibilitiesFromASAction } from "../../../redux/actions/interfaceActions";
 import CalendarIconButton from "../../UI/buttons/IconButton/CalendarIconButton";
@@ -17,8 +22,9 @@ import { HomeStackNavigatorParamsList } from "../../Navigators/Stack/Home/types"
 import { LanguageType } from "../../../redux/types/prefs";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { interfaceSelector } from "../../../redux/selectors/interfaceSelectors";
+import { SectionsObjectType } from "./types";
 
-const Home: FC<HomePropType> = () => {
+const Home: FC<undefined> = () => {
   const navigator =
     useNavigation<StackNavigationProp<HomeStackNavigatorParamsList>>();
   const dispatch: AppDispatch = useDispatch();
@@ -51,7 +57,37 @@ const Home: FC<HomePropType> = () => {
       }}
     >
       <View>
-        {PERIODS_LIST.map((period) => {
+        {sections[EXPIRED].list.length !== 0 && (
+          <Section
+            key={EXPIRED}
+            title={sections[EXPIRED].title}
+            list={sections[EXPIRED].list}
+            initPositions={sections[EXPIRED].positions}
+            visibilities={sectionsVisibilities[EXPIRED]}
+          />
+        )}
+        <Section
+          key={FOR_TODAY}
+          title={sections[FOR_TODAY].title}
+          list={sections[FOR_TODAY].list}
+          initPositions={sections[FOR_TODAY].positions}
+          visibilities={sectionsVisibilities[FOR_TODAY]}
+        />
+        <Section
+          key={FOR_TOMORROW}
+          title={sections[FOR_TOMORROW].title}
+          list={sections[FOR_TOMORROW].list}
+          initPositions={sections[FOR_TOMORROW].positions}
+          visibilities={sectionsVisibilities[FOR_TOMORROW]}
+        />
+        <Section
+          key={FOR_WEEK}
+          title={sections[FOR_WEEK].title}
+          list={sections[FOR_WEEK].list}
+          initPositions={sections[FOR_WEEK].positions}
+          visibilities={sectionsVisibilities[FOR_WEEK]}
+        />
+        {/* {PERIODS_LIST.map((period) => {
           if (period === EXPIRED && sections[EXPIRED].list.length === 0) {
             return null;
           }
@@ -64,7 +100,7 @@ const Home: FC<HomePropType> = () => {
               visibilities={sectionsVisibilities[period]}
             />
           );
-        })}
+        })} */}
       </View>
     </ScreenLayout>
   );

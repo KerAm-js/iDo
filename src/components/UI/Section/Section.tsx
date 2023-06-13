@@ -34,7 +34,10 @@ import { saveSectionVisibilityToAS } from "../../../backend/asyncStorage/section
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { taskListToObject } from "../../../utils/section/positionsObject";
 import LangText from "../LangText/LangText";
-import { taskStateSelector } from "../../../redux/selectors/taskSelector";
+import {
+  isTaskAddingAnimatedSelector,
+  taskStateSelector,
+} from "../../../redux/selectors/taskSelector";
 
 export const TaskMargin = 8;
 export const TaskHeight = 58 + TaskMargin;
@@ -49,8 +52,9 @@ const Section: FC<SectionProps> = ({
   visibilities,
   disableAnimationsTrigger,
 }) => {
+  console.log(title);
   const dispatch: AppDispatch = useDispatch();
-  const { isTaskAddingAnimated } = useSelector(taskStateSelector);
+  const isTaskAddingAnimated = useSelector(isTaskAddingAnimatedSelector);
   const [sortedTasks, completedTasksLength] = sortTasksAndUpdatePositions(
     list,
     initPositions
@@ -342,7 +346,8 @@ const Section: FC<SectionProps> = ({
 };
 
 const shouldSectionUpdate = (prev: SectionProps, curr: SectionProps) => {
-  let result =
+  const result =
+    prev.list.length === curr.list.length &&
     JSON.stringify(prev.list) === JSON.stringify(curr.list) &&
     JSON.stringify(prev.initPositions) === JSON.stringify(curr.initPositions);
   return result;

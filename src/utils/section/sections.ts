@@ -1,5 +1,4 @@
 import { isToday } from './../date';
-import { SectionsObjectType } from './../../components/Screens/Home/types';
 import {
   EXPIRED,
   FOR_TODAY,
@@ -14,6 +13,7 @@ import { getDaysDiff, isWeeklyTime } from "../date";
 import { LanguageType } from "../../redux/types/prefs";
 import { HomePeriodsKeys, PeriodsListType } from '../../types/global/Periods';
 import { ListObject } from '../../types/global/ListObject';
+import { SectionsObjectType } from '../../components/Screens/Home/types';
 
 export const getSectionListEmptyMessage = (title: HomePeriodsKeys, lang: LanguageType) => {
   let clearListMessage = `${languageTexts.sectionEmptyList[FOR_TODAY][lang]} ${languageTexts.periods[
