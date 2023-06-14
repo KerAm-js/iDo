@@ -218,10 +218,6 @@ const Content: FC<{ visible: boolean }> = ({ visible }) => {
       Number(hours[1])
     );
     if (visible && newDate.valueOf() !== currentDate) {
-      console.log(
-        newDate.toLocaleString(),
-        new Date(currentDate).toLocaleString()
-      );
       setDefaults(newDate, taskData.timeType);
     }
   }, [visible]);
