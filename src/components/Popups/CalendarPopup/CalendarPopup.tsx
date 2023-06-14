@@ -212,13 +212,16 @@ const Content: FC<{ visible: boolean }> = ({ visible }) => {
   useEffect(() => {
     translateFormButtonY.value = 0;
     const newDate = new Date(taskData.time);
-    if (
-      visible &&
-      (newDate.valueOf() !== date.valueOf() ||
-        (time && taskData.timeType === "day")) 
-        //Тут надо быть осторожным, сравниваются не сами даты, а типы дедлайнов, 
-        //это может привести к ошибкам в будущем, но сейчас всё работает
-    ) {
+    const hours = time.split(":");
+    const currentDate = new Date(date.valueOf()).setHours(
+      Number(hours[0]),
+      Number(hours[1])
+    );
+    if (visible && newDate.valueOf() !== currentDate) {
+      console.log(
+        newDate.toLocaleString(),
+        new Date(currentDate).toLocaleString()
+      );
       setDefaults(newDate, taskData.timeType);
     }
   }, [visible]);

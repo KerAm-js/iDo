@@ -75,7 +75,7 @@ export const scheduleTaskExpiration = ({
               currentTask.time === task.time &&
               currentTask.timeType === task.timeType &&
               currentTask.folderId === task.folderId;
-
+            console.log(isTaskNotUpdated);
             if (
               currentTask.isRegular &&
               isTaskNotUpdated &&
