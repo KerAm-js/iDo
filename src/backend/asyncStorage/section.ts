@@ -30,7 +30,7 @@ export const getSectionVisibilityFromAS = async (
       return undefined;
     }
   } catch (error) {
-    console.log('getSectionVisibilityFromAS', error);
+    console.log("getSectionVisibilityFromAS", error);
   }
 };
 
@@ -44,6 +44,6 @@ export const saveSectionVisibilityToAS = async (
       JSON.stringify(valueObj)
     );
   } catch (error) {
-    console.log('saveSectionVisibilityToAS', error);
+    console.log("saveSectionVisibilityToAS", error);
   }
 };

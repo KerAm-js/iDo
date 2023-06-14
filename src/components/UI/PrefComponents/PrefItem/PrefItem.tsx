@@ -13,52 +13,56 @@ import LangText from "../../LangText/LangText";
 import { prefItemStyles } from "./styles";
 import { PrefItemPropTypes } from "./types";
 
-const PrefItem: FC<PrefItemPropTypes> = React.memo(
-  ({ iconXml, title, type, onPress, state }) => {
-    let rightItem;
-    if (type === "navigation") {
-      rightItem = (
-        <SvgXml
-          xml={arrowBottom(textColors.grey)}
-          style={{ transform: [{ rotate: "-90deg" }] }}
-          width={16}
-          height={16}
-        />
-      );
-    } else if (type === "switching") {
-      rightItem = (
-        <Switch
-          trackColor={{
-            true: buttonColors.blue,
-          }}
-          value={!!state}
-          onValueChange={onPress}
-        />
-      );
-    } else {
-      rightItem = <Text style={[text14LineHeight, textGrey]}>{state}</Text>;
-    }
-
-    return (
-      <Pressable onPress={onPress}>
-        <ListItem isCardColor style={prefItemStyles.container}>
-          <View style={prefItemStyles.leftItemsContainer}>
-            <SvgXml
-              xml={iconXml}
-              style={prefItemStyles.icon}
-              width={22}
-              height={22}
-            />
-            <LangText
-              style={[text16LineHeight, prefItemStyles.title]}
-              title={title}
-            />
-          </View>
-          {rightItem}
-        </ListItem>
-      </Pressable>
+const PrefItem: FC<PrefItemPropTypes> = ({
+  iconXml,
+  title,
+  type,
+  onPress,
+  state,
+}) => {
+  let rightItem;
+  if (type === "navigation") {
+    rightItem = (
+      <SvgXml
+        xml={arrowBottom(textColors.grey)}
+        style={{ transform: [{ rotate: "-90deg" }] }}
+        width={16}
+        height={16}
+      />
     );
+  } else if (type === "switching") {
+    rightItem = (
+      <Switch
+        trackColor={{
+          true: buttonColors.blue,
+        }}
+        value={!!state}
+        onValueChange={onPress}
+      />
+    );
+  } else {
+    rightItem = <Text style={[text14LineHeight, textGrey]}>{state}</Text>;
   }
-);
 
-export default PrefItem;
+  return (
+    <Pressable onPress={onPress}>
+      <ListItem isCardColor style={prefItemStyles.container}>
+        <View style={prefItemStyles.leftItemsContainer}>
+          <SvgXml
+            xml={iconXml}
+            style={prefItemStyles.icon}
+            width={22}
+            height={22}
+          />
+          <LangText
+            style={[text16LineHeight, prefItemStyles.title]}
+            title={title}
+          />
+        </View>
+        {rightItem}
+      </ListItem>
+    </Pressable>
+  );
+};
+
+export default React.memo(PrefItem);

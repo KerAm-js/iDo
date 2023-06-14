@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { Dimensions, Keyboard, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -30,7 +30,6 @@ import ModalLayout from "../../Layouts/Modal/ModalLayout";
 import {
   taskDataSelector,
   taskTimePopupVisibilitySelector,
-  taskToEditSelector,
 } from "../../../redux/selectors/popupsSelector";
 import {
   setTaskTimeAction,
@@ -52,19 +51,17 @@ const CalendarPopup = () => {
         visible={visible}
         title={languageTexts.popupTitles.dateOfCompletion}
       >
-        <Content />
+        <Content visible={visible} />
       </BottomPopup>
     </ModalLayout>
   );
 };
 
-const Content = () => {
+const Content: FC<{ visible: boolean }> = ({ visible }) => {
   const theme = useTheme();
   const dispatch: AppDispatch = useDispatch();
   const { autoReminder } = useSelector(prefsSelector);
-  const visible = useSelector(taskTimePopupVisibilitySelector);
   const taskData = useSelector(taskDataSelector);
-  const taskToEdit = useSelector(taskToEditSelector);
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime, onTimeChange, isTimeValid, isTimeExpired] =
     useTimeValidation(date);
@@ -92,7 +89,7 @@ const Content = () => {
     keyboardHeight > 0 ? keyboardHeight - 30 : 0
   );
 
-  const scrollViewsStyle = useAnimatedStyle(() => {
+  const itemsWrapperStyle = useAnimatedStyle(() => {
     return {
       opacity: withTiming(keyboardHeight > 0 ? 0 : 1, { duration: 150 }),
     };
@@ -124,18 +121,17 @@ const Content = () => {
     [chooseItemTitleDate]
   );
 
-  const setDefaults = (defaultTaskTime?: Date, defaultTimeType?: TimeType) => {
+  const setDefaults = (defaultTaskTime: Date, defaultTimeType: TimeType) => {
     const state = defaultTaskTime
       ? extractCalendarState(defaultTaskTime)
       : TODAY;
-    const time = defaultTaskTime
-      ? defaultTimeType === "time"
+    const newTime =
+      defaultTimeType === "time"
         ? defaultTaskTime.toTimeString().slice(0, 5)
-        : ""
-      : "";
-    setTime(time);
+        : "";
+    setTime(newTime);
     setState(state);
-    setDate(defaultTaskTime ? defaultTaskTime : new Date());
+    setDate(defaultTaskTime);
     setCalendarShown(false);
 
     if (state === CHOOSE) {
@@ -144,10 +140,6 @@ const Content = () => {
       );
     } else {
       setChooseItemTitleDate(null);
-    }
-
-    if (!(defaultTaskTime && defaultTimeType)) {
-      setTimeInputPlaceholder(languageTexts.words.time);
     }
   };
 
@@ -219,22 +211,17 @@ const Content = () => {
 
   useEffect(() => {
     translateFormButtonY.value = 0;
-    if (visible && !taskToEdit && taskData?.time && taskData?.timeType) {
-      setDefaults(new Date(taskData?.time), taskData?.timeType);
+    const newDate = new Date(taskData.time);
+    if (
+      visible &&
+      (newDate.valueOf() !== date.valueOf() ||
+        (time && taskData.timeType === "day")) 
+        //Тут надо быть осторожным, сравниваются не сами даты, а типы дедлайнов, 
+        //это может привести к ошибкам в будущем, но сейчас всё работает
+    ) {
+      setDefaults(newDate, taskData.timeType);
     }
   }, [visible]);
-
-  useEffect(() => {
-    if (taskData?.timeType === "day" && time) {
-      setTime("");
-    }
-  }, [taskData]);
-
-  useEffect(() => {
-    if (taskToEdit) {
-      setDefaults(new Date(taskToEdit.time), taskToEdit.timeType);
-    }
-  }, [taskToEdit]);
 
   useEffect(() => {
     translateX.value = withTiming(calendarShown ? -SCREEN_WIDTH : 0, {
@@ -245,7 +232,7 @@ const Content = () => {
   return (
     <>
       <Animated.View style={[calendarPopupStyles.container, containerStyle]}>
-        <Animated.View style={[calendarPopupStyles.screen, scrollViewsStyle]}>
+        <Animated.View style={[calendarPopupStyles.screen, itemsWrapperStyle]}>
           <DateCheckItem
             title={languageTexts.periods[TODAY]}
             date={currDate}
@@ -270,7 +257,7 @@ const Content = () => {
         </Animated.View>
         <View style={[calendarPopupStyles.screen]}>
           {calendarShown && (
-            <Animated.View style={[scrollViewsStyle]}>
+            <Animated.View style={[itemsWrapperStyle]}>
               <Calendar
                 isCardBackgroundColor={true}
                 date={date}

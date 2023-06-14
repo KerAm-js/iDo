@@ -1,6 +1,24 @@
+import { TaskData } from "../redux/types/popups";
 import { LanguageType } from "../redux/types/prefs";
 import { TaskType } from "../redux/types/task";
 import { languageTexts } from "./languageTexts";
+
+export const checkIsTaskEdited = (
+  taskToEdit: TaskType,
+  {
+    task,
+    description,
+    taskData,
+  }: { task: string; description: string; taskData: TaskData }
+) => {
+  return (
+    task === taskToEdit.task &&
+    description === taskToEdit.description &&
+    taskData?.time === taskToEdit.time &&
+    taskData?.remindTime === taskToEdit.remindTime &&
+    taskData?.isRegular === !!taskToEdit.isRegular
+  );
+};
 
 export const getReminderItemTitle = (
   language: LanguageType,

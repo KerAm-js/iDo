@@ -1,4 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  FC,
+  Ref,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import * as Haptics from "expo-haptics";
 import { TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -34,6 +41,8 @@ import {
 } from "../../../redux/actions/popupsActions";
 import { useKeyboard } from "../../../hooks/useKeyboard";
 import { autoReminderSelector } from "../../../redux/selectors/prefsSelectors";
+import { AddTaskPopupVisibleType } from "../../../redux/types/popups";
+import { checkIsTaskEdited } from "../../../utils/utils";
 
 const AddTaskPopup = () => {
   const addTaskPopupVisibilities = useSelector(
@@ -50,23 +59,22 @@ const AddTaskPopup = () => {
   return (
     <ModalLayout visible={visible} close={close}>
       <BottomPopup visible={visible} keyboardHeight={keyboardHeight}>
-        <Content />
+        <Content addTaskPopupVisibilities={addTaskPopupVisibilities} />
       </BottomPopup>
     </ModalLayout>
   );
 };
 
-const Content = () => {
-  const addTaskPopupVisibilities = useSelector(
-    addTaskPopupVisibilitiesSelector
-  );
+const Content: FC<{ addTaskPopupVisibilities?: AddTaskPopupVisibleType }> = ({
+  addTaskPopupVisibilities,
+}) => {
   const taskData = useSelector(taskDataSelector);
   const taskToEdit = useSelector(taskToEditSelector);
   const autoReminder = useSelector(autoReminderSelector);
   const visible = !!addTaskPopupVisibilities?.task;
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
-  const [circleButtonDisabled, setCircleButtonDisabled] =
+  const [submitButtonDisabled, setSubmitButtonDisabled] =
     useState<boolean>(false);
   const [description, setDescription] = useState<string>("");
   const [submitButtonXml, setSubmitButtonXml] = useState(
@@ -108,19 +116,23 @@ const Content = () => {
                 remindTime,
                 isRegular: taskData?.isRegular ? 1 : 0,
               },
-              taskToEdit
+              taskToEdit,
+              autoReminder
             )
-          : addTaskAction({
-              id: new Date().valueOf(),
-              isCompleted: 0,
-              task,
-              description,
-              time,
-              isExpired: isExpired ? 1 : 0,
-              timeType,
-              remindTime,
-              isRegular: taskData?.isRegular ? 1 : 0,
-            })
+          : addTaskAction(
+              {
+                id: new Date().valueOf(),
+                isCompleted: 0,
+                task,
+                description,
+                time,
+                isExpired: isExpired ? 1 : 0,
+                timeType,
+                remindTime,
+                isRegular: taskData?.isRegular ? 1 : 0,
+              },
+              autoReminder
+            )
       );
       dispatch(setDefaultTaskDataAction(autoReminder));
       if (taskToEdit) {
@@ -162,29 +174,27 @@ const Content = () => {
   useEffect(() => {
     if (!visible) return;
     if (taskToEdit) {
-      const isTaskIsNotEdited =
-        task === taskToEdit.task &&
-        description === taskToEdit.description &&
-        taskData?.time === taskToEdit.time &&
-        taskData?.remindTime === taskToEdit.remindTime &&
-        taskData?.isRegular === !!taskToEdit.isRegular;
-
+      const isTaskIsNotEdited = checkIsTaskEdited(taskToEdit, {
+        task,
+        description,
+        taskData,
+      });
       if (isTaskIsNotEdited || task.length === 0) {
-        setCircleButtonDisabled(true);
+        setSubmitButtonDisabled(true);
       } else {
-        setCircleButtonDisabled(false);
+        setSubmitButtonDisabled(false);
       }
     } else {
       if (task.length > 0) {
-        setCircleButtonDisabled(false);
+        setSubmitButtonDisabled(false);
       } else {
-        setCircleButtonDisabled(true);
+        setSubmitButtonDisabled(true);
       }
     }
   }, [task, description, taskData, taskData?.isRegular]);
 
   return (
-    <>
+    <React.Fragment>
       <ThemeInput
         value={task}
         onChangeText={updateTask}
@@ -253,12 +263,12 @@ const Content = () => {
           <CircleButton
             xml={submitButtonXml || arrowUp(themeColors.dark.colors.text)}
             size="small"
-            disabled={circleButtonDisabled}
+            disabled={submitButtonDisabled}
             onClick={onSubmit}
           />
         </View>
       </View>
-    </>
+    </React.Fragment>
   );
 };
 

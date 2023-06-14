@@ -9,7 +9,7 @@ export const getPositionsFromAS = async (): Promise<ListObject | undefined>=> {
       return JSON.parse(positions);
     }
   } catch (error) {
-    console.log('getPositionsFromAS');
+    console.log("getPositionsFromAS");
   }
 }
 
@@ -17,6 +17,6 @@ export const savePositions = async (positions: ListObject) => {
   try {
     await AsyncStorage.setItem(POSITIONS, JSON.stringify(positions)); 
   } catch (error) {
-    console.log('savePositions', error);
+    console.log("savePositions", error);
   }
 }

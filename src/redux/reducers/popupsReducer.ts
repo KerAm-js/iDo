@@ -136,12 +136,12 @@ export const popupsReducer = (
       };
     }
     case SET_TASK_POPUP_VISIBLE: {
-      const taskData: TaskData = state.calendarChoosedDate
-        ? state.taskData
-        : getDefaultTaskData({ isAutoReminder: action.autoReminder });
       return {
         ...state,
-        taskData,
+        taskData: getDefaultTaskData({
+          defaultTime: state?.calendarChoosedDate,
+          isAutoReminder: action.autoReminder,
+        }),
         taskToEdit: undefined,
         addTaskPopupVisibilities: action.visible
           ? {

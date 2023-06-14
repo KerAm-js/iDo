@@ -1,4 +1,4 @@
-import React, { FC, useCallback, useEffect, useRef, useState } from "react";
+import React, { FC, useCallback, useEffect, useRef } from "react";
 import { Pressable, Text, View } from "react-native";
 import { arrowBottom } from "../../../../assets/icons/arrowBottom";
 import { textGrey, textSemiBold, title22 } from "../../../styles/global/texts";
@@ -34,10 +34,7 @@ import { saveSectionVisibilityToAS } from "../../../backend/asyncStorage/section
 import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { taskListToObject } from "../../../utils/section/positionsObject";
 import LangText from "../LangText/LangText";
-import {
-  isTaskAddingAnimatedSelector,
-  taskStateSelector,
-} from "../../../redux/selectors/taskSelector";
+import { isTaskAddingAnimatedSelector } from "../../../redux/selectors/taskSelector";
 
 export const TaskMargin = 8;
 export const TaskHeight = 58 + TaskMargin;
@@ -52,7 +49,6 @@ const Section: FC<SectionProps> = ({
   visibilities,
   disableAnimationsTrigger,
 }) => {
-  console.log(title);
   const dispatch: AppDispatch = useDispatch();
   const isTaskAddingAnimated = useSelector(isTaskAddingAnimatedSelector);
   const [sortedTasks, completedTasksLength] = sortTasksAndUpdatePositions(

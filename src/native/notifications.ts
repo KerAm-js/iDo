@@ -27,7 +27,7 @@ async function requestPermissionsAsync() {
       return true;
     }
   } catch (error) {
-    console.log('requestPermissionsAsync', error);
+    console.log("requestPermissionsAsync", error);
   }
 }
 
@@ -53,7 +53,7 @@ export const setNotification = async (
           title,
           subtitle,
           body,
-          sound: '../../assets/notification-sound.wav',
+          sound: "../../assets/notification-sound.wav",
           vibrate: [0, 250, 250, 250],
         },
         trigger: { seconds: time },
@@ -61,7 +61,7 @@ export const setNotification = async (
       return identifier;
     }
   } catch (error) {
-    console.log('setNotification', error);
+    console.log("setNotification", error);
   }
 };
 
@@ -88,7 +88,7 @@ export const presentNotification = async (title: string, subtitle: string, body:
       });
     }
   } catch (error) {
-    console.log('presentNotification', error);
+    console.log("presentNotification", error);
   }
 };
 
@@ -97,7 +97,7 @@ export const getAllNotifications = async () => {
     const result = await Notifications.getAllScheduledNotificationsAsync();
     return result;
   } catch (error) {
-    console.log('getAllNotifications', error);
+    console.log("getAllNotifications", error);
   }
 };
 
@@ -105,7 +105,7 @@ export const deleteNotification = async (notificationId: string) => {
   try {
     await Notifications.cancelScheduledNotificationAsync(notificationId);
   } catch (error) {
-    console.log('deleteNotification', error);
+    console.log("deleteNotification", error);
   }
 };
 
@@ -113,6 +113,6 @@ export const deleteAllNotifications = async () => {
   try {
     await Notifications.cancelAllScheduledNotificationsAsync();
   } catch (error) {
-    console.log('deleteAllNotifications', error);
+    console.log("deleteAllNotifications", error);
   }
 };

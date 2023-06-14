@@ -2,8 +2,8 @@ import { Action } from "@reduxjs/toolkit";
 import { TaskType, TimeType } from "./task";
 
 export type TaskData = {
-  time?: number;
-  timeType?: TimeType;
+  time: number;
+  timeType: TimeType;
   remindTime?: number;
   isRegular?: boolean;
 };

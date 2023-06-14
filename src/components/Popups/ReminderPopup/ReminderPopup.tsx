@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { FC, useCallback, useEffect, useState } from "react";
 import { Dimensions, Keyboard, View } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -8,7 +8,6 @@ import Animated, {
 import { useDispatch, useSelector } from "react-redux";
 import { clock } from "../../../../assets/icons/clock";
 import { AppDispatch } from "../../../redux/types/appDispatch";
-import { TimeType } from "../../../redux/types/task";
 import { CHOOSE } from "../../../utils/constants/periods";
 import {
   extractReminderState,
@@ -37,10 +36,8 @@ import {
   setTaskRemindTimeAction,
 } from "../../../redux/actions/popupsActions";
 import {
-  addTaskPopupVisibilitiesSelector,
   taskDataSelector,
   taskReminderPopupVisibilitySelector,
-  taskToEditSelector,
 } from "../../../redux/selectors/popupsSelector";
 
 const ReminderPopup = () => {
@@ -73,12 +70,7 @@ const ReminderPopup = () => {
 const Content = () => {
   const theme = useTheme();
   const dispatch: AppDispatch = useDispatch();
-  const addTaskPopupVisibilities = useSelector(
-    addTaskPopupVisibilitiesSelector
-  );
   const taskData = useSelector(taskDataSelector);
-  const taskToEdit = useSelector(taskToEditSelector);
-  const visible = !!addTaskPopupVisibilities?.reminder;
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime, onTimeChange, isTimeValid, isTimeExpired] =
     useTimeValidation(date);
@@ -135,18 +127,18 @@ const Content = () => {
     if (taskData?.remindTime && defaultTaskTime) {
       const reminderState = extractReminderState(
         defaultTaskTime,
-        taskData?.remindTime
+        taskData.remindTime
       );
       setState(reminderState.id);
-      setDate(new Date(taskData?.remindTime));
+      setDate(new Date(taskData.remindTime));
       if (reminderState.id === CHOOSE) {
-        setChooseItemTitleDate(new Date(taskData?.remindTime));
-        setTime(new Date(taskData?.remindTime).toTimeString().slice(0, 5));
+        setChooseItemTitleDate(new Date(taskData.remindTime));
+        setTime(new Date(taskData.remindTime).toTimeString().slice(0, 5));
       } else {
         setChooseItemTitleDate(null);
       }
     } else {
-      setDate(taskData?.time ? new Date(taskData?.time) : new Date());
+      setDate(new Date(taskData.time));
       setChooseItemTitleDate(null);
       setState("");
       setTime("");
@@ -196,6 +188,12 @@ const Content = () => {
   const onSubmit = () => {
     if (keyboardHeight) {
       Keyboard.dismiss();
+      if (state !== CHOOSE && time) {
+        const taskTime = new Date(taskData.time);
+        setState(CHOOSE);
+        setDate(new Date(taskTime));
+        setChooseItemTitleDate(new Date(taskTime));
+      }
     } else if (calendarShown) {
       setCalendarShown(false);
     } else {
@@ -219,45 +217,19 @@ const Content = () => {
   }, [keyboardHeight]);
 
   useEffect(() => {
-    translateFormButtonY.value = 0;
-    if (visible && !taskData?.remindTime) {
-      setDefaults();
-    }
-  }, [visible]);
-
-  useEffect(() => {
-    if (!taskData?.remindTime || (!taskData?.time && !taskData?.timeType)) {
+    if (!taskData?.remindTime) {
       setDefaults();
     }
     if (taskData?.remindTime && taskData?.time) {
       setDefaults(new Date(taskData?.time));
     }
-  }, [taskData]);
-
-  useEffect(() => {
-    if (taskToEdit) {
-      setDefaults(new Date(taskToEdit.time));
-    }
-  }, [taskToEdit]);
+  }, [taskData.time, taskData.remindTime]);
 
   useEffect(() => {
     translateX.value = withTiming(calendarShown ? -SCREEN_WIDTH : 0, {
       duration: 300,
     });
   }, [calendarShown]);
-
-  useEffect(() => {
-    if (state !== CHOOSE && time) {
-      const taskTime = new Date(taskData?.time || "");
-      setState(CHOOSE);
-      setDate(new Date(taskTime));
-      setChooseItemTitleDate(new Date(taskTime));
-    }
-  }, [time]);
-
-  useEffect(() => {
-    if (!addTaskPopupVisibilities) setDefaults();
-  }, [addTaskPopupVisibilities]);
 
   return (
     <>
