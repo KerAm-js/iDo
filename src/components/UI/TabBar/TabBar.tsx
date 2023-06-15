@@ -13,16 +13,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch } from "../../../redux/types/appDispatch";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 import { setTaskPopupVisibleAction } from "../../../redux/actions/popupsActions";
-import { autoReminderSelector } from "../../../redux/selectors/prefsSelectors";
 
 const TabBar: FC<BottomTabBarProps> = ({ state, descriptors, navigation }) => {
   const { dark } = useTheme();
   const { bottom } = useSafeAreaInsets();
-  const autoReminder = useSelector(autoReminderSelector);
   const dispatch: AppDispatch = useDispatch();
   const onCircleButtonClick = () => {
     setTimeout(() => {
-      dispatch(setTaskPopupVisibleAction(true, autoReminder));
+      dispatch(setTaskPopupVisibleAction(true));
     }, 200);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };

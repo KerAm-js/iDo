@@ -35,7 +35,6 @@ import {
   setTaskTimeAction,
   setTimePopupVisibleAction,
 } from "../../../redux/actions/popupsActions";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
 
 const CalendarPopup = () => {
   const visible = useSelector(taskTimePopupVisibilitySelector);
@@ -60,7 +59,6 @@ const CalendarPopup = () => {
 const Content: FC<{ visible: boolean }> = ({ visible }) => {
   const theme = useTheme();
   const dispatch: AppDispatch = useDispatch();
-  const { autoReminder } = useSelector(prefsSelector);
   const taskData = useSelector(taskDataSelector);
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime, onTimeChange, isTimeValid, isTimeExpired] =
@@ -156,7 +154,7 @@ const Content: FC<{ visible: boolean }> = ({ visible }) => {
       : dateCopy.setHours(23, 59, 59, 999);
 
     if (timeValue.valueOf() !== taskData?.time && state) {
-      dispatch(setTaskTimeAction(timeValue, timeType, autoReminder));
+      dispatch(setTaskTimeAction(timeValue, timeType));
     }
   };
 

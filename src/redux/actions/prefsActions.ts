@@ -4,12 +4,7 @@ import { ColorSchemeName } from "react-native";
 import { getPrefsFromAS } from "../../backend/asyncStorage/prefs";
 import { lagnuages } from "../../utils/languageTexts";
 import { SET_LANGUAGE, SET_THEME, UPDATE_PREFS } from "../constants/prefs";
-import { store } from "../store";
 import { LanguageType, ThemeType } from "../types/prefs";
-
-export const getAutoReminderSetting = () => {
-  return store.getState().prefs.autoReminder;
-};
 
 export const updateLanguageAction =
   (language: LanguageType) => (dispatch: Dispatch) => {

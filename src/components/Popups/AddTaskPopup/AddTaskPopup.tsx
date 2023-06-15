@@ -1,6 +1,5 @@
 import React, {
   FC,
-  Ref,
   useCallback,
   useEffect,
   useRef,
@@ -40,7 +39,6 @@ import {
   setDefaultTaskDataAction,
 } from "../../../redux/actions/popupsActions";
 import { useKeyboard } from "../../../hooks/useKeyboard";
-import { autoReminderSelector } from "../../../redux/selectors/prefsSelectors";
 import { AddTaskPopupVisibleType } from "../../../redux/types/popups";
 import { checkIsTaskEdited } from "../../../utils/utils";
 
@@ -70,7 +68,6 @@ const Content: FC<{ addTaskPopupVisibilities?: AddTaskPopupVisibleType }> = ({
 }) => {
   const taskData = useSelector(taskDataSelector);
   const taskToEdit = useSelector(taskToEditSelector);
-  const autoReminder = useSelector(autoReminderSelector);
   const visible = !!addTaskPopupVisibilities?.task;
   const dispatch: AppDispatch = useDispatch();
   const [task, setTask] = useState<string>("");
@@ -116,8 +113,7 @@ const Content: FC<{ addTaskPopupVisibilities?: AddTaskPopupVisibleType }> = ({
                 remindTime,
                 isRegular: taskData?.isRegular ? 1 : 0,
               },
-              taskToEdit,
-              autoReminder
+              taskToEdit
             )
           : addTaskAction(
               {
@@ -130,11 +126,10 @@ const Content: FC<{ addTaskPopupVisibilities?: AddTaskPopupVisibleType }> = ({
                 timeType,
                 remindTime,
                 isRegular: taskData?.isRegular ? 1 : 0,
-              },
-              autoReminder
+              }
             )
       );
-      dispatch(setDefaultTaskDataAction(autoReminder));
+      dispatch(setDefaultTaskDataAction());
       if (taskToEdit) {
         dispatch(setTaskPopupVisibleAction(false));
       }

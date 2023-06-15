@@ -12,9 +12,11 @@ import {
   SET_CALENDAR_CHOOSED_DATE,
 } from "../constants/popups";
 import { TaskType, TimeType } from "../types/task";
+import { RootState } from "../types/rootState";
 
 export const setTaskPopupVisibleAction =
-  (visible: boolean, autoReminder?: boolean) => (dispatch: Dispatch) => {
+  (visible: boolean) => (dispatch: Dispatch, getState: () => RootState) => {
+    const autoReminder = getState().prefs.autoReminder;
     dispatch({ type: SET_TASK_POPUP_VISIBLE, visible, autoReminder });
   };
 
@@ -38,8 +40,9 @@ export const toggleIsTaskRegularAction = () => (dispatch: Dispatch) => {
 };
 
 export const setCalendarChoosedDateAction =
-  (date: number | undefined, autoReminder?: boolean) =>
-  (dispatch: Dispatch) => {
+  (date: number | undefined) =>
+  (dispatch: Dispatch, getState: () => RootState) => {
+    const autoReminder = getState().prefs.autoReminder;
     dispatch({ type: SET_CALENDAR_CHOOSED_DATE, date, autoReminder });
   };
 
@@ -57,7 +60,8 @@ export const setTaskRemindTimeAction =
   };
 
 export const setDefaultTaskDataAction =
-  (autoReminder?: boolean) => (dispatch: Dispatch) => {
+  () => (dispatch: Dispatch, getState: () => RootState) => {
+    const autoReminder = getState().prefs.autoReminder;
     dispatch({
       type: SET_DEFAULT_TASK_DATA,
       autoReminder,
@@ -65,8 +69,9 @@ export const setDefaultTaskDataAction =
   };
 
 export const setTaskTimeAction =
-  (time: number, timeType: TimeType | null, autoReminder: boolean) =>
-  (dispatch: Dispatch) => {
+  (time: number, timeType: TimeType | null) =>
+  (dispatch: Dispatch, getState: () => RootState) => {
+    const autoReminder = getState().prefs.autoReminder;
     dispatch({
       type: SET_TASK_TIME,
       time,

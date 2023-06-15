@@ -15,13 +15,11 @@ import Calendar from "../../../UI/Calendar/Calendar";
 import Section from "../../../UI/Section/Section";
 import ThemeBorder from "../../../UI/Theme/Border/ThemeBorder";
 import Options from "./Options";
-import { autoReminderSelector } from "../../../../redux/selectors/prefsSelectors";
 
 const CalendarScreen = () => {
   const navigation = useNavigation();
   const dispatch: AppDispatch = useDispatch();
   const { tasks, positions } = useSelector(taskStateSelector);
-  const autoReminder = useSelector(autoReminderSelector);
   const [date, setDate] = useState(new Date());
   const tabBarHeight = useBottomTabBarHeight();
 
@@ -34,9 +32,9 @@ const CalendarScreen = () => {
   );
 
   useEffect(() => {
-    dispatch(setCalendarChoosedDateAction(date.valueOf(), autoReminder));
+    dispatch(setCalendarChoosedDateAction(date.valueOf()));
     return () => {
-      dispatch(setCalendarChoosedDateAction(undefined, autoReminder));
+      dispatch(setCalendarChoosedDateAction(undefined));
     };
   }, [date]);
 

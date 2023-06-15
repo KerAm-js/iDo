@@ -25,6 +25,14 @@ import {
   setLanguagePopupVisibleAction,
 } from "../../../redux/actions/popupsActions";
 
+const Prefs: FC<PrefsPropType> = () => {
+  return (
+    <ScreenLayout title={languageTexts.screenTitles.prefs}>
+      <PrefsContent />
+    </ScreenLayout>
+  );
+};
+
 const PrefsContent = () => {
   const dispatch: AppDispatch = useDispatch();
   const { language, theme, autoReminder } = useSelector(prefsSelector);
@@ -40,7 +48,7 @@ const PrefsContent = () => {
       presentNotification(title[language], "", body[language]);
     }
     dispatch(setAutoReminderAction(!autoReminder));
-    dispatch(setDefaultTaskDataAction(!autoReminder));
+    dispatch(setDefaultTaskDataAction());
   }, [autoReminder]);
 
   const rateApp = () => {
@@ -98,14 +106,6 @@ const PrefsContent = () => {
         {languageTexts.words.version[language] + " " + appJson.expo.version}
       </Text>
     </View>
-  );
-};
-
-const Prefs: FC<PrefsPropType> = () => {
-  return (
-    <ScreenLayout title={languageTexts.screenTitles.prefs}>
-      <PrefsContent />
-    </ScreenLayout>
   );
 };
 

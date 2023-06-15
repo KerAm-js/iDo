@@ -39,4 +39,5 @@ export interface TaskType {
   notificationId?: string;
   folderId?: number;
   isRegular?: number;
+  expirationTimeoutId?: ReturnType<typeof setTimeout>;
 }
