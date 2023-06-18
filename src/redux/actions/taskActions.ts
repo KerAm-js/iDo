@@ -38,10 +38,12 @@ export const scheduleTaskExpiration = ({
         task.isCompleted &&
         task.completionTime &&
         task.completionTime < task.time;
-
+      console.log('scheduleExpiration isInit', isInit)
       if (!isCompletedInTime && task.time <= currTime) {
+        console.log('scheduleExpiration', 1)
         LocalDB.setTaskExpiration(task.id);
         if (task.isRegular && !task.completionTime) {
+          console.log('scheduleExpiration', 2)
           addRegularTask({
             dispatch,
             addedTask: task,
@@ -52,8 +54,10 @@ export const scheduleTaskExpiration = ({
           dispatch({ type: SET_TASK_EXPIRATION, id: task.id });
         }
       } else {
+        console.log('scheduleExpiration', 3)
         const timeDiff = task.time - currTime;
         const timeoutId = setTimeout(() => {
+          console.log('scheduleExpiration timeout')
           if (task.isRegular) {
             addRegularTask({
               dispatch,
@@ -95,7 +99,7 @@ export const loadTasksFromLocalDB = () => async (dispatch: Dispatch) => {
           ...task,
           notificationId,
           expirationTimeoutId,
-          isExpired: task.isExpired && !expirationTimeoutId,
+          isExpired: !expirationTimeoutId,
         };
       })
     );
@@ -318,6 +322,8 @@ export const checkNotificationDisabling = async (
 export const completeTaskAction =
   (task: TaskType) => async (dispatch: Dispatch) => {
     try {
+      console.log('completeTask');
+      console.log(task);
       const isCompleted = task.isCompleted ? 0 : 1;
       const completionTime = isCompleted
         ? new Date().valueOf()
