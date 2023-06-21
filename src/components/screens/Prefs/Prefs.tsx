@@ -15,7 +15,6 @@ import PrefItem from "../../UI/PrefComponents/PrefItem/PrefItem";
 import { PrefsPropType } from "./types";
 import appJson from "../../../../app.json";
 import { setStatusBarStyle } from "expo-status-bar";
-import { presentNotification } from "../../../native/notifications";
 import { bell } from "../../../../assets/icons/bell";
 import { appStore } from "../../../../assets/icons/appStore";
 import { Linking, Text, View } from "react-native";
@@ -23,6 +22,7 @@ import { text16, textGrey } from "../../../styles/global/texts";
 import {
   setDefaultTaskDataAction,
   setLanguagePopupVisibleAction,
+  setMessageAction,
 } from "../../../redux/actions/popupsActions";
 
 const Prefs: FC<PrefsPropType> = () => {
@@ -45,7 +45,7 @@ const PrefsContent = () => {
   const toggleAutoReminder = useCallback(() => {
     if (!autoReminder) {
       const { title, body } = languageTexts.notifications.autoReminderEnabled;
-      presentNotification(title[language], "", body[language]);
+      dispatch(setMessageAction({ title, body }));
     }
     dispatch(setAutoReminderAction(!autoReminder));
     dispatch(setDefaultTaskDataAction());

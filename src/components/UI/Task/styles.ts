@@ -8,10 +8,13 @@ export const taskStyles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 15,
     paddingLeft: 5,
-    ...shadowStyle,
+    shadowOffset: {
+      height: 2,
+      width: 0,
+    },
     shadowRadius: 6,
     shadowColor: '#000',
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.08,
   },
   infoContainer: {
     flexDirection: 'row',

@@ -4,6 +4,7 @@ import CalendarPopup from "../../Popups/CalendarPopup/CalendarPopup";
 import LanguagePopup from "../../Popups/LanguagePopup/LanguagePopup";
 import ReminderPopup from "../../Popups/ReminderPopup/ReminderPopup";
 import TabNavigator from "../Tab/TabNavigator";
+import Message from "../../UI/Message/Message";
 
 const RootContent = () => {
   return (
@@ -13,6 +14,7 @@ const RootContent = () => {
       <ReminderPopup />
       <LanguagePopup />
       <TabNavigator />
+      <Message />
     </React.Fragment>
   );
 };

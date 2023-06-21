@@ -9,3 +9,5 @@ export const taskTimePopupVisibilitySelector = (state: RootState) => !!state.pop
 export const taskReminderPopupVisibilitySelector = (state: RootState) => !!state.popups.addTaskPopupVisibilities?.reminder;
 export const taskDataSelector = (state: RootState) => state.popups.taskData;
 export const taskToEditSelector = (state: RootState) => state.popups.taskToEdit;
+export const messageSelector = (state: RootState) => state.popups.message;
+export const calendarChoosedDateSelector = (state: RootState) => state.popups.calendarChoosedDate;

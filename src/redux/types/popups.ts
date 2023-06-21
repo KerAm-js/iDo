@@ -1,5 +1,6 @@
 import { Action } from "@reduxjs/toolkit";
 import { TaskType, TimeType } from "./task";
+import { LangObjectType, TextGetterType } from "../../types/global/LangObject";
 
 export type TaskData = {
   time: number;
@@ -14,7 +15,13 @@ export type AddTaskPopupVisibleType = {
   reminder: boolean;
 };
 
+export type MessageType = {
+  title?: LangObjectType;
+  body?: LangObjectType;
+};
+
 export type PopupsState = {
+  message: MessageType;
   addTaskPopupVisibilities: AddTaskPopupVisibleType | undefined;
   languagePopupVisible: boolean;
   taskToEdit?: TaskType;
@@ -32,4 +39,5 @@ export interface PopupsActionType extends Action {
   visible: boolean;
   date: number | undefined;
   autoReminder?: boolean;
+  message?: MessageType;
 }

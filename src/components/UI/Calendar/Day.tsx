@@ -10,25 +10,34 @@ import { text17, textGrey, title18 } from "../../../styles/global/texts";
 import { isToday } from "../../../utils/date";
 import ThemeText from "../../Layouts/Theme/Text/ThemeText";
 import { calendarStyles } from "./styles";
-import { DateItemPropType } from "./types";
+import { DayPropType } from "./types";
+import { AppDispatch } from "../../../redux/types/appDispatch";
+import { useDispatch, useSelector } from "react-redux";
+import { setCalendarChoosedDateAction } from "../../../redux/actions/popupsActions";
 
-const DateItem: FC<DateItemPropType> = ({
-  data: { date, isCurrentMonth },
-  onClick,
-  isSelected,
+const Day: FC<DayPropType> = ({
+  data,
+  date,
+  setDate,
   busyness,
+  isChoosed,
   isCardBackgroundColor,
   pastDatesShown,
   busynessShown,
 }) => {
   const theme = useTheme();
-  const isExpired =
-    new Date().getMonth() === date.getMonth() &&
-    new Date().valueOf() - date.valueOf() > 1000 * 3600 * 24 &&
-    !pastDatesShown;
-  const onClickHandler = () => {
-    onClick(date);
+  const dispatch: AppDispatch = useDispatch();
+  const onClick = () => {
+    if (date && setDate) {
+      setDate(data.date);
+    } else {
+      dispatch(setCalendarChoosedDateAction(data.date.valueOf()));
+    }
   };
+  const isExpired =
+    new Date().getMonth() === data.date.getMonth() &&
+    new Date().valueOf() - data.date.valueOf() > 1000 * 3600 * 24 &&
+    !pastDatesShown;
 
   let circleColor = "";
 
@@ -46,27 +55,27 @@ const DateItem: FC<DateItemPropType> = ({
         calendarStyles.calendarItem,
         {
           backgroundColor:
-            isSelected && isCurrentMonth
+            isChoosed && data.isCurrentMonth
               ? buttonColors.blue
               : isCardBackgroundColor
               ? theme.colors.card
               : theme.colors.background,
         },
       ]}
-      onPress={isCurrentMonth && !isExpired ? onClickHandler : undefined}
+      onPress={data.isCurrentMonth && !isExpired ? onClick : undefined}
     >
       <ThemeText
         style={[
           calendarStyles.item,
           text17,
-          isToday(date) ? { color: textColors.blue, ...title18 } : null,
-          isSelected ? { color: themeColors.dark.colors.text } : null,
-          !isCurrentMonth || isExpired ? textGrey : null,
+          isToday(data.date) ? { color: textColors.blue, ...title18 } : null,
+          isChoosed ? { color: themeColors.dark.colors.text } : null,
+          !data.isCurrentMonth || isExpired ? textGrey : null,
         ]}
       >
-        {date.getDate()}
+        {data.date.getDate()}
       </ThemeText>
-      {busynessShown && busyness && !isSelected && (
+      {busynessShown && busyness && !isChoosed && (
         <View
           style={{
             width: 4,
@@ -82,15 +91,9 @@ const DateItem: FC<DateItemPropType> = ({
   );
 };
 
-export default React.memo(DateItem, (prevProps, currProps) => {
-  if (
-    prevProps.isSelected === currProps.isSelected &&
-    prevProps.busyness?.hasCompleted === currProps.busyness?.hasCompleted &&
-    prevProps.busyness?.hasExpired === currProps.busyness?.hasExpired &&
-    prevProps.busyness?.hasUncompleted === currProps.busyness?.hasUncompleted
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+export default React.memo(Day, (prevProps, currProps) => {
+  return (
+    prevProps.isChoosed === currProps.isChoosed &&
+    JSON.stringify(prevProps.busyness) === JSON.stringify(currProps.busyness)
+  );
 });

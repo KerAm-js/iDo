@@ -23,6 +23,7 @@ import { LanguageType } from "../../../redux/types/prefs";
 import { taskStateSelector } from "../../../redux/selectors/taskSelector";
 import { interfaceSelector } from "../../../redux/selectors/interfaceSelectors";
 import { SectionsObjectType } from "./types";
+import { setCalendarChoosedDateAction } from "../../../redux/actions/popupsActions";
 
 const Home: FC<undefined> = () => {
   const navigator =
@@ -43,7 +44,10 @@ const Home: FC<undefined> = () => {
     <CalendarIconButton
       date={new Date()}
       color={textColors.blue}
-      onPress={() => navigator.navigate("Calendar")}
+      onPress={() => {
+        dispatch(setCalendarChoosedDateAction(new Date().setHours(0, 0, 0, 0)));
+        navigator.navigate("Calendar");
+      }}
     />
   );
 
@@ -87,20 +91,6 @@ const Home: FC<undefined> = () => {
           initPositions={sections[FOR_WEEK].positions}
           visibilities={sectionsVisibilities[FOR_WEEK]}
         />
-        {/* {PERIODS_LIST.map((period) => {
-          if (period === EXPIRED && sections[EXPIRED].list.length === 0) {
-            return null;
-          }
-          return (
-            <Section
-              key={period}
-              title={sections[period].title}
-              list={sections[period].list}
-              initPositions={sections[period].positions}
-              visibilities={sectionsVisibilities[period]}
-            />
-          );
-        })} */}
       </View>
     </ScreenLayout>
   );

@@ -10,9 +10,16 @@ import {
   SET_REMINDER_POPUP_VISIBLE,
   SET_LANGUAGE_POPUP_VISIBLE,
   SET_CALENDAR_CHOOSED_DATE,
+  SET_MESSAGE,
 } from "../constants/popups";
 import { TaskType, TimeType } from "../types/task";
 import { RootState } from "../types/rootState";
+import { MessageType } from "../types/popups";
+
+export const setMessageAction =
+  (message?: MessageType) => (dispatch: Dispatch) => {
+    dispatch({ type: SET_MESSAGE, message });
+  };
 
 export const setTaskPopupVisibleAction =
   (visible: boolean) => (dispatch: Dispatch, getState: () => RootState) => {

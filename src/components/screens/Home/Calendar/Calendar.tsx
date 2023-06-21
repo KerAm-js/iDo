@@ -15,12 +15,13 @@ import Calendar from "../../../UI/Calendar/Calendar";
 import Section from "../../../UI/Section/Section";
 import ThemeBorder from "../../../UI/Theme/Border/ThemeBorder";
 import Options from "./Options";
+import { calendarChoosedDateSelector } from "../../../../redux/selectors/popupsSelector";
 
 const CalendarScreen = () => {
   const navigation = useNavigation();
   const dispatch: AppDispatch = useDispatch();
   const { tasks, positions } = useSelector(taskStateSelector);
-  const [date, setDate] = useState(new Date());
+  const choosedDate = useSelector(calendarChoosedDateSelector);
   const tabBarHeight = useBottomTabBarHeight();
 
   const updateScreenTitle = useCallback(
@@ -32,16 +33,15 @@ const CalendarScreen = () => {
   );
 
   useEffect(() => {
-    dispatch(setCalendarChoosedDateAction(date.valueOf()));
     return () => {
       dispatch(setCalendarChoosedDateAction(undefined));
     };
-  }, [date]);
+  }, []);
 
   let list: Array<TaskType> = [];
   let listPositions: ListObject = {};
   tasks.forEach((task) => {
-    if (isTheSameDate(task.time, date.valueOf())) {
+    if (choosedDate && isTheSameDate(task.time, choosedDate.valueOf())) {
       list.push(task);
       listPositions[task.id] = positions[task.id];
     }
@@ -52,8 +52,6 @@ const CalendarScreen = () => {
   return (
     <View>
       <Calendar
-        date={date}
-        setDate={setDate}
         setGlobalTitle={updateScreenTitle}
         pastDatesShown
         busynessShown
@@ -66,7 +64,7 @@ const CalendarScreen = () => {
       >
         <Section
           title={CALENDAR_DAY}
-          disableAnimationsTrigger={date}
+          disableAnimationsTrigger={choosedDate}
           list={list}
           initPositions={listPositions}
         />

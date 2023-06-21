@@ -1,10 +1,4 @@
-import React, {
-  FC,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { FC, useCallback, useEffect, useRef, useState } from "react";
 import * as Haptics from "expo-haptics";
 import { TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -37,6 +31,7 @@ import {
   setTimePopupVisibleAction,
   setReminderPopupVisibleAction,
   setDefaultTaskDataAction,
+  setMessageAction,
 } from "../../../redux/actions/popupsActions";
 import { useKeyboard } from "../../../hooks/useKeyboard";
 import { AddTaskPopupVisibleType } from "../../../redux/types/popups";
@@ -98,37 +93,53 @@ const Content: FC<{ addTaskPopupVisibilities?: AddTaskPopupVisibleType }> = ({
       const timeType = taskData?.timeType || "day";
       const remindTime = taskData?.remindTime;
       const isExpired = new Date(time) <= new Date();
-      dispatch(
-        taskToEdit
-          ? editTaskAction(
-              {
-                id: taskToEdit.id,
-                isCompleted: taskToEdit.isCompleted,
-                task,
-                description,
-                completionTime: taskToEdit.completionTime,
-                time,
-                timeType,
-                isExpired: isExpired ? 1 : 0,
-                remindTime,
-                isRegular: taskData?.isRegular ? 1 : 0,
-              },
-              taskToEdit
-            )
-          : addTaskAction(
-              {
-                id: new Date().valueOf(),
-                isCompleted: 0,
-                task,
-                description,
-                time,
-                isExpired: isExpired ? 1 : 0,
-                timeType,
-                remindTime,
-                isRegular: taskData?.isRegular ? 1 : 0,
-              }
-            )
-      );
+      let message;
+      if (taskToEdit) {
+        dispatch(
+          editTaskAction(
+            {
+              id: taskToEdit.id,
+              isCompleted: taskToEdit.isCompleted,
+              task,
+              description,
+              completionTime: taskToEdit.completionTime,
+              time,
+              timeType,
+              isExpired: isExpired ? 1 : 0,
+              remindTime,
+              isRegular: taskData?.isRegular ? 1 : 0,
+            },
+            taskToEdit
+          )
+        );
+        if (taskData.isRegular && !taskToEdit.isRegular) {
+          message = languageTexts.notifications.regularTaskIsAdded;
+        } else if (
+          !taskData.isRegular &&
+          taskToEdit.isRegular &&
+          !taskToEdit.isExpired
+        ) {
+          message = languageTexts.notifications.regularTaskRemoved;
+        }
+      } else {
+        if (taskData.isRegular) {
+          message = languageTexts.notifications.regularTaskIsAdded;
+        }
+        dispatch(
+          addTaskAction({
+            id: new Date().valueOf(),
+            isCompleted: 0,
+            task,
+            description,
+            time,
+            isExpired: isExpired ? 1 : 0,
+            timeType,
+            remindTime,
+            isRegular: taskData.isRegular ? 1 : 0,
+          })
+        );
+      }
+      if (message) dispatch(setMessageAction(message));
       dispatch(setDefaultTaskDataAction());
       if (taskToEdit) {
         dispatch(setTaskPopupVisibleAction(false));

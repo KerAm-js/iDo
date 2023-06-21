@@ -277,7 +277,7 @@ const MovableItem: FC<MovableItemProps> = ({
       setIsDragged(true);
       zIndex.value = 10 * upperBound.current;
       scale.value = withTiming(1.04);
-      shadowOpacity.value = withTiming(0.8);
+      shadowOpacity.value = withTiming(1);
     }
   };
 

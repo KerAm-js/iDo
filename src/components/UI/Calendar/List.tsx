@@ -1,100 +1,57 @@
-import React, { FC, useEffect, useReducer, useRef } from "react";
+import React, { FC } from "react";
 import { Dimensions, FlatList, View } from "react-native";
 import { useSelector } from "react-redux";
-import { taskStateSelector } from "../../../redux/selectors/taskSelector";
-import DateItem from "./DateItem";
+import { tasksSelector } from "../../../redux/selectors/taskSelector";
 import { calendarStyles } from "./styles";
-import { CalendarMonthItemType, DateBusynessType, ListPropType } from "./types";
+import { DatesObjetType, ListPropType } from "./types";
+import Month from "./Month";
 
 const List: FC<ListPropType> = ({
+  date,
+  setDate,
   state,
   onScrollEnd,
-  date,
   reference,
-  setDate,
   isCardBackgroundColor,
   pastDatesShown,
   busynessShown,
 }) => {
   const { width: WIDTH } = Dimensions.get("screen");
-  const { tasks } = useSelector(taskStateSelector);
+  const tasks = useSelector(tasksSelector);
 
-  const datesObject = useRef<{
-    [key: string]: DateBusynessType | undefined;
-  }>({});
+  const datesObject: DatesObjetType = {};
 
-  useEffect(() => {
-    datesObject.current = {};
-    tasks.forEach((task) => {
-      const key = new Date(task.time).toLocaleDateString();
-      const currObj = datesObject.current[key] || {
+  tasks.forEach((task) => {
+    const key = new Date(task.time).toLocaleDateString();
+    const currObj = datesObject[key] || {
+      hasCompleted: false,
+      hasExpired: false,
+      hasUncompleted: false,
+    };
+
+    if (task.isExpired && !task.isCompleted) {
+      datesObject[key] = {
+        hasUncompleted: false,
+        hasCompleted: false,
+        hasExpired: true,
+      };
+    } else if (!task.isCompleted && !currObj.hasExpired) {
+      datesObject[key] = {
+        hasUncompleted: true,
         hasCompleted: false,
         hasExpired: false,
-        hasUncompleted: false,
       };
-
-      if (task.isExpired && !task.isCompleted) {
-        datesObject.current[key] = {
-          hasUncompleted: false,
-          hasCompleted: false,
-          hasExpired: true,
-        };
-      } else if (!task.isCompleted && !currObj.hasExpired) {
-        datesObject.current[key] = {
-          hasUncompleted: true,
-          hasCompleted: false,
-          hasExpired: false,
-        };
-      } else if (
-        task.isCompleted &&
-        !currObj.hasExpired &&
-        !currObj.hasUncompleted
-      ) {
-        datesObject.current[key] = {
-          ...currObj,
-          hasCompleted: true,
-        };
-      }
-    });
-  }, [tasks]);
-
-  const renderItem = ({
-    item,
-  }: {
-    item: CalendarMonthItemType;
-    index: number;
-  }) => {
-    return (
-      <View>
-        {item.map((line, lineIndex) => {
-          return (
-            <View
-              key={lineIndex}
-              style={[calendarStyles.daysContainer, { width: WIDTH }]}
-            >
-              {line.map((object) => (
-                <DateItem
-                  busynessShown={busynessShown}
-                  isSelected={
-                    object.date.toLocaleDateString() ===
-                    date.toLocaleDateString()
-                  }
-                  busyness={
-                    datesObject.current[object.date.toLocaleDateString()]
-                  }
-                  onClick={setDate}
-                  key={object.date.valueOf()}
-                  data={object}
-                  isCardBackgroundColor={isCardBackgroundColor}
-                  pastDatesShown={pastDatesShown}
-                />
-              ))}
-            </View>
-          );
-        })}
-      </View>
-    );
-  };
+    } else if (
+      task.isCompleted &&
+      !currObj.hasExpired &&
+      !currObj.hasUncompleted
+    ) {
+      datesObject[key] = {
+        ...currObj,
+        hasCompleted: true,
+      };
+    }
+  });
 
   return (
     <FlatList
@@ -113,7 +70,17 @@ const List: FC<ListPropType> = ({
       showsHorizontalScrollIndicator={false}
       maxToRenderPerBatch={5}
       onMomentumScrollEnd={onScrollEnd}
-      renderItem={renderItem}
+      renderItem={({ item }) => (
+        <Month
+          pastDatesShown={pastDatesShown}
+          isCardBackgroundColor={isCardBackgroundColor}
+          item={item}
+          busynessShown={busynessShown}
+          datesObject={datesObject}
+          date={date}
+          setDate={setDate}
+        />
+      )}
     />
   );
 };

@@ -11,6 +11,7 @@ import {
   SET_REMINDER_POPUP_VISIBLE,
   SET_LANGUAGE_POPUP_VISIBLE,
   SET_CALENDAR_CHOOSED_DATE,
+  SET_MESSAGE,
 } from "./../constants/popups";
 import { PopupsActionType, PopupsState, TaskData } from "../types/popups";
 import { extractReminderState } from "../../utils/date";
@@ -31,6 +32,10 @@ const getDefaultTaskData = (args?: props): TaskData => {
 };
 
 const initialState: PopupsState = {
+  message: {
+    title: undefined,
+    body: undefined,
+  },
   addTaskPopupVisibilities: undefined,
   languagePopupVisible: false,
   taskToEdit: undefined,
@@ -43,6 +48,15 @@ export const popupsReducer = (
   action: PopupsActionType
 ): PopupsState => {
   switch (action.type) {
+    case SET_MESSAGE: {
+      return {
+        ...state,
+        message: {
+          title: action?.message?.title,
+          body: action?.message?.body
+        }
+      }
+    };
     case SET_TASK_TO_EDIT: {
       let taskData: TaskData = getDefaultTaskData();
       if (action.task) {

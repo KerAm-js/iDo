@@ -4,30 +4,55 @@ import {
   NativeSyntheticEvent,
 } from "react-native";
 
+export type DatesObjetType = {
+  [key: string]: DateBusynessType | undefined;
+};
+
 export type DateBusynessType = {
   hasCompleted: boolean;
   hasUncompleted: boolean;
   hasExpired: boolean;
 };
 
-export type DateItemPropType = {
-  data: DateItemType;
-  isSelected: boolean;
+export type DayPropType = {
+  date?: Date;
+  setDate?: (date: Date) => void;
+  data: DayType;
+  isChoosed: boolean;
   busyness?: DateBusynessType;
   busynessShown?: boolean;
   isCardBackgroundColor?: boolean;
-  onClick: (date: Date) => void;
   pastDatesShown?: boolean;
 };
 
-export type DateItemType = {
+export type DayType = {
   date: Date;
   isCurrentMonth: boolean;
 };
 
+export type WeekPropType = {
+  date?: Date;
+  setDate?: (date: Date) => void;
+  line: DayType[];
+  isCardBackgroundColor?: boolean;
+  pastDatesShown?: boolean;
+  busynessShown?: boolean;
+  datesObject: DatesObjetType;
+};
+
+export type MonthPropType = {
+  date?: Date;
+  setDate?: (date: Date) => void;
+  item: CalendarMonthItemType;
+  isCardBackgroundColor?: boolean;
+  pastDatesShown?: boolean;
+  busynessShown?: boolean;
+  datesObject: DatesObjetType;
+};
+
 export type CalendarPropType = {
-  date: Date;
-  setDate: (date: Date) => void;
+  date?: Date;
+  setDate?: (date: Date) => void;
   setGlobalTitle?: (title: string) => void;
   isCardBackgroundColor?: boolean;
   pastDatesShown?: boolean;
@@ -37,13 +62,13 @@ export type CalendarPropType = {
 
 export type ListPropType = {
   state: Array<CalendarMonthItemType>;
-  date: Date;
+  date?: Date;
+  setDate?: (date: Date) => void;
   reference: { current: FlatList | null };
-  setDate: (date: Date) => void;
   onScrollEnd: (event: NativeSyntheticEvent<NativeScrollEvent>) => void;
   isCardBackgroundColor?: boolean;
   pastDatesShown?: boolean;
   busynessShown?: boolean;
 };
 
-export type CalendarMonthItemType = Array<Array<DateItemType>>;
+export type CalendarMonthItemType = Array<Array<DayType>>;

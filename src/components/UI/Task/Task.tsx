@@ -55,7 +55,6 @@ const Task: FC<TaskPropTypes> = ({
   rStyle,
   completeTask,
 }) => {
-  console.log('Task', taskObject);
   const {
     task,
     time,

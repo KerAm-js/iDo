@@ -35,6 +35,7 @@ import { CALENDAR_DAY } from "../../../utils/constants/periods";
 import { taskListToObject } from "../../../utils/section/positionsObject";
 import LangText from "../LangText/LangText";
 import { isTaskAddingAnimatedSelector } from "../../../redux/selectors/taskSelector";
+import { setMessageAction } from "../../../redux/actions/popupsActions";
 
 export const TaskMargin = 8;
 export const TaskHeight = 58 + TaskMargin;
@@ -194,6 +195,11 @@ const Section: FC<SectionProps> = ({
   const deleteTask = useCallback(
     (task: TaskType) => {
       dispatch(deleteTaskAction(task));
+      if (task.isRegular) {
+        dispatch(
+          setMessageAction(languageTexts.notifications.regularTaskRemoved)
+        );
+      }
     },
     [dispatch]
   );

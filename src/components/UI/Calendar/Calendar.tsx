@@ -6,7 +6,7 @@ import {
   View,
 } from "react-native";
 import { useSelector } from "react-redux";
-import { prefsSelector } from "../../../redux/selectors/prefsSelectors";
+import { languageSelector } from "../../../redux/selectors/prefsSelectors";
 import { text17, textSemiBold, title18 } from "../../../styles/global/texts";
 import {
   getCalendarArray,
@@ -20,14 +20,14 @@ import { calendarStyles } from "./styles";
 import { CalendarMonthItemType, CalendarPropType } from "./types";
 
 const Calendar: FC<CalendarPropType> = ({
-  date,
-  setDate,
   setGlobalTitle,
   isCardBackgroundColor,
   pastDatesShown,
   busynessShown,
+  date,
+  setDate,
 }) => {
-  const { language } = useSelector(prefsSelector);
+  const language = useSelector(languageSelector);
   const { width: WIDTH } = Dimensions.get("screen");
   const currDate = new Date();
   const weekDaysArr = languageTexts.weekDays.shorts;
@@ -89,15 +89,15 @@ const Calendar: FC<CalendarPropType> = ({
       <List
         reference={scrollViewRef}
         state={state}
-        date={date}
-        setDate={setDate}
         onScrollEnd={onScroll}
         isCardBackgroundColor={isCardBackgroundColor}
         pastDatesShown={pastDatesShown}
         busynessShown={busynessShown}
+        date={date}
+        setDate={setDate}
       />
     ),
-    [state, date]
+    [date, state]
   );
 
   useEffect(() => {
@@ -108,7 +108,7 @@ const Calendar: FC<CalendarPropType> = ({
     } else {
       setTitle(newTitle);
     }
-  }, [language]);
+  }, []);
 
   return (
     <View style={calendarStyles.container}>

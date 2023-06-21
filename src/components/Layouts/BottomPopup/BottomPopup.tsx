@@ -26,8 +26,7 @@ const BottomPopup: FC<BottomPopupPropType> = ({
   onCloseAnimationEnd,
 }) => {
   const { height: SCREEN_HEIGHT } = Dimensions.get("screen");
-  const { bottom } = useSafeAreaInsets();
-  const { top } = useSafeAreaInsets();
+  const { top, bottom } = useSafeAreaInsets();
   const HEIGHT = useRef(0);
 
   const translateY = useSharedValue(0);
